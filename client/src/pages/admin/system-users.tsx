@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
-import AppLayout from '@/components/layout/app-layout';
+import AppShell from '@/components/layout/app-shell';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/system-users/data-table';
 import { columns } from '@/components/system-users/columns';
@@ -132,16 +132,22 @@ export default function SystemUsers() {
     statusMutation.mutate({ id, isActive });
   };
 
+  // Se estiver carregando, mostrar indicador de carregamento
+  if (isLoading) {
+    return (
+      <AppShell>
+        <div className="flex-1 flex items-center justify-center">
+          <p>Carregando usuários...</p>
+        </div>
+      </AppShell>
+    );
+  }
+
   return (
-    <AppLayout title="Usuários do Sistema" subtitle="Gerencie os usuários que podem acessar a plataforma">
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight">Usuários do Sistema</h2>
-            <p className="text-muted-foreground">
-              Gerencie os usuários e seus níveis de acesso
-            </p>
-          </div>
+    <AppShell>
+      <div className="flex-1">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold">Usuários do Sistema</h2>
           <Button 
             onClick={() => handleOpenForm()}
             className="bg-primary hover:bg-primary/90"
@@ -151,15 +157,13 @@ export default function SystemUsers() {
           </Button>
         </div>
 
-        <div className="border rounded-md bg-card">
-          <DataTable
-            columns={columns}
-            data={users}
-            onEdit={handleOpenForm}
-            onDelete={handleDelete}
-            onStatusChange={(user: SystemUser, status: boolean) => handleUpdateStatus(user.id, status)}
-          />
-        </div>
+        <DataTable
+          columns={columns}
+          data={users}
+          onEdit={handleOpenForm}
+          onDelete={handleDelete}
+          onStatusChange={(user: SystemUser, status: boolean) => handleUpdateStatus(user.id, status)}
+        />
       </div>
 
       {/* Diálogo para Criar/Editar Usuário */}
@@ -203,6 +207,6 @@ export default function SystemUsers() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </AppLayout>
+    </AppShell>
   );
 }

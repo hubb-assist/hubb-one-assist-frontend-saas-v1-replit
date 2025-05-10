@@ -23,6 +23,9 @@ export const API_CONFIG = {
     
     // Planos
     PLANS: '/plans',
+    
+    // Usuários do Sistema
+    SYSTEM_USERS: '/users',
   }
 };
 

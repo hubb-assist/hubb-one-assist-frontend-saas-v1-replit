@@ -141,6 +141,14 @@ export default function SidebarMain({ expanded }: SidebarMainProps) {
             expanded={expanded}
             active={pathname === '/admin/plans'}
           />
+          {/* Item de Usuários do Sistema */}
+          <NavItem
+            href="/admin/system-users"
+            icon={<Users className="h-5 w-5" />}
+            label="Usuários do Sistema"
+            expanded={expanded}
+            active={pathname === '/admin/system-users'}
+          />
         </div>
       </div>
 

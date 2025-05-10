@@ -1,20 +1,41 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, Router as WouterRouter } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { useEffect } from "react";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Setup from "@/pages/setup";
 import Dashboard from "@/pages/dashboard";
+import Login from "@/pages/login";
+import AdminDashboard from "@/pages/admin/dashboard";
+import PrivateRoute from "@/components/auth/private-route";
+import { useAuth } from "@/lib/auth";
 
 function Router() {
+  const { checkAuth } = useAuth();
+
+  // Verificar a autenticação ao carregar a aplicação
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
   return (
     <Switch>
       <Route path="/" component={Home}/>
       <Route path="/setup" component={Setup}/>
       <Route path="/dashboard" component={Dashboard}/>
+      <Route path="/login" component={Login}/>
+      
+      {/* Rotas protegidas */}
+      <Route path="/admin/dashboard">
+        <PrivateRoute>
+          <AdminDashboard />
+        </PrivateRoute>
+      </Route>
+      
       {/* Fallback to 404 */}
       <Route component={NotFound} />
     </Switch>

@@ -46,7 +46,28 @@ export default function SegmentsPage() {
     isError,
   } = useQuery({
     queryKey: ['segments'],
-    queryFn: segmentsService.getAll,
+    queryFn: async () => {
+      // Chamada direta para garantir o processamento correto
+      try {
+        console.log('Buscando segmentos...');
+        const data = await segmentsService.getAll();
+        console.log('Segmentos recebidos da API:', data);
+        
+        // Mapear os campos para garantir compatibilidade com a interface
+        const segmentsMapped = data.map(segment => ({
+          ...segment,
+          nome: segment.name,
+          descricao: segment.description
+        }));
+        
+        console.log('Segmentos mapeados:', segmentsMapped);
+        return segmentsMapped;
+      } catch (error) {
+        console.error('Erro ao buscar segmentos:', error);
+        throw error;
+      }
+    },
+    refetchOnWindowFocus: true,
   });
 
   // Mutations
@@ -212,7 +233,7 @@ export default function SegmentsPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Excluir Segmento</AlertDialogTitle>
             <AlertDialogDescription>
-              Você tem certeza que deseja excluir o segmento <strong>{selectedSegment?.nome}</strong>?<br />
+              Você tem certeza que deseja excluir o segmento <strong>{selectedSegment?.name}</strong>?<br />
               Esta ação não pode ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>

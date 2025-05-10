@@ -88,11 +88,12 @@ export const segmentsService = {
   // Atualizar apenas o status de um segmento (ativo/inativo)
   async updateStatus(id: string, isActive: boolean): Promise<Segment> {
     try {
-      // Usar rotas específicas para ativar/desativar
+      // Usar rotas específicas para ativar/desativar com a barra no final
       const endpoint = isActive 
-        ? `/segments/${id}/activate` 
-        : `/segments/${id}/deactivate`;
+        ? `/segments/${id}/activate/` 
+        : `/segments/${id}/deactivate/`;
         
+      console.log(`Atualizando status do segmento ${id} para ${isActive ? 'ativo' : 'inativo'}, endpoint: ${endpoint}`);
       const response = await api.patch(endpoint);
       return response.data;
     } catch (error) {

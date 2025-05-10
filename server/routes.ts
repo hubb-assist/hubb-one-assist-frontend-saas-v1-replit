@@ -5,7 +5,7 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 import { log } from "./vite";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Definir a URL da API externa (atualizada para a URL estável)
+  // Definir a URL da API externa (URL final de produção)
   const API_TARGET = 'https://hubb-one-assist-back-hubb-one.replit.app';
   
   // Configurar proxy mais simples para evitar problemas de tipagem

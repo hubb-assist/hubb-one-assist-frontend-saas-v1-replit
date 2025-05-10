@@ -1,0 +1,91 @@
+https://32c76b88-78ce-48ad-9c13-04975e5e14a3-00-12ynk9jfvcfqw.worf.replit.dev/users/me
+index-DS3Afm99.js:292 Erro na requisição: 
+Oe
+index-DS3Afm99.js:292 Erro na verificação de autenticação: 
+Oe
+index-DS3Afm99.js:292 Usuário não autenticado (resposta vazia)
+index-DS3Afm99.js:292 Fazendo requisição para API: https://32c76b88-78ce-48ad-9c13-04975e5e14a3-00-12ynk9jfvcfqw.worf.replit.dev/auth/login
+index-DS3Afm99.js:292 Erro na requisição: 
+Oe
+(anônimo)	@	index-DS3Afm99.js:292
+index-DS3Afm99.js:292 Fazendo requisição para API: https://32c76b88-78ce-48ad-9c13-04975e5e14a3-00-12ynk9jfvcfqw.worf.replit.dev/auth/login
+index-DS3Afm99.js:292 Erro na requisição: 
+Oe
+code
+: 
+"ERR_NETWORK"
+config
+: 
+adapter
+: 
+(3) ['xhr', 'http', 'fetch']
+allowAbsoluteUrls
+: 
+true
+baseURL
+: 
+"https://32c76b88-78ce-48ad-9c13-04975e5e14a3-00-12ynk9jfvcfqw.worf.replit.dev"
+data
+: 
+"{\"email\":\"admin@hubbassist.com\",\"password\":\"admin123\"}"
+env
+: 
+{FormData: ƒ, Blob: ƒ}
+headers
+: 
+Mn {Accept: 'application/json', Content-Type: 'application/json'}
+maxBodyLength
+: 
+-1
+maxContentLength
+: 
+-1
+method
+: 
+"post"
+timeout
+: 
+10000
+transformRequest
+: 
+[ƒ]
+transformResponse
+: 
+[ƒ]
+transitional
+: 
+{silentJSONParsing: true, forcedJSONParsing: true, clarifyTimeoutError: false}
+url
+: 
+"/auth/login"
+validateStatus
+: 
+ƒ (t)
+withCredentials
+: 
+true
+xsrfCookieName
+: 
+"XSRF-TOKEN"
+xsrfHeaderName
+: 
+"X-XSRF-TOKEN"
+[[Prototype]]
+: 
+Object
+message
+: 
+"Network Error"
+name
+: 
+"AxiosError"
+request
+: 
+XMLHttpRequest {url: 'https://32c76b88-78ce-48ad-9c13-04975e5e14a3-00-12ynk9jfvcfqw.worf.replit.dev/auth/login', onreadystatechange: null, readyState: 4, timeout: 10000, withCredentials: true, …}
+stack
+: 
+"AxiosError: Network Error\n    at g.onerror (https://hubb-one-assist-front-hubb-one.replit.app/assets/index-DS3Afm99.js:289:6064)\n    at qa.request (https://hubb-one-assist-front-hubb-one.replit.app/assets/index-DS3Afm99.js:291:2066)\n    at async Object.login (https://hubb-one-assist-front-hubb-one.replit.app/assets/index-DS3Afm99.js:292:5799)\n    at async login (https://hubb-one-assist-front-hubb-one.replit.app/assets/index-DS3Afm99.js:292:6356)\n    at async f (https://hubb-one-assist-front-hubb-one.replit.app/assets/index-DS3Afm99.js:292:7401)\n    at async https://hubb-one-assist-front-hubb-one.replit.app/assets/index-DS3Afm99.js:287:119005"
+[[Prototype]]
+: 
+Error
+(anônimo)	@	index-DS3Afm99.js:292

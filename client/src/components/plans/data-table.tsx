@@ -40,6 +40,22 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
+  // Definir os handlers explicitamente para garantir que funcionam
+  const handleEdit = (plan: Plan) => {
+    console.log("DataTable - Chamando onEdit para plano:", plan);
+    onEdit(plan);
+  };
+
+  const handleDelete = (plan: Plan) => {
+    console.log("DataTable - Chamando onDelete para plano:", plan);
+    onDelete(plan);
+  };
+
+  const handleUpdateStatus = (id: string, status: boolean) => {
+    console.log("DataTable - Chamando updatePlanStatus para id:", id, "status:", status);
+    updatePlanStatus(id, status);
+  };
+
   const table = useReactTable({
     data,
     columns,
@@ -56,9 +72,9 @@ export function DataTable<TData, TValue>({
       },
     },
     meta: {
-      onEdit,
-      onDelete,
-      updatePlanStatus,
+      onEdit: handleEdit,
+      onDelete: handleDelete,
+      updatePlanStatus: handleUpdateStatus,
     },
   });
 

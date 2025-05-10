@@ -91,27 +91,23 @@ export const columns: ColumnDef<Plan>[] = [
     cell: ({ row }) => {
       const plan = row.original;
       
-      // Ao receber as render props, assumimos onEdit, onDelete e updateModuleStatus
-      // serão fornecidos pelo componente pai
+      // @ts-ignore - row.table existe mas o TS não reconhece
+      const meta = (row.table?.options?.meta as any) || {};
+      const updatePlanStatus = meta.updatePlanStatus;
       
-      const handleStatusChange = (checked: boolean) => {
-        console.log("Switch status clicado para plano:", plan.name, "Novo valor:", checked);
-        ((row as any).table?.options?.meta || {})?.updatePlanStatus?.(plan.id, checked);
-      };
+      if (!updatePlanStatus) {
+        return (
+          <div className="flex items-center">
+            <span className="ml-2 text-xs text-muted-foreground">
+              {plan.is_active ? 'Ativo' : 'Inativo'}
+            </span>
+          </div>
+        );
+      }
       
-      return (
-        <div className="flex items-center pointer-events-auto">
-          <Switch
-            checked={plan.is_active}
-            onCheckedChange={handleStatusChange}
-            aria-label={`Status do plano ${plan.name}`}
-            className="pointer-events-auto"
-          />
-          <span className="ml-2 text-xs text-muted-foreground">
-            {plan.is_active ? 'Ativo' : 'Inativo'}
-          </span>
-        </div>
-      );
+      // Usando StatusSwitch ao invés de código direto
+      const StatusSwitch = require('./status-switch').StatusSwitch;
+      return <StatusSwitch plan={plan} onUpdateStatus={updatePlanStatus} />;
     },
   },
   {
@@ -132,15 +128,29 @@ export const columns: ColumnDef<Plan>[] = [
     cell: ({ row }) => {
       const plan = row.original;
       
+      // Obter as funções diretamente do meta
+      // @ts-ignore - row.table existe mas o TS não reconhece
+      const meta = (row.table?.options?.meta as any) || {};
+      const onEdit = meta.onEdit;
+      const onDelete = meta.onDelete;
+      
       // Adicionando log para debugging e envolvendo em div com pointer-events-auto
       const handleEditClick = () => {
         console.log("Botão editar clicado para plano:", plan.name);
-        ((row as any).table?.options?.meta || {})?.onEdit?.(plan);
+        if (typeof onEdit === 'function') {
+          onEdit(plan);
+        } else {
+          console.error("Função onEdit não está disponível");
+        }
       };
       
       const handleDeleteClick = () => {
         console.log("Botão excluir clicado para plano:", plan.name);
-        ((row as any).table?.options?.meta || {})?.onDelete?.(plan);
+        if (typeof onDelete === 'function') {
+          onDelete(plan);
+        } else {
+          console.error("Função onDelete não está disponível");
+        }
       };
       
       return (

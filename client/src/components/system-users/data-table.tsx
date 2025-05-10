@@ -1,144 +1,157 @@
 import React, { useState } from 'react';
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable, SortingState, getSortedRowModel, getPaginationRowModel, ColumnFiltersState, getFilteredRowModel, Row } from '@tanstack/react-table';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Input } from '@/components/ui/input';
+import {
+  ColumnDef,
+  ColumnFiltersState,
+  SortingState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { SystemUser, SystemUserRole, roleLabels } from './types';
+import { Input } from '@/components/ui/input';
+import { SystemUser } from './types';
+import { Switch } from '@/components/ui/switch';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  isLoading?: boolean;
-  onEdit: (user: SystemUser) => void;
-  onDelete: (user: SystemUser) => void;
-  onUpdateStatus: (id: string, status: boolean) => void;
+  searchColumn?: string;
+  searchPlaceholder?: string;
+  onRowClick?: (row: TData) => void;
+  onDelete?: (row: TData) => void;
+  onEdit?: (row: TData) => void;
+  onStatusChange?: (row: TData, status: boolean) => void;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
-  isLoading,
-  onEdit,
+  searchColumn = 'name',
+  searchPlaceholder = 'Filtrar por nome...',
+  onRowClick,
   onDelete,
-  onUpdateStatus
+  onEdit,
+  onStatusChange,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
-  const [roleFilter, setRoleFilter] = useState<string[]>([]);
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    onPaginationChange: setPagination,
     state: {
       sorting,
       columnFilters,
-      pagination: {
-        pageIndex: 0,
-        pageSize: rowsPerPage,
-      },
+      pagination,
+    },
+    meta: {
+      onDelete,
+      onEdit,
+      onStatusChange,
     },
   });
 
-  // Aplicar filtro de cargo/role
+  // Anexar eventos aos botões com os IDs específicos
   React.useEffect(() => {
-    if (roleFilter.length > 0) {
-      table.getColumn('role')?.setFilterValue(roleFilter);
-    } else {
-      table.getColumn('role')?.setFilterValue(undefined);
-    }
-  }, [roleFilter, table]);
-
-  // Setando as ações nas linhas
-  const rows = table.getRowModel().rows.map(row => {
-    // Estender a row com as propriedades customizadas
-    const extendedRow = row as Row<TData> & {
-      onEdit: typeof onEdit;
-      onDelete: typeof onDelete;
-      onStatusChange: (checked: boolean) => void;
-    };
-    
-    extendedRow.onEdit = onEdit;
-    extendedRow.onDelete = onDelete;
-    extendedRow.onStatusChange = (checked: boolean) => {
-      const user = row.original as SystemUser;
-      onUpdateStatus(user.id, checked);
-    };
-    
-    return extendedRow;
-  });
-
-  // Função para lidar com a mudança no filtro de cargo
-  const handleRoleFilterChange = (value: string) => {
-    if (value === 'all') {
-      setRoleFilter([]);
-    } else {
-      setRoleFilter([value]);
-    }
-  };
+    // Para cada linha, adicionar eventos aos botões de edição, exclusão e status
+    data.forEach((row: any) => {
+      const id = row.id;
+      
+      // Status switch
+      const statusSwitch = document.getElementById(`status-switch-${id}`);
+      if (statusSwitch && onStatusChange) {
+        statusSwitch.onclick = (e) => {
+          e.stopPropagation();
+          onStatusChange(row, !row.is_active);
+        };
+      }
+      
+      // Edit button
+      const editButton = document.getElementById(`edit-button-${id}`);
+      if (editButton && onEdit) {
+        editButton.onclick = (e) => {
+          e.stopPropagation();
+          onEdit(row);
+        };
+      }
+      
+      // Delete button
+      const deleteButton = document.getElementById(`delete-button-${id}`);
+      if (deleteButton && onDelete) {
+        deleteButton.onclick = (e) => {
+          e.stopPropagation();
+          onDelete(row);
+        };
+      }
+    });
+  }, [data, onDelete, onEdit, onStatusChange]);
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center py-4 gap-2">
+    <div className="w-full">
+      <div className="flex items-center justify-between py-4">
         <Input
-          placeholder="Filtrar por nome..."
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          placeholder={searchPlaceholder}
+          value={(table.getColumn(searchColumn)?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
+            table.getColumn(searchColumn)?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
-        
-        <Select
-          value={roleFilter.length ? roleFilter[0] : 'all'}
-          onValueChange={handleRoleFilterChange}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filtrar por cargo" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos os cargos</SelectItem>
-            {Object.entries(roleLabels).map(([value, label]) => (
-              <SelectItem key={value} value={value}>{label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
       </div>
-
       <div className="rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                ))}
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHeader key={header.id} className="px-4 py-2">
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHeader>
+                  );
+                })}
               </TableRow>
             ))}
           </TableHeader>
           <TableBody>
-            {rows.length ? (
-              rows.map((row) => (
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
+                  className={`${onRowClick ? 'cursor-pointer hover:bg-slate-50' : ''}`}
+                  onClick={() => onRowClick && onRowClick(row.original)}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="px-4 py-2">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
@@ -147,59 +160,34 @@ export function DataTable<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  {isLoading ? 'Carregando...' : 'Nenhum usuário encontrado.'}
+                  Nenhum resultado encontrado.
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
-
-      <div className="flex items-center justify-between space-x-2 py-4">
-        <div className="flex items-center space-x-2">
-          <p className="text-sm text-muted-foreground">
-            Mostrando página {table.getState().pagination.pageIndex + 1} de{' '}
-            {table.getPageCount()} ({data.length} itens)
-          </p>
-          
-          <Select
-            value={`${rowsPerPage}`}
-            onValueChange={(value) => {
-              setRowsPerPage(Number(value));
-              table.setPageSize(Number(value));
-            }}
-          >
-            <SelectTrigger className="h-8 w-[70px]">
-              <SelectValue placeholder={rowsPerPage} />
-            </SelectTrigger>
-            <SelectContent>
-              {[5, 10, 20, 30, 40, 50].map((pageSize) => (
-                <SelectItem key={pageSize} value={`${pageSize}`}>
-                  {pageSize}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="text-sm text-muted-foreground">
+          Página {table.getState().pagination.pageIndex + 1} de{' '}
+          {table.getPageCount()}
         </div>
-
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Anterior
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Próxima
-          </Button>
-        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+        >
+          Anterior
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+        >
+          Próxima
+        </Button>
       </div>
     </div>
   );

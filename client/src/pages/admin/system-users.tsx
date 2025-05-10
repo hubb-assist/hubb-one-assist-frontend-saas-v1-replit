@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { Plus, Loader2 } from 'lucide-react';
 
-import AppShell from '@/components/layout/app-shell';
+import AppLayout from '@/components/layout/app-layout';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
+import { DataTable } from '@/components/system-users/data-table';
+import { columns } from '@/components/system-users/columns';
+import UserForm from '@/components/system-users/user-form';
+import { systemUsersService } from '@/lib/api-users';
+import { SystemUser, SystemUserCreateValues, SystemUserUpdateValues } from '@/components/system-users/types';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import {
   AlertDialog,
@@ -24,259 +26,183 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { UserPlus } from 'lucide-react';
 
-import { columns } from '@/components/system-users/columns';
-import { DataTable } from '@/components/system-users/data-table';
-import { UserForm } from '@/components/system-users/user-form';
-import { SystemUser, SystemUserCreateValues, SystemUserUpdateValues } from '@/components/system-users/types';
-import { systemUsersService } from '@/lib/api-users';
-
-export default function SystemUsersPage() {
+export default function SystemUsers() {
+  const [openDialog, setOpenDialog] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<SystemUser | undefined>(undefined);
   const queryClient = useQueryClient();
-  
-  // Estados locais
-  const [formOpen, setFormOpen] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<SystemUser | null>(null);
 
-  // Consulta para buscar usuários do sistema
-  const {
-    data: users = [],
-    isLoading: isLoadingUsers,
-    isError: isErrorUsers,
-  } = useQuery({
-    queryKey: ['system-users'],
+  // Buscar lista de usuários
+  const { data: users = [], isLoading } = useQuery({
+    queryKey: ['/api/users'],
     queryFn: async () => {
       try {
-        console.log('Buscando usuários do sistema...');
-        return await systemUsersService.getAll();
+        const data = await systemUsersService.getAll();
+        return data;
       } catch (error) {
-        console.error('Erro ao buscar usuários do sistema:', error);
-        throw error;
+        console.error('Erro ao buscar usuários:', error);
+        toast.error('Não foi possível carregar os usuários');
+        return [];
       }
     },
-    refetchOnWindowFocus: true,
   });
 
-  // Mutation para criar usuário
-  const createMutation = useMutation({
-    mutationFn: systemUsersService.create,
+  // Mutação para criar ou atualizar usuário
+  const mutation = useMutation({
+    mutationFn: (data: { id?: string; values: SystemUserCreateValues | SystemUserUpdateValues }) => {
+      if (data.id) {
+        return systemUsersService.update(data.id, data.values as SystemUserUpdateValues);
+      } else {
+        return systemUsersService.create(data.values as SystemUserCreateValues);
+      }
+    },
     onSuccess: () => {
-      toast.success('Usuário criado com sucesso!');
-      queryClient.invalidateQueries({ queryKey: ['system-users'] });
-      setFormOpen(false);
+      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      setOpenDialog(false);
+      toast.success(selectedUser ? 'Usuário atualizado com sucesso!' : 'Usuário criado com sucesso!');
+      setSelectedUser(undefined);
     },
-    onError: () => {
-      toast.error('Erro ao criar usuário.');
-    },
-  });
-
-  // Mutation para atualizar usuário
-  const updateMutation = useMutation({
-    mutationFn: (data: { id: string; values: SystemUserUpdateValues }) =>
-      systemUsersService.update(data.id, data.values),
-    onSuccess: () => {
-      toast.success('Usuário atualizado com sucesso!');
-      queryClient.invalidateQueries({ queryKey: ['system-users'] });
-      setFormOpen(false);
-      setSelectedUser(null);
-    },
-    onError: () => {
-      toast.error('Erro ao atualizar usuário.');
+    onError: (error) => {
+      console.error('Erro ao salvar usuário:', error);
+      toast.error(selectedUser ? 
+        'Erro ao atualizar usuário. Tente novamente.' : 
+        'Erro ao criar usuário. Tente novamente.');
     },
   });
 
-  // Mutation para excluir usuário
+  // Mutação para deletar usuário
   const deleteMutation = useMutation({
     mutationFn: (id: string) => systemUsersService.delete(id),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      setOpenDeleteDialog(false);
       toast.success('Usuário excluído com sucesso!');
-      queryClient.invalidateQueries({ queryKey: ['system-users'] });
-      setDeleteDialogOpen(false);
-      setSelectedUser(null);
+      setSelectedUser(undefined);
     },
-    onError: () => {
-      toast.error('Erro ao excluir usuário.');
-    },
-  });
-
-  // Mutation para ativar usuário
-  const activateMutation = useMutation({
-    mutationFn: (id: string) => systemUsersService.activate(id),
-    onSuccess: (data) => {
-      toast.success('Usuário ativado com sucesso!');
-      queryClient.invalidateQueries({ queryKey: ['system-users'] });
-    },
-    onError: () => {
-      toast.error('Erro ao ativar usuário.');
-      queryClient.invalidateQueries({ queryKey: ['system-users'] });
+    onError: (error) => {
+      console.error('Erro ao excluir usuário:', error);
+      toast.error('Erro ao excluir usuário. Tente novamente.');
     },
   });
 
-  // Mutation para desativar usuário
-  const deactivateMutation = useMutation({
-    mutationFn: (id: string) => systemUsersService.deactivate(id),
-    onSuccess: (data) => {
-      toast.success('Usuário desativado com sucesso!');
-      queryClient.invalidateQueries({ queryKey: ['system-users'] });
+  // Mutação para atualizar status (ativar/desativar)
+  const statusMutation = useMutation({
+    mutationFn: (data: { id: string; isActive: boolean }) => {
+      return data.isActive
+        ? systemUsersService.activate(data.id)
+        : systemUsersService.deactivate(data.id);
     },
-    onError: () => {
-      toast.error('Erro ao desativar usuário.');
-      queryClient.invalidateQueries({ queryKey: ['system-users'] });
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      toast.success(`Usuário ${data.is_active ? 'ativado' : 'desativado'} com sucesso!`);
+    },
+    onError: (error) => {
+      console.error('Erro ao atualizar status do usuário:', error);
+      toast.error('Erro ao atualizar status do usuário. Tente novamente.');
     },
   });
 
   // Handlers
   const handleOpenForm = (user?: SystemUser) => {
-    console.log("Abrindo formulário para usuário:", user?.name || "novo");
-    setSelectedUser(user || null);
-    setFormOpen(true);
-  };
-
-  const handleCloseForm = () => {
-    console.log("Fechando formulário");
-    setFormOpen(false);
-    setSelectedUser(null);
-  };
-
-  const handleSubmit = (values: SystemUserCreateValues | SystemUserUpdateValues) => {
-    console.log("Enviando dados do formulário:", values);
-    if (selectedUser) {
-      console.log("Atualizando usuário existente:", selectedUser.id);
-      updateMutation.mutate({ id: selectedUser.id, values: values as SystemUserUpdateValues });
-    } else {
-      console.log("Criando novo usuário");
-      createMutation.mutate(values as SystemUserCreateValues);
-    }
+    setSelectedUser(user);
+    setOpenDialog(true);
   };
 
   const handleDelete = (user: SystemUser) => {
-    console.log("SystemUsersPage: handleDelete chamado para usuário:", user.name);
-    // Verificação para garantir que o usuário é válido
-    if (!user || !user.id) {
-      console.error("Usuário inválido recebido em handleDelete");
-      toast.error("Erro ao selecionar usuário para exclusão");
-      return;
-    }
     setSelectedUser(user);
-    setDeleteDialogOpen(true);
+    setOpenDeleteDialog(true);
   };
 
-  const confirmDelete = () => {
-    console.log("SystemUsersPage: confirmDelete chamado para usuário:", selectedUser?.name);
+  const handleConfirmDelete = () => {
     if (selectedUser) {
-      console.log("Chamando API para excluir usuário ID:", selectedUser.id);
       deleteMutation.mutate(selectedUser.id);
     }
   };
 
-  const handleUpdateStatus = (id: string, isActive: boolean) => {
-    console.log("SystemUsersPage: handleUpdateStatus chamado para usuário ID:", id, "novo status:", isActive);
-    if (isActive) {
-      activateMutation.mutate(id);
-    } else {
-      deactivateMutation.mutate(id);
-    }
+  const handleSubmit = async (values: SystemUserCreateValues | SystemUserUpdateValues) => {
+    mutation.mutate({
+      id: selectedUser?.id,
+      values,
+    });
   };
 
-  // Se ocorrer um erro na consulta principal
-  if (isErrorUsers) {
-    return (
-      <AppShell>
-        <div className="flex-1">
-          <h2 className="text-2xl font-bold mb-6">Usuários do Sistema</h2>
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-            <p>Erro ao carregar usuários do sistema. Tente novamente mais tarde.</p>
-            <Button 
-              variant="outline" 
-              onClick={() => queryClient.invalidateQueries({ queryKey: ['system-users'] })}
-              className="mt-2"
-            >
-              Tentar novamente
-            </Button>
-          </div>
-        </div>
-      </AppShell>
-    );
-  }
+  const handleUpdateStatus = (id: string, isActive: boolean) => {
+    statusMutation.mutate({ id, isActive });
+  };
 
   return (
-    <AppShell>
-      <div className="flex-1">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Usuários do Sistema</h2>
-          
-          <Dialog open={formOpen} onOpenChange={setFormOpen}>
-            <DialogTrigger asChild>
-              <Button onClick={() => handleOpenForm()}>
-                <Plus className="mr-2 h-4 w-4" />
-                Novo Usuário
-              </Button>
-            </DialogTrigger>
-            {formOpen && (
-              <DialogContent className="sm:max-w-[600px]">
-                <DialogHeader>
-                  <DialogTitle>{selectedUser ? 'Editar Usuário' : 'Novo Usuário'}</DialogTitle>
-                  <DialogDescription>
-                    {selectedUser
-                      ? 'Edite as informações do usuário existente.'
-                      : 'Preencha os dados para criar um novo usuário do sistema.'}
-                  </DialogDescription>
-                </DialogHeader>
-                <UserForm
-                  user={selectedUser || undefined}
-                  onSubmit={handleSubmit}
-                  onCancel={handleCloseForm}
-                  isSubmitting={createMutation.isPending || updateMutation.isPending}
-                />
-              </DialogContent>
-            )}
-          </Dialog>
+    <AppLayout title="Usuários do Sistema" subtitle="Gerencie os usuários que podem acessar a plataforma">
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight">Usuários do Sistema</h2>
+            <p className="text-muted-foreground">
+              Gerencie os usuários e seus níveis de acesso
+            </p>
+          </div>
+          <Button 
+            onClick={() => handleOpenForm()}
+            className="bg-primary hover:bg-primary/90"
+          >
+            <UserPlus className="h-4 w-4 mr-2" />
+            Novo Usuário
+          </Button>
         </div>
 
-        {isLoadingUsers ? (
-          <div className="space-y-4">
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-96 w-full" />
-          </div>
-        ) : (
+        <div className="border rounded-md bg-card">
           <DataTable
             columns={columns}
             data={users}
             onEdit={handleOpenForm}
             onDelete={handleDelete}
-            onUpdateStatus={handleUpdateStatus}
+            onStatusChange={(user: SystemUser, status: boolean) => handleUpdateStatus(user.id, status)}
           />
-        )}
+        </div>
       </div>
 
-      {/* Dialog de confirmação de exclusão */}
-      {deleteDialogOpen && (
-        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Excluir Usuário</AlertDialogTitle>
-              <AlertDialogDescription>
-                Você tem certeza que deseja excluir o usuário <strong>{selectedUser?.name}</strong>?<br />
-                Esta ação não pode ser desfeita.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={confirmDelete}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                disabled={deleteMutation.isPending}
-              >
-                {deleteMutation.isPending && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                Excluir
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      )}
-    </AppShell>
+      {/* Diálogo para Criar/Editar Usuário */}
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>{selectedUser ? 'Editar Usuário' : 'Criar Novo Usuário'}</DialogTitle>
+            <DialogDescription>
+              {selectedUser
+                ? 'Atualize os dados do usuário no formulário abaixo.'
+                : 'Preencha os dados para criar um novo usuário.'}
+            </DialogDescription>
+          </DialogHeader>
+          <UserForm
+            user={selectedUser}
+            onSubmit={handleSubmit}
+            onCancel={() => setOpenDialog(false)}
+            isLoading={mutation.isPending}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Diálogo de Confirmação de Exclusão */}
+      <AlertDialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+            <AlertDialogDescription>
+              Você tem certeza que deseja excluir o usuário "{selectedUser?.name}"?
+              Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleConfirmDelete}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              {deleteMutation.isPending ? 'Excluindo...' : 'Excluir'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </AppLayout>
   );
 }

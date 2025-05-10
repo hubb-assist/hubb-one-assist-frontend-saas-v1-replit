@@ -1,9 +1,8 @@
 import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Loader2 } from 'lucide-react';
+import { z } from 'zod';
 
-import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -14,7 +13,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -22,62 +21,59 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 
-import { 
-  SystemUser, 
-  SystemUserRole, 
-  roleLabels,
-  systemUserCreateSchema, 
-  systemUserUpdateSchema,
+import {
+  SystemUser,
   SystemUserCreateValues,
-  SystemUserUpdateValues
+  SystemUserUpdateValues,
+  systemUserCreateSchema,
+  systemUserUpdateSchema,
+  UserRole,
+  roleLabels,
 } from './types';
 
 interface UserFormProps {
+  onSubmit: (values: SystemUserCreateValues | SystemUserUpdateValues) => Promise<void>;
+  isLoading: boolean;
   user?: SystemUser;
-  onSubmit: (values: SystemUserCreateValues | SystemUserUpdateValues) => void;
   onCancel: () => void;
-  isSubmitting: boolean;
 }
 
-export function UserForm({
-  user,
+export default function UserForm({
   onSubmit,
+  isLoading,
+  user,
   onCancel,
-  isSubmitting
 }: UserFormProps) {
-  // Definir o schema correto com base na presença de usuário (edição vs. criação)
-  const schema = user ? systemUserUpdateSchema : systemUserCreateSchema;
+  // Determinar se estamos editando um usuário existente
+  const isEditing = !!user;
   
-  // Configurar o formulário com React Hook Form e validação Zod
-  const form = useForm({
-    resolver: zodResolver(schema),
-    defaultValues: user
-      ? {
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          is_active: user.is_active,
-        }
-      : {
-          name: '',
-          email: '',
-          password: '',
-          role: SystemUserRole.COLABORADOR_NIVEL_2,
-          is_active: true,
-        },
+  // Escolher o schema apropriado baseado no modo (criar/editar)
+  const formSchema = isEditing
+    ? systemUserUpdateSchema
+    : systemUserCreateSchema;
+
+  // Inicializar o formulário com os valores padrão
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: user?.name || '',
+      email: user?.email || '',
+      password: '', // Sempre vazio ao editar
+      role: user?.role || 'USER',
+      is_active: user?.is_active ?? true,
+    },
   });
 
-  // Manipular envio do formulário
-  const handleSubmit = (values: any) => {
-    console.log("Enviando dados do formulário:", values);
-    onSubmit(values);
-  };
+  // Função para lidar com o envio do formulário
+  async function handleSubmit(values: z.infer<typeof formSchema>) {
+    await onSubmit(values);
+  }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        {/* Campo de Nome */}
         <FormField
           control={form.control}
           name="name"
@@ -87,102 +83,93 @@ export function UserForm({
               <FormControl>
                 <Input placeholder="Nome do usuário" {...field} />
               </FormControl>
-              <FormDescription>
-                Nome completo do usuário do sistema.
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        {/* Campo de E-mail */}
         <FormField
           control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>E-mail</FormLabel>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input 
+                  type="email" 
+                  placeholder="email@exemplo.com" 
+                  {...field} 
+                  disabled={isEditing} // Email não pode ser alterado após criação
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{isEditing ? 'Nova Senha (opcional)' : 'Senha'}</FormLabel>
               <FormControl>
                 <Input
-                  type="email"
-                  placeholder="email@exemplo.com"
+                  type="password"
+                  placeholder={isEditing ? 'Deixe em branco para manter a senha atual' : 'Senha do usuário'}
                   {...field}
                 />
               </FormControl>
               <FormDescription>
-                E-mail de contato do usuário.
+                {isEditing 
+                  ? 'Deixe em branco para manter a senha atual do usuário.' 
+                  : 'Mínimo de 6 caracteres.'}
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        {/* Campo de Senha (apenas para criação de novo usuário) */}
-        {!user && (
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Senha</FormLabel>
-                <FormControl>
-                  <Input
-                    type="password"
-                    placeholder="********"
-                    {...field}
-                  />
-                </FormControl>
-                <FormDescription>
-                  Senha para acesso ao sistema (mínimo 6 caracteres).
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        )}
-
-        {/* Campo de Cargo (Role) */}
         <FormField
           control={form.control}
           name="role"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Cargo</FormLabel>
-              <Select
-                onValueChange={field.onChange}
+              <FormLabel>Papel (Role)</FormLabel>
+              <Select 
+                onValueChange={field.onChange} 
                 defaultValue={field.value}
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecione um cargo" />
+                    <SelectValue placeholder="Selecione um papel" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {Object.entries(roleLabels).map(([value, label]) => (
-                    <SelectItem key={value} value={value}>
-                      {label}
+                  {(Object.keys(roleLabels) as UserRole[]).map((role) => (
+                    <SelectItem key={role} value={role}>
+                      {roleLabels[role]}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               <FormDescription>
-                Cargo do usuário determina suas permissões no sistema.
+                Define o nível de acesso do usuário no sistema.
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        {/* Campo de Status (Ativo/Inativo) */}
         <FormField
           control={form.control}
           name="is_active"
           render={({ field }) => (
             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
-                <FormLabel className="text-base">Status</FormLabel>
+                <FormLabel className="text-base">Status da conta</FormLabel>
                 <FormDescription>
-                  Usuário está {field.value ? "ativo" : "inativo"} no sistema.
+                  Desative para impedir o acesso temporariamente.
                 </FormDescription>
               </div>
               <FormControl>
@@ -195,21 +182,17 @@ export function UserForm({
           )}
         />
 
-        {/* Botões de ação */}
-        <div className="flex justify-end gap-3">
+        <div className="flex justify-end space-x-4 pt-4">
           <Button
             type="button"
             variant="outline"
             onClick={onCancel}
-            disabled={isSubmitting}
+            disabled={isLoading}
           >
             Cancelar
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting && (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            )}
-            {user ? 'Atualizar' : 'Criar'} Usuário
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? 'Salvando...' : isEditing ? 'Atualizar' : 'Criar'}
           </Button>
         </div>
       </form>

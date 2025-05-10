@@ -70,7 +70,7 @@ export const columns: ColumnDef<SystemUser>[] = [
         <div className="flex items-center space-x-2">
           <Switch
             checked={user.is_active}
-            // Será vinculado externamente
+            // Será vinculado externamente via data-table.tsx
             id={`status-switch-${user.id}`}
             aria-label="Ativar/Desativar usuário"
           />
@@ -119,7 +119,7 @@ export const columns: ColumnDef<SystemUser>[] = [
             // Será vinculado externamente
             id={`edit-button-${user.id}`}
           >
-            <ArrowUpDown className="h-4 w-4" />
+            <Edit className="h-4 w-4" />
             <span className="sr-only">Editar</span>
           </Button>
           
@@ -130,7 +130,7 @@ export const columns: ColumnDef<SystemUser>[] = [
             // Será vinculado externamente
             id={`delete-button-${user.id}`}
           >
-            <ArrowUpDown className="h-4 w-4" />
+            <Trash2 className="h-4 w-4" />
             <span className="sr-only">Excluir</span>
           </Button>
         </div>

@@ -17,7 +17,7 @@ export interface Plan {
   id: string;
   name: string;
   segment_id: string;
-  price: number;
+  base_price: number;  // Renomeado de 'price' para 'base_price' para corresponder à API
   description?: string | null;
   is_active: boolean;
   created_at: string;
@@ -42,7 +42,7 @@ export const planModuleSchema = z.object({
 export const planFormSchema = z.object({
   name: z.string().min(1, { message: 'Nome é obrigatório' }),
   segment_id: z.string().min(1, { message: 'Segmento é obrigatório' }),
-  price: z.number().min(0, { message: 'O preço não pode ser negativo' }),
+  base_price: z.number().min(0, { message: 'O preço não pode ser negativo' }),
   description: z.string().nullable().optional(),
   is_active: z.boolean().default(true),
   modules: z.array(planModuleSchema).min(1, { message: 'Selecione pelo menos um módulo' }),

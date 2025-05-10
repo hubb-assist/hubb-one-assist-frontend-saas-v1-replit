@@ -59,7 +59,7 @@ export function PlanForm({
     defaultValues: {
       name: plan?.name || plan?.nome || '',
       segment_id: plan?.segment_id || '',
-      price: plan?.price || 0,
+      base_price: plan?.base_price || 0,
       description: plan?.description || plan?.descricao || '',
       is_active: plan?.is_active ?? true,
       modules: plan?.modules || [],
@@ -220,7 +220,7 @@ export function PlanForm({
             
             <FormField
               control={form.control}
-              name="price"
+              name="base_price"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Preço Base</FormLabel>
@@ -469,7 +469,7 @@ export function PlanForm({
                     </div>
                     <div>
                       <span className="text-sm text-muted-foreground">Preço Base:</span>
-                      <p className="font-medium">{formatCurrency(form.watch('price'))}</p>
+                      <p className="font-medium">{formatCurrency(form.watch('base_price'))}</p>
                     </div>
                     <div>
                       <span className="text-sm text-muted-foreground">Status:</span>

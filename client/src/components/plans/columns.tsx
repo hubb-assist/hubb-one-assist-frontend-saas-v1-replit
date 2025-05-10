@@ -48,10 +48,10 @@ export const columns: ColumnDef<Plan>[] = [
     },
   },
   {
-    accessorKey: 'price',
-    ...sortableHeader('price', 'Preço Base'),
+    accessorKey: 'base_price',
+    ...sortableHeader('base_price', 'Preço Base'),
     cell: ({ row }) => (
-      <div>{formatCurrency(row.original.price)}</div>
+      <div>{formatCurrency(row.original.base_price)}</div>
     ),
   },
   {

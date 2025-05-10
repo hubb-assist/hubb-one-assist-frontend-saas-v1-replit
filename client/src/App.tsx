@@ -15,6 +15,7 @@ import Segments from "@/pages/admin/segments";
 import Modules from "@/pages/admin/modules";
 import Plans from "@/pages/admin/plans";
 import SystemUsers from "@/pages/admin/system-users";
+import Onboarding from "@/pages/public/onboarding";
 import PrivateRoute from "@/components/auth/private-route";
 import { useAuth } from "@/lib/auth";
 

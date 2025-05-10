@@ -23,26 +23,15 @@ function sortableHeader(column: string, header: string) {
 }
 
 export const columns: ColumnDef<Segment>[] = [
-  // Coluna: ID
+  // Coluna: Item (número sequencial em vez de ID)
   {
-    accessorKey: "id",
-    header: "ID",
-    cell: ({ row }) => <div className="text-sm text-muted-foreground">{row.getValue("id")}</div>,
+    id: "item",
+    header: "Item",
+    cell: ({ row }) => <div className="text-center font-medium">{row.index + 1}</div>,
   },
   
   // Coluna: Nome (com ordenação)
-  sortableHeader("name", "Nome"),
-  
-  // Coluna: Descrição
-  {
-    accessorKey: "description",
-    header: "Descrição",
-    cell: ({ row }) => {
-      const description = row.getValue("description") as string;
-      if (!description) return <span className="text-muted-foreground text-sm italic">Sem descrição</span>;
-      return <div className="max-w-[400px] truncate">{description}</div>;
-    },
-  },
+  sortableHeader("nome", "Nome"),
   
   // Coluna: Status 
   {

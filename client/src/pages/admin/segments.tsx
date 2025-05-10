@@ -54,11 +54,17 @@ export default function SegmentsPage() {
         console.log('Segmentos recebidos da API:', data);
         
         // Mapear os campos para garantir compatibilidade com a interface
-        const segmentsMapped = data.map(segment => ({
-          ...segment,
-          nome: segment.name,
-          descricao: segment.description
-        }));
+        const segmentsMapped = data.map(segment => {
+          // A API está retornando dados inconsistentes, alguns têm nome/descricao e outros name/description
+          // Vamos garantir que ambos os formatos funcionem
+          return {
+            ...segment,
+            // Se já tiver nome, usa o existente, senão usa name
+            nome: segment.nome || segment.name || "",
+            // Se já tiver descricao, usa a existente, senão usa description
+            descricao: segment.descricao || segment.description || ""
+          };
+        });
         
         console.log('Segmentos mapeados:', segmentsMapped);
         return segmentsMapped;
@@ -233,7 +239,7 @@ export default function SegmentsPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Excluir Segmento</AlertDialogTitle>
             <AlertDialogDescription>
-              Você tem certeza que deseja excluir o segmento <strong>{selectedSegment?.name}</strong>?<br />
+              Você tem certeza que deseja excluir o segmento <strong>{selectedSegment?.nome}</strong>?<br />
               Esta ação não pode ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>

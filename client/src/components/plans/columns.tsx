@@ -60,9 +60,12 @@ export const columns: ColumnDef<Plan>[] = [
     cell: ({ row }) => {
       const basePrice = row.original.base_price || 0;
       const modulesPrice = row.original.modules?.reduce((total, mod) => {
-        // Calcular o preço dos módulos - verificar diferentes formatos possíveis
-        const modulePrice = mod.price || mod.custom_price || 0;
-        return total + (mod.is_free ? 0 : modulePrice);
+        // Calcular o preço dos módulos - API retorna no formato 'price'
+        const modulePrice = typeof mod.price === 'number' ? mod.price : 0;
+        // Consideramos o módulo gratuito se a propriedade is_free existir e for true,
+        // ou se o preço for zero ou não existir
+        const isFree = (mod.is_free === true) || (!modulePrice);
+        return total + (isFree ? 0 : modulePrice);
       }, 0) || 0;
       
       // Somar preço base + preço dos módulos

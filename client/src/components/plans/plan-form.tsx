@@ -140,11 +140,14 @@ export function PlanForm({
     // Processar valores antes de enviar
     const processedValues = {
       ...values,
-      // Remover propriedade is_free dos módulos quando enviar para a API
+      // Mapear módulos para o formato esperado pela API
       modules: values.modules.map((m) => ({
         module_id: m.module_id,
-        custom_price: m.is_free ? 0 : m.custom_price,
-        trial_days: m.trial_days,
+        // A API espera o campo 'price', não 'custom_price'
+        price: m.is_free ? 0 : (m.custom_price || 0),
+        // Flag is_free é usado apenas no frontend
+        is_free: m.is_free === true,
+        trial_days: m.trial_days || 0,
       })) as any,
     };
 
@@ -232,11 +235,30 @@ export function PlanForm({
                       {...field}
                       value={field.value ? String(field.value).replace('.', ',') : ''}
                       onChange={(e) => {
-                        // Remover caracteres não numéricos e permitir apenas vírgula
-                        const value = e.target.value.replace(/[^\d,]/g, '');
-                        // Substituir vírgula por ponto para conversão para número
-                        const numericValue = parseFloat(value.replace(',', '.')) || 0;
+                        // Remover caracteres não numéricos exceto vírgula
+                        let value = e.target.value.replace(/[^\d,]/g, '');
+                        
+                        // Garantir que apenas uma vírgula é usada
+                        const commaCount = (value.match(/,/g) || []).length;
+                        if (commaCount > 1) {
+                          const parts = value.split(',');
+                          value = parts[0] + ',' + parts.slice(1).join('');
+                        }
+                        
+                        // Se o valor tiver vírgula, formatá-lo corretamente
+                        let numericValue = 0;
+                        if (value.includes(',')) {
+                          // Dividir em parte inteira e parte decimal
+                          const [intPart, decPart] = value.split(',');
+                          // Converter para número com ponto decimal 
+                          numericValue = parseFloat(intPart + '.' + decPart);
+                        } else {
+                          // Se não tiver vírgula, é um número inteiro
+                          numericValue = parseInt(value) || 0;
+                        }
+                        
                         field.onChange(numericValue);
+                        console.log('Valor convertido:', numericValue);
                       }}
                     />
                   </FormControl>
@@ -375,10 +397,34 @@ export function PlanForm({
                                           {...field}
                                           value={field.value !== null ? String(field.value).replace('.', ',') : ''}
                                           onChange={(e) => {
-                                            // Remover caracteres não numéricos e permitir apenas vírgula
-                                            const value = e.target.value.replace(/[^\d,]/g, '');
-                                            // Substituir vírgula por ponto para conversão para número
-                                            const numericValue = value ? parseFloat(value.replace(',', '.')) : null;
+                                            // Remover caracteres não numéricos exceto vírgula
+                                            let value = e.target.value.replace(/[^\d,]/g, '');
+                                            
+                                            // Se o campo estiver vazio, definir como null
+                                            if (!value) {
+                                              field.onChange(null);
+                                              return;
+                                            }
+                                            
+                                            // Garantir que apenas uma vírgula é usada
+                                            const commaCount = (value.match(/,/g) || []).length;
+                                            if (commaCount > 1) {
+                                              const parts = value.split(',');
+                                              value = parts[0] + ',' + parts.slice(1).join('');
+                                            }
+                                            
+                                            // Se o valor tiver vírgula, formatá-lo corretamente
+                                            let numericValue = 0;
+                                            if (value.includes(',')) {
+                                              // Dividir em parte inteira e parte decimal
+                                              const [intPart, decPart] = value.split(',');
+                                              // Converter para número com ponto decimal 
+                                              numericValue = parseFloat(intPart + '.' + decPart);
+                                            } else {
+                                              // Se não tiver vírgula, é um número inteiro
+                                              numericValue = parseInt(value) || 0;
+                                            }
+                                            
                                             field.onChange(numericValue);
                                           }}
                                         />

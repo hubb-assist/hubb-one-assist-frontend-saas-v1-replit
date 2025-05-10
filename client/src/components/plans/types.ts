@@ -5,9 +5,12 @@ import { Segment } from '@/components/segments/types';
 // Tipo do módulo em um plano
 export interface PlanModule {
   module_id: string;
-  custom_price: number | null; // null ou 0 se for gratuito
+  custom_price?: number | null; // Campo usado no frontend para edição
+  price?: number; // Campo retornado pela API
   trial_days: number | null;
+  is_free?: boolean; // Usado no frontend para indicar módulo gratuito 
   is_active?: boolean; // se o módulo está ativo neste plano
+  plan_id?: string; // ID do plano ao qual o módulo está vinculado
   // Campo para armazenar os dados completos do módulo quando disponíveis
   module?: Module;
 }

@@ -86,10 +86,19 @@ export const plansService = {
   // Criar novo plano
   async create(data: PlanFormValues): Promise<Plan> {
     try {
+      console.log('Enviando dados para criar plano:', JSON.stringify(data, null, 2));
       const response = await plansApi.post(ENDPOINTS.PLANS, data);
+      console.log('Resposta da API (criar plano):', response.data);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao criar plano:', error);
+      if (error.response) {
+        console.error('Detalhes da resposta de erro:', {
+          status: error.response.status,
+          statusText: error.response.statusText,
+          data: error.response.data
+        });
+      }
       throw error;
     }
   },
@@ -97,10 +106,19 @@ export const plansService = {
   // Atualizar plano existente
   async update(id: string, data: PlanFormValues): Promise<Plan> {
     try {
+      console.log(`Enviando dados para atualizar plano ${id}:`, JSON.stringify(data, null, 2));
       const response = await plansApi.put(`${ENDPOINTS.PLANS}/${id}`, data);
+      console.log('Resposta da API (atualizar plano):', response.data);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Erro ao atualizar plano com ID ${id}:`, error);
+      if (error.response) {
+        console.error('Detalhes da resposta de erro (atualizar):', {
+          status: error.response.status,
+          statusText: error.response.statusText,
+          data: error.response.data
+        });
+      }
       throw error;
     }
   },

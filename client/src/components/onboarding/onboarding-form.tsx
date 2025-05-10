@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
-import { useNavigate } from 'wouter';
+import { useLocation } from 'wouter';
 
 import {
   Form,
@@ -55,8 +55,8 @@ const step3Schema = z.object({
 // Schema de validação para a Etapa 4 - Simulação de Pagamento
 const step4Schema = z.object({
   admin_password: z.string().min(1, 'Senha de administrador é obrigatória'),
-  terms: z.literal(true, {
-    errorMap: () => ({ message: 'Você precisa aceitar os termos' }),
+  terms: z.boolean().refine(val => val === true, {
+    message: 'Você precisa aceitar os termos',
   }),
 });
 
@@ -71,7 +71,7 @@ export default function OnboardingForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [fetchingCep, setFetchingCep] = useState(false);
   const [selectedSegment, setSelectedSegment] = useState<string | null>(null);
-  const navigate = useNavigate();
+  const [, navigate] = useLocation();
 
   // Formulário completo
   const form = useForm<FormValues>({
@@ -99,7 +99,11 @@ export default function OnboardingForm() {
   useEffect(() => {
     async function loadSegments() {
       try {
-        const data = await segmentsService.getAll({ is_active: true });
+        const data = await segmentsService.getAll({ 
+          is_active: true,
+          // Usando 'nome' em vez de 'name' conforme esperado pela API
+          nome: undefined
+        });
         setSegments(data);
       } catch (error) {
         console.error('Erro ao carregar segmentos:', error);
@@ -520,12 +524,12 @@ export default function OnboardingForm() {
                                     Módulos incluídos:
                                   </p>
                                   <ul className="text-sm space-y-1">
-                                    {plan.modules.map((module) => (
-                                      <li key={module.id} className="flex items-center gap-2">
+                                    {plan.modules.map((planModule, index) => (
+                                      <li key={planModule.module_id || index} className="flex items-center gap-2">
                                         <CheckCircle className="h-4 w-4 text-green-500" />
                                         <span>
-                                          {module.module.name} 
-                                          {module.is_free ? ' (incluído)' : ''}
+                                          {planModule.module?.name || 'Módulo'} 
+                                          {planModule.is_free ? ' (incluído)' : ''}
                                         </span>
                                       </li>
                                     ))}

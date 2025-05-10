@@ -69,6 +69,7 @@ interface ViaCEPResponse {
   gia: string;
   ddd: string;
   siafi: string;
+  erro?: boolean;
 }
 
 export const viaCepService = {

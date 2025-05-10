@@ -74,7 +74,9 @@ function Router() {
         </PrivateRoute>
       </Route>
       
+      {/* Rotas públicas */}
       <Route path="/login" component={Login}/>
+      <Route path="/public/onboarding" component={Onboarding}/>
       
       {/* Rotas protegidas */}
       <Route path="/dashboard">

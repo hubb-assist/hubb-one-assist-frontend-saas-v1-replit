@@ -1,0 +1,31 @@
+https://hubb-one-assist-back-hubb-one.replit.app/users/me
+index-Bn7nt7p-.js:292 Erro na requisição: Oe
+(anônimo) @ index-Bn7nt7p-.js:292Entenda o erro
+index-Bn7nt7p-.js:292 Erro na verificação de autenticação: Oe
+verificarAutenticacao @ index-Bn7nt7p-.js:292Entenda o erro
+index-Bn7nt7p-.js:292 Usuário não autenticado (resposta vazia)
+index-Bn7nt7p-.js:292 Tentando login no endpoint: /auth/login
+index-Bn7nt7p-.js:292 Fazendo requisição para API: https://hubb-one-assist-back-hubb-one.replit.app/auth/login
+index-Bn7nt7p-.js:292 Erro na requisição: Oe {message: 'Network Error', name: 'AxiosError', code: 'ERR_NETWORK', config: {…}, request: XMLHttpRequest, …}code: "ERR_NETWORK"config: {transitional: {…}, adapter: Array(3), transformRequest: Array(1), transformResponse: Array(1), timeout: 15000, …}message: "Network Error"name: "AxiosError"request: XMLHttpRequest {onreadystatechange: null, readyState: 4, timeout: 15000, withCredentials: true, upload: XMLHttpRequestUpload, …}stack: "AxiosError: Network Error\n    at g.onerror (https://hubb-one-assist-front-hubb-one.replit.app/assets/index-Bn7nt7p-.js:289:6064)\n    at qa.request (https://hubb-one-assist-front-hubb-one.replit.app/assets/index-Bn7nt7p-.js:291:2066)\n    at async Object.login (https://hubb-one-assist-front-hubb-one.replit.app/assets/index-Bn7nt7p-.js:292:5980)\n    at async login (https://hubb-one-assist-front-hubb-one.replit.app/assets/index-Bn7nt7p-.js:292:6634)\n    at async f (https://hubb-one-assist-front-hubb-one.replit.app/assets/index-Bn7nt7p-.js:292:7679)\n    at async https://hubb-one-assist-front-hubb-one.replit.app/assets/index-Bn7nt7p-.js:287:119005"[[Prototype]]: Error
+(anônimo) @ index-Bn7nt7p-.js:292
+Promise.then
+_request @ index-Bn7nt7p-.js:292
+request @ index-Bn7nt7p-.js:291
+(anônimo) @ index-Bn7nt7p-.js:292
+(anônimo) @ index-Bn7nt7p-.js:287
+login @ index-Bn7nt7p-.js:292
+login @ index-Bn7nt7p-.js:292
+f @ index-Bn7nt7p-.js:292
+(anônimo) @ index-Bn7nt7p-.js:287
+await in (anônimo)
+MF @ index-Bn7nt7p-.js:37
+DF @ index-Bn7nt7p-.js:37
+LF @ index-Bn7nt7p-.js:37
+T_ @ index-Bn7nt7p-.js:37
+Wk @ index-Bn7nt7p-.js:37
+(anônimo) @ index-Bn7nt7p-.js:37
+Bw @ index-Bn7nt7p-.js:40
+mk @ index-Bn7nt7p-.js:37
+Rv @ index-Bn7nt7p-.js:37
+hw @ index-Bn7nt7p-.js:37
+e3 @ index-Bn7nt7p-.js:37Entenda o erro

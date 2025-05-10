@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { useLocation } from 'wouter';
+import InputMask from 'react-input-mask';
 
 import {
   Form,
@@ -20,28 +21,144 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { ArrowLeft, ArrowRight, CheckCircle, Loader2 } from 'lucide-react';
+import { DocumentInput, PhoneInput, CEPInput } from '@/components/ui/masked-input';
 
 import { viaCepService, type SubscriberFormData } from '@/lib/api-subscribers';
 import { publicService, type PublicSegment, type PublicPlan, getFallbackSegments, getFallbackPlans } from '@/lib/api-public';
 
+// Funções para validação de CPF e CNPJ
+const isValidCPF = (cpf: string) => {
+  const cleanCPF = cpf.replace(/\D/g, '');
+  if (cleanCPF.length !== 11) return false;
+  
+  // Verifica se todos os dígitos são iguais (caso inválido)
+  if (/^(\d)\1+$/.test(cleanCPF)) return false;
+  
+  // Cálculo do dígito verificador
+  let sum = 0;
+  let remainder;
+  
+  for (let i = 1; i <= 9; i++) {
+    sum += parseInt(cleanCPF.substring(i - 1, i)) * (11 - i);
+  }
+  
+  remainder = (sum * 10) % 11;
+  if (remainder === 10 || remainder === 11) remainder = 0;
+  if (remainder !== parseInt(cleanCPF.substring(9, 10))) return false;
+  
+  sum = 0;
+  for (let i = 1; i <= 10; i++) {
+    sum += parseInt(cleanCPF.substring(i - 1, i)) * (12 - i);
+  }
+  
+  remainder = (sum * 10) % 11;
+  if (remainder === 10 || remainder === 11) remainder = 0;
+  if (remainder !== parseInt(cleanCPF.substring(10, 11))) return false;
+  
+  return true;
+};
+
+const isValidCNPJ = (cnpj: string) => {
+  const cleanCNPJ = cnpj.replace(/\D/g, '');
+  if (cleanCNPJ.length !== 14) return false;
+  
+  // Verifica se todos os dígitos são iguais (caso inválido)
+  if (/^(\d)\1+$/.test(cleanCNPJ)) return false;
+  
+  // Cálculo do primeiro dígito verificador
+  let size = cleanCNPJ.length - 2;
+  let numbers = cleanCNPJ.substring(0, size);
+  const digits = cleanCNPJ.substring(size);
+  let sum = 0;
+  let pos = size - 7;
+  
+  for (let i = size; i >= 1; i--) {
+    sum += parseInt(numbers.charAt(size - i)) * pos--;
+    if (pos < 2) pos = 9;
+  }
+  
+  let result = sum % 11 < 2 ? 0 : 11 - (sum % 11);
+  if (result !== parseInt(digits.charAt(0))) return false;
+  
+  // Cálculo do segundo dígito verificador
+  size = size + 1;
+  numbers = cleanCNPJ.substring(0, size);
+  sum = 0;
+  pos = size - 7;
+  
+  for (let i = size; i >= 1; i--) {
+    sum += parseInt(numbers.charAt(size - i)) * pos--;
+    if (pos < 2) pos = 9;
+  }
+  
+  result = sum % 11 < 2 ? 0 : 11 - (sum % 11);
+  if (result !== parseInt(digits.charAt(1))) return false;
+  
+  return true;
+};
+
 // Schema de validação para a Etapa 1 - Dados do Responsável
 const step1Schema = z.object({
-  name: z.string().min(1, 'Nome é obrigatório'),
-  document: z.string().min(1, 'CPF/CNPJ é obrigatório'),
-  email: z.string().email('E-mail inválido'),
-  password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
-  phone: z.string().min(1, 'Telefone é obrigatório'),
-  clinic_name: z.string().min(1, 'Nome da clínica é obrigatório'),
-  segment_id: z.string().min(1, 'Segmento é obrigatório'),
+  name: z.string().min(1, 'Nome é obrigatório').min(3, 'Nome deve ter pelo menos 3 caracteres'),
+  
+  document: z.string()
+    .min(1, 'CPF/CNPJ é obrigatório')
+    .refine(
+      (val) => {
+        const digits = val.replace(/\D/g, '');
+        if (digits.length === 11) return isValidCPF(val);
+        if (digits.length === 14) return isValidCNPJ(val);
+        return false;
+      },
+      { message: 'CPF/CNPJ inválido' }
+    ),
+    
+  email: z.string()
+    .min(1, 'E-mail é obrigatório')
+    .email('E-mail inválido'),
+    
+  password: z.string()
+    .min(1, 'Senha é obrigatória')
+    .min(6, 'Senha deve ter pelo menos 6 caracteres'),
+    
+  phone: z.string()
+    .min(1, 'Telefone é obrigatório')
+    .refine(
+      (val) => val.replace(/\D/g, '').length >= 10,
+      { message: 'Telefone deve ter pelo menos 10 dígitos' }
+    ),
+    
+  clinic_name: z.string()
+    .min(1, 'Nome da clínica é obrigatório')
+    .min(3, 'Nome da clínica deve ter pelo menos 3 caracteres'),
+    
+  segment_id: z.string()
+    .min(1, 'Segmento é obrigatório'),
 });
 
 // Schema de validação para a Etapa 2 - Endereço
 const step2Schema = z.object({
-  zip_code: z.string().min(1, 'CEP é obrigatório'),
-  address: z.string().min(1, 'Endereço é obrigatório'),
-  number: z.string().min(1, 'Número é obrigatório'),
-  city: z.string().min(1, 'Cidade é obrigatória'),
-  state: z.string().min(1, 'Estado é obrigatório'),
+  zip_code: z.string()
+    .min(1, 'CEP é obrigatório')
+    .refine(
+      (val) => val.replace(/\D/g, '').length === 8,
+      { message: 'CEP deve ter 8 dígitos' }
+    ),
+    
+  address: z.string()
+    .min(1, 'Endereço é obrigatório')
+    .min(3, 'Endereço deve ter pelo menos 3 caracteres'),
+    
+  number: z.string()
+    .min(1, 'Número é obrigatório'),
+    
+  city: z.string()
+    .min(1, 'Cidade é obrigatória')
+    .min(2, 'Cidade deve ter pelo menos 2 caracteres'),
+    
+  state: z.string()
+    .min(1, 'Estado é obrigatório')
+    .min(2, 'Estado deve ter pelo menos 2 caracteres'),
 });
 
 // Schema de validação para a Etapa 3 - Escolha de Plano
@@ -335,7 +452,10 @@ export default function OnboardingForm() {
                 <FormItem>
                   <FormLabel>CPF / CNPJ</FormLabel>
                   <FormControl>
-                    <Input placeholder="Digite seu CPF ou CNPJ" {...field} />
+                    <DocumentInput 
+                      placeholder="Digite seu CPF ou CNPJ" 
+                      {...field} 
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -377,7 +497,7 @@ export default function OnboardingForm() {
                 <FormItem>
                   <FormLabel>Telefone / WhatsApp</FormLabel>
                   <FormControl>
-                    <Input placeholder="(00) 00000-0000" {...field} />
+                    <PhoneInput placeholder="(00) 00000-0000" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

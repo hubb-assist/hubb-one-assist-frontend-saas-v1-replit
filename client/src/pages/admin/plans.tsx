@@ -167,12 +167,15 @@ export default function PlansPage() {
   };
 
   const handleDelete = (plan: Plan) => {
+    console.log("Botão excluir clicado para o plano:", plan);
     setSelectedPlan(plan);
     setDeleteDialogOpen(true);
   };
 
   const confirmDelete = () => {
+    console.log("Confirmação de exclusão para o plano:", selectedPlan);
     if (selectedPlan) {
+      console.log("Chamando API para excluir plano ID:", selectedPlan.id);
       deleteMutation.mutate(selectedPlan.id);
     }
   };

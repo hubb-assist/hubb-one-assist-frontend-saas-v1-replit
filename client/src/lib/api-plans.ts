@@ -135,9 +135,11 @@ export const plansService = {
   // Excluir plano
   async delete(id: string): Promise<void> {
     try {
-      await plansApi.delete(`${ENDPOINTS.PLANS}/${id}`);
-    } catch (error: any) {
-      console.error(`Erro ao excluir plano com ID ${id}:`, error);
+      const path = `${ENDPOINTS.PLANS}/${id}`;
+      console.log(`Excluindo plano na API: ${path}`);
+      await api.delete(path);
+    } catch (error) {
+      console.error(`Erro ao excluir plano ${id}:`, error);
       throw error;
     }
   },

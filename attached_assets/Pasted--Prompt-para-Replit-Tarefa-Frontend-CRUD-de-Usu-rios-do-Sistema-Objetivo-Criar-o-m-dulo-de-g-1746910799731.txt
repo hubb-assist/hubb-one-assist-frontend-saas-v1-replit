@@ -1,0 +1,113 @@
+✅ Prompt para Replit — Tarefa Frontend: CRUD de Usuários do Sistema
+🎯 Objetivo:
+Criar o módulo de gerenciamento de usuários do sistema (nível SaaS) com base nos endpoints disponíveis no backend.
+
+⚠️ Este módulo é diferente dos usuários das clínicas (assinantes). Aqui estamos falando de usuários administradores do HUBB ONE Assist, com papéis como SUPER_ADMIN, DIRETOR e COLABORADOR_NIVEL_2.
+
+🧩 Funcionalidades esperadas:
+Listagem paginada de usuários (GET /api/users/)
+
+Criação de novo usuário (POST /api/users/)
+
+Edição de nome, e-mail, role e status (PUT)
+
+Ativação/Inativação (PATCH)
+
+Exclusão lógica ou física (DELETE)
+
+Visualização de role atual e data de criação
+
+📄 Campos esperados por usuário:
+ts
+Copiar
+Editar
+interface SystemUser {
+  id: string;
+  name: string;
+  email: string;
+  role: 'SUPER_ADMIN' | 'DIRETOR' | 'COLABORADOR_NIVEL_2';
+  is_active: boolean;
+  created_at: string;
+}
+📂 Local da página:
+Caminho: src/pages/admin/system-users.tsx
+
+Adicionar item no menu lateral: "Usuários do Sistema"
+
+Layout deve seguir MainLayout
+
+Sidebar deve ser apenas atualizado, nunca reescrito
+
+🛠️ Componentes esperados:
+DataTable com colunas:
+
+Nome
+
+E-mail
+
+Cargo (role)
+
+Status (ativo/inativo com switch)
+
+Criado em (formato data relativa)
+
+Ações: editar, excluir
+
+Dialog para criar/editar usuário
+
+Campos obrigatórios: nome, e-mail, senha (só no POST), role
+
+Select com os valores fixos de role
+
+Botão "Salvar"
+
+AlertDialog para confirmação de exclusão
+
+📎 API base:
+ts
+Copiar
+Editar
+const api = axios.create({
+  baseURL: 'https://hubb-one-assist-back-hubb-one.replit.app/api',
+  withCredentials: true,
+});
+🧠 Observações:
+Não criar rotas novas ou páginas não solicitadas
+
+Todas as mensagens e labels devem estar em português
+
+Utilizar Toast com Sonner para feedbacks de ação
+
+Validar formulário com zod
+
+Responsividade obrigatória
+
+📚 Antes de começar:
+O desenvolvedor DEVE obrigatoriamente ler:
+
+Arquivos na raiz:
+README.md
+
+rules.md
+
+TAREFAS.md
+
+Em /docs:
+API_GUIDELINES.md
+
+CRIACAO_PAGINAS.md
+
+design_system.md
+
+ESTRUTURA_COMPONENTES.md
+
+PADRAO_LAYOUT.md
+
+INTEGRACAO_TEMP.md
+
+Após concluir, registrar a tarefa como finalizada no TAREFAS.md com o texto:
+
+md
+Copiar
+Editar
+✅ TAREFA FRONTEND — CRUD de Usuários do Sistema (nível SaaS) implementado com sucesso.

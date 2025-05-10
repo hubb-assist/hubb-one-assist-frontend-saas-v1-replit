@@ -1,0 +1,68 @@
+Baseado na análise, vou te informar sobre os endpoints que já estão disponíveis no backend para implementar o módulo de Usuários do Sistema no frontend:
+
+Endpoints Disponíveis para o Módulo de Usuários do Sistema:
+Listar Usuários com Paginação e Filtros:
+
+Método: GET
+URL: /api/users/
+Filtros disponíveis: name, email, role, is_active
+Parâmetros de paginação: skip, limit
+Resposta: PaginatedUserResponse com lista de usuários
+Obter Usuário Específico:
+
+Método: GET
+URL: /api/users/{user_id}
+Resposta: UserResponse com dados do usuário
+Criar Novo Usuário:
+
+Método: POST
+URL: /api/users/
+Corpo: UserCreate com name, email, password, role, is_active
+Resposta: UserResponse com o usuário criado
+Atualizar Usuário:
+
+Método: PUT
+URL: /api/users/{user_id}
+Corpo: UserUpdate com campos opcionais para atualização
+Resposta: UserResponse com o usuário atualizado
+Excluir Usuário:
+
+Método: DELETE
+URL: /api/users/{user_id}
+Resposta: Status 204 No Content
+Ativar Usuário:
+
+Método: PATCH
+URL: /api/users/{user_id}/activate
+Resposta: UserResponse com o usuário ativado
+Desativar Usuário:
+
+Método: PATCH
+URL: /api/users/{user_id}/deactivate
+Resposta: UserResponse com o usuário desativado
+Usuário Atual:
+
+Método: GET
+URL: /api/users/me
+Resposta: Dados do usuário atualmente autenticado
+Modelos de Dados Relevantes:
+O modelo de usuário no backend já inclui todos os campos necessários para a interface solicitada:
+id: identificador único
+name: nome do usuário
+email: email do usuário
+role: papel do usuário (SUPER_ADMIN, DIRETOR, COLABORADOR_NIVEL_2)
+is_active: status de ativação do usuário
+created_at: data de criação
+updated_at: data de atualização
+Conclusão:
+✅ Você já tem todos os endpoints necessários no backend para implementar o CRUD completo de Usuários do Sistema no frontend.
+
+O backend suporta todas as operações solicitadas na tarefa:
+
+Listar usuários do sistema
+Criar novo usuário com role
+Editar dados básicos (nome, e-mail, role)
+Ativar/Inativar usuários
+Quanto ao reset de senha que você mencionou como "em uma segunda fase", seria necessário implementar um endpoint específico para isso no backend, pois não vi essa funcionalidade nos endpoints atuais.
+
+Você pode prosseguir com a implementação do frontend usando os endpoints existentes, criando as páginas e componentes conforme especificado na tarefa.

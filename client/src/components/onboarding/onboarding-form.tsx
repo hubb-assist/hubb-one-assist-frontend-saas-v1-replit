@@ -179,23 +179,32 @@ export default function OnboardingForm() {
   // Buscar endereço pelo CEP
   const handleCepBlur = async () => {
     const cep = form.getValues('zip_code');
-    if (cep.length >= 8) {
+    // Limpar o CEP para garantir que só contém números
+    const cleanCep = cep.replace(/\D/g, '');
+    
+    // Verificação melhorada do CEP
+    if (cleanCep.length >= 8) {
       setFetchingCep(true);
       try {
-        const data = await viaCepService.getAddressByCep(cep);
+        console.log('Buscando CEP:', cleanCep);
+        const data = await viaCepService.getAddressByCep(cleanCep);
         if (data) {
-          form.setValue('address', data.logradouro);
-          form.setValue('city', data.localidade);
-          form.setValue('state', data.uf);
+          form.setValue('address', data.logradouro || '');
+          form.setValue('city', data.localidade || '');
+          form.setValue('state', data.uf || '');
           toast.success('CEP encontrado!');
         } else {
           toast.error('CEP não encontrado');
         }
       } catch (error) {
-        toast.error('Erro ao buscar CEP');
+        console.error('Erro ao buscar CEP:', error);
+        toast.error('Erro ao buscar CEP. Verifique se o formato está correto (99999-999)');
       } finally {
         setFetchingCep(false);
       }
+    } else if (cep.length > 0) {
+      // Avisar quando o CEP está incompleto
+      toast.warning('CEP deve ter 8 dígitos');
     }
   };
 
@@ -433,7 +442,23 @@ export default function OnboardingForm() {
                       <Input 
                         placeholder="00000-000" 
                         {...field} 
-                        onBlur={handleCepBlur} 
+                        onBlur={handleCepBlur}
+                        type="text"
+                        maxLength={9}
+                        onChange={(e) => {
+                          // Formatar o CEP enquanto digita (99999-999)
+                          const value = e.target.value.replace(/\D/g, '');
+                          let formatted = '';
+                          
+                          if (value.length > 0) {
+                            formatted = value.substring(0, 5);
+                            if (value.length > 5) {
+                              formatted += '-' + value.substring(5, 8);
+                            }
+                          }
+                          
+                          field.onChange(formatted);
+                        }}
                       />
                       {fetchingCep && (
                         <Loader2 className="h-4 w-4 animate-spin text-primary" />

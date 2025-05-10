@@ -1,0 +1,80 @@
+Prompt para Replit — Atualizar Onboarding com Rotas Públicas
+📌 Tarefa:
+Corrigir a integração do formulário de onboarding para que ele use os dados reais do backend, sem dados mockados ou hardcoded.
+
+✅ O que foi implementado no backend:
+Agora existem rotas públicas (sem autenticação) que retornam dados reais e atualizados para uso no formulário de cadastro de assinantes.
+
+✳️ Novas rotas públicas disponíveis:
+Listar segmentos ativos
+
+ruby
+Copiar
+Editar
+GET https://hubb-one-assist-back-hubb-one.replit.app/public/segments/
+Listar planos ativos
+
+ruby
+Copiar
+Editar
+GET https://hubb-one-assist-back-hubb-one.replit.app/public/plans/
+Obter detalhes de um plano específico
+
+ruby
+Copiar
+Editar
+GET https://hubb-one-assist-back-hubb-one.replit.app/public/plans/{plan_id}
+Todas essas rotas retornam somente os registros com is_active = true. Não exigem autenticação e foram criadas especificamente para o onboarding.
+
+🧩 O que precisa ser feito no frontend:
+Substituir qualquer dado mockado (segmentos ou planos) usado nos arquivos:
+
+src/pages/public/onboarding/step2.tsx (Segmentos)
+
+src/pages/public/onboarding/step3.tsx (Planos)
+
+Consumir diretamente as rotas públicas do backend listadas acima.
+
+Remover quaisquer valores fixos, duplicações ou objetos locais que não vieram da API real.
+
+Atualizar o arquivo de API (api-segments.ts, api-plans.ts ou api-public.ts) com funções como:
+
+ts
+Copiar
+Editar
+export const getPublicSegments = async () => {
+  const response = await axios.get('/public/segments');
+  return response.data;
+};
+
+export const getPublicPlans = async () => {
+  const response = await axios.get('/public/plans');
+  return response.data;
+};
+✅ A baseURL já está configurada para https://hubb-one-assist-back-hubb-one.replit.app
+✅ axios.defaults.withCredentials = false para essas rotas
+
+⚠️ Regras obrigatórias:
+❌ Não criar novos mocks ou valores estáticos se a API falhar
+
+❌ Não copiar valores antigos que foram testados antes
+
+❌ Nunca tentar adivinhar segment_id ou plan_id — eles devem vir do backend
+
+❌ Não duplicar selects nem simular “itens ativos” por conta própria
+
+✅ Checklist:
+ Segmentos visíveis vêm de /public/segments
+
+ Planos exibidos vêm de /public/plans
+
+ Nenhum dado duplicado ou fictício
+
+ Redução de inconsistência entre frontend e banco real
+
+Após concluir, marque como finalizado em TAREFAS.md:
+
+md
+Copiar
+Editar
+✅ TAREFA FRONTEND — Integração real com rotas públicas de segmentos e planos no onboarding concluída co

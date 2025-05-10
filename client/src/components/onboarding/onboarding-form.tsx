@@ -24,7 +24,7 @@ import { ArrowLeft, ArrowRight, CheckCircle, Loader2 } from 'lucide-react';
 import { DocumentInput, PhoneInput, CEPInput } from '@/components/ui/masked-input';
 
 import { viaCepService, type SubscriberFormData } from '@/lib/api-subscribers';
-import { publicService, type PublicSegment, type PublicPlan, getFallbackSegments, getFallbackPlans } from '@/lib/api-public';
+import { publicService, type PublicSegment, type PublicPlan } from '@/lib/api-public';
 
 // Funções para validação de CPF e CNPJ
 const isValidCPF = (cpf: string) => {
@@ -186,7 +186,7 @@ export default function OnboardingForm() {
   const [fetchingCep, setFetchingCep] = useState(false);
   const [selectedSegment, setSelectedSegment] = useState<string | null>(null);
   const [, navigate] = useLocation();
-  const [useFallbackData, setUseFallbackData] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   // Formulário completo
   const form = useForm<FormValues>({
@@ -213,30 +213,27 @@ export default function OnboardingForm() {
   // Carregar segmentos ao iniciar
   useEffect(() => {
     async function loadSegments() {
+      setIsLoading(true);
+      setApiError(null);
+      
       try {
         console.log('Tentando carregar segmentos públicos');
-        // Tentar carregar da API primeiro
         const data = await publicService.getSegments();
         
         if (data && data.length > 0) {
           console.log('Segmentos públicos carregados com sucesso:', data);
           setSegments(data);
-          setUseFallbackData(false);
         } else {
-          // Se a API falhar ou retornar vazio, use os dados de fallback
-          console.log('Sem dados da API, usando fallback');
-          const fallbackData = getFallbackSegments();
-          setSegments(fallbackData);
-          setUseFallbackData(true);
-          toast.warning('Usando dados de demonstração (API indisponível)');
+          console.log('API retornou lista vazia de segmentos');
+          setApiError('Não há segmentos disponíveis no momento. Por favor, tente novamente mais tarde.');
+          toast.error('Não há segmentos disponíveis no momento');
         }
       } catch (error) {
         console.error('Erro ao carregar segmentos:', error);
-        // Usar dados de fallback em caso de erro
-        const fallbackData = getFallbackSegments();
-        setSegments(fallbackData);
-        setUseFallbackData(true);
-        toast.warning('Usando dados de demonstração (API indisponível)');
+        setApiError('Não foi possível carregar os segmentos. Por favor, verifique sua conexão ou tente novamente mais tarde.');
+        toast.error('Erro ao carregar dados dos segmentos');
+      } finally {
+        setIsLoading(false);
       }
     }
 
@@ -248,42 +245,37 @@ export default function OnboardingForm() {
     async function loadPlans() {
       if (!selectedSegment) return;
 
+      setIsLoading(true);
+      setApiError(null);
+      setPlans([]);
+      
       try {
         console.log(`Tentando carregar planos para o segmento ${selectedSegment}`);
         
-        if (useFallbackData) {
-          // Se estamos usando dados de fallback para segmentos, também usaremos para planos
-          console.log('Usando planos de fallback');
-          const fallbackData = getFallbackPlans(selectedSegment);
-          setPlans(fallbackData);
+        // Tentar carregar da API
+        const data = await publicService.getPlans(selectedSegment);
+        
+        if (data && data.length > 0) {
+          console.log('Planos carregados com sucesso:', data);
+          setPlans(data);
         } else {
-          // Tentar carregar da API
-          const data = await publicService.getPlans(selectedSegment);
-          
-          if (data && data.length > 0) {
-            console.log('Planos carregados com sucesso:', data);
-            setPlans(data);
-          } else {
-            // Se a API não retornar planos, usar fallback específico para este segmento
-            console.log('Sem planos retornados da API, usando fallback');
-            const fallbackData = getFallbackPlans(selectedSegment);
-            setPlans(fallbackData);
-            toast.warning('Usando planos de demonstração (API indisponível)');
-          }
+          console.log('API retornou lista vazia de planos');
+          setApiError(`Não há planos disponíveis para o segmento selecionado. Por favor, escolha outro segmento ou tente mais tarde.`);
+          toast.warning('Não há planos disponíveis para este segmento');
         }
       } catch (error) {
         console.error('Erro ao carregar planos:', error);
-        // Usar planos de fallback em caso de erro
-        const fallbackData = getFallbackPlans(selectedSegment);
-        setPlans(fallbackData);
-        toast.warning('Usando planos de demonstração (API indisponível)');
+        setApiError('Não foi possível carregar os planos. Por favor, verifique sua conexão ou tente novamente mais tarde.');
+        toast.error('Erro ao carregar dados dos planos');
+      } finally {
+        setIsLoading(false);
       }
     }
 
     if (selectedSegment) {
       loadPlans();
     }
-  }, [selectedSegment, useFallbackData]);
+  }, [selectedSegment]);
 
   // Atualizar segmento selecionado quando mudar no formulário
   useEffect(() => {

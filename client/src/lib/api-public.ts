@@ -45,11 +45,11 @@ export const publicService = {
   async getSegments(): Promise<PublicSegment[]> {
     try {
       console.log('Buscando segmentos públicos');
-      const response = await apiPublic.get('/public/segments');
+      const response = await apiPublic.get('/public/segments/');
       return response.data;
     } catch (error) {
       console.error('Erro ao buscar segmentos públicos:', error);
-      return []; // Retornar array vazio em caso de erro
+      throw error; // Propagar o erro para ser tratado pelo componente
     }
   },
 
@@ -57,11 +57,25 @@ export const publicService = {
   async getPlans(segmentId: string): Promise<PublicPlan[]> {
     try {
       console.log(`Buscando planos públicos para o segmento ${segmentId}`);
-      const response = await apiPublic.get(`/public/plans?segment_id=${segmentId}`);
-      return response.data;
+      const response = await apiPublic.get('/public/plans/');
+      
+      // Filtrar apenas os planos do segmento solicitado
+      return response.data.filter((plan: PublicPlan) => plan.segment_id === segmentId);
     } catch (error) {
       console.error('Erro ao buscar planos públicos:', error);
-      return []; // Retornar array vazio em caso de erro
+      throw error; // Propagar o erro para ser tratado pelo componente
+    }
+  },
+
+  // Obter detalhes de um plano específico
+  async getPlanDetails(planId: string): Promise<PublicPlan> {
+    try {
+      console.log(`Buscando detalhes do plano ${planId}`);
+      const response = await apiPublic.get(`/public/plans/${planId}`);
+      return response.data;
+    } catch (error) {
+      console.error(`Erro ao buscar detalhes do plano ${planId}:`, error);
+      throw error; // Propagar o erro para ser tratado pelo componente
     }
   },
 
@@ -78,78 +92,5 @@ export const publicService = {
   }
 };
 
-// Implementação de fallbacks enquanto os endpoints não estão disponíveis
-// Estes dados simulados serão usados apenas se a API retornar erro
-
-const fallbackSegments: PublicSegment[] = [
-  { id: '1', nome: 'Clínica Médica', descricao: 'Para clínicas médicas de pequeno e médio porte' },
-  { id: '2', nome: 'Odontologia', descricao: 'Para consultórios e clínicas odontológicas' },
-  { id: '3', nome: 'Fisioterapia', descricao: 'Para clínicas de fisioterapia e reabilitação' },
-  { id: '4', nome: 'Psicologia', descricao: 'Para consultórios e clínicas de psicologia' },
-  { id: '5', nome: 'Nutrição', descricao: 'Para consultórios de nutrição e bem-estar' }
-];
-
-const fallbackPlans: Record<string, PublicPlan[]> = {
-  '1': [
-    {
-      id: '101',
-      name: 'Básico Médico',
-      segment_id: '1',
-      base_price: 199.90,
-      description: 'Plano básico para clínicas médicas iniciantes',
-      modules: [
-        { module_id: 'm1', module_name: 'Agenda', is_free: true },
-        { module_id: 'm2', module_name: 'Pacientes', is_free: true }
-      ]
-    },
-    {
-      id: '102',
-      name: 'Premium Médico',
-      segment_id: '1',
-      base_price: 349.90,
-      description: 'Plano completo para clínicas médicas',
-      modules: [
-        { module_id: 'm1', module_name: 'Agenda', is_free: true },
-        { module_id: 'm2', module_name: 'Pacientes', is_free: true },
-        { module_id: 'm3', module_name: 'Financeiro', is_free: false },
-        { module_id: 'm4', module_name: 'Relatórios', is_free: false }
-      ]
-    }
-  ],
-  '2': [
-    {
-      id: '201',
-      name: 'Básico Odontológico',
-      segment_id: '2',
-      base_price: 179.90,
-      description: 'Plano básico para consultórios odontológicos',
-      modules: [
-        { module_id: 'm1', module_name: 'Agenda', is_free: true },
-        { module_id: 'm2', module_name: 'Pacientes', is_free: true }
-      ]
-    },
-    {
-      id: '202',
-      name: 'Premium Odontológico',
-      segment_id: '2',
-      base_price: 329.90,
-      description: 'Plano completo para clínicas odontológicas',
-      modules: [
-        { module_id: 'm1', module_name: 'Agenda', is_free: true },
-        { module_id: 'm2', module_name: 'Pacientes', is_free: true },
-        { module_id: 'm3', module_name: 'Financeiro', is_free: false },
-        { module_id: 'm4', module_name: 'Odontograma', is_free: false }
-      ]
-    }
-  ]
-};
-
-// Função que retorna segmentos de fallback caso a API falhe
-export const getFallbackSegments = (): PublicSegment[] => {
-  return fallbackSegments;
-};
-
-// Função que retorna planos de fallback caso a API falhe
-export const getFallbackPlans = (segmentId: string): PublicPlan[] => {
-  return fallbackPlans[segmentId] || [];
-};
+// Não usamos mais dados mockados ou fallback
+// Todos os dados devem vir diretamente da API

@@ -1,0 +1,162 @@
+🧩 Diagnóstico — Por que o CRUD dos planos não responde?
+✅ Comportamento observado:
+Você clica nas ações (ícone de editar/lixeira), mas nada acontece
+
+Não há erro no console
+
+Não há resposta visual
+
+E parece que "algo está em cima" bloqueando o clique
+
+🎯 Causa mais provável: camada invisível sobre a tabela (z-index, overlay ou backdrop mal posicionado)
+Esse comportamento é típico quando:
+
+Existe um div flutuante mal posicionado (ex: backdrop, modal, blur)
+
+O z-index de algum elemento cobre os botões mas é invisível
+
+O Dialog, Drawer ou um absolute ficou renderizado sem estar aberto, e ocupando espaço
+
+✅ Como confirmar (sem mudar o código):
+Passo 1 — Use o DevTools (F12) e inspecione a área dos ícones
+Clique com botão direito sobre o ícone da caneta ou lixeira
+
+Vá em "Inspecionar"
+
+Veja se aparece um div com position: absolute ou fixed em cima
+
+Veja se o botão está lá, mas coberto por algo com z-index maior
+
+✅ Solução esperada (que o Replit deve aplicar):
+Verificar se há Dialog, Drawer, backdrop ou overlays sendo montados mesmo quando fechados
+
+Garantir que componentes ocultos realmente usem display: none ou hidden
+
+Testar removendo temporariamente qualquer <Dialog open={true/false}> se o open estiver mal gerenciado
+
+🧠 Prompt pronto para o Replit AI corrigir
+md
+Copiar
+Editar
+Olá Replit, identifiquei que o CRUD do módulo de planos não está funcionando corretamente no frontend. A tabela carrega os dados, mas:
+
+- Não é possível clicar nos botões de ação (editar, excluir)
+- Não ocorre nenhuma ação
+- Não há erros no console
+- O comportamento indica que há **uma camada invisível sobre a tabela** (overlay, backdrop ou z-index alto)
+
+Por favor, revise se:
+
+1. Há componentes como `<Dialog>` ou `<Drawer>` que estão montados no DOM mesmo quando deveriam estar ocultos
+2. Há `div` com `position: absolute/fixed` sobre a tabela
+3. Existe `z-index` indevido cobrindo a `DataTable`
+
+Não alterar layout, não modificar componentes visuais, nem reescrever lógica de navegação.
+
+Antes de iniciar, leia:
+
+- `README.md`, `rules.md`, `TAREFAS.md`
+- Em `/docs`: `design_system.md`, `ESTRUTURA_COMPONENTES.md`, `padrao_layout.md`, `CRIACAO_PAGINAS.md`
+
+Apenas ajuste o problema que impede o clique nos botões de ação da tabela na tela `/admin/plans`.
+Deseja que eu revise junto com você algum componente que pode estar criando esse overlay?
+
+
+
+
+
+
+Você disse:
+
+olha isso
+
+O ChatGPT disse:
+Ótimo print, Luis — agora ficou cristalino.
+Você clicou exatamente no botão, e ele existe no DOM, está visível, mas nada acontece ao clicar.
+
+🔎 Confirmação visual: o botão está bloqueado por outro elemento invisível
+O comportamento que você relatou (clique inativo sem erro) é característico de estar sendo coberto por um elemento com:
+
+position: absolute ou fixed
+
+z-index alto
+
+E sem pointer-events: none — o que faz o clique parar nele
+
+✅ O botão está visível e funcional, mas algo está em cima dele impedindo a ação
+Na imagem:
+
+O botão está renderizado corretamente (Tailwind classes aplicadas, texto correto)
+
+Não há erro nem console.log
+
+O DevTools mostra aria-label="Editar plano teste", então o evento provavelmente existe
+
+🎯 O que deve ser verificado agora:
+Subir o mouse no DOM no DevTools (até o <section> por exemplo)
+
+Procurar um div, section, main, etc. com:
+
+position: absolute ou fixed
+
+que cobre toda a <tbody> da tabela
+
+Confirmar se tem algo com:
+
+css
+Copiar
+Editar
+pointer-events: auto;
+z-index: 10+;
+✅ Temporariamente, para confirmar:
+No DevTools, selecione o elemento suspeito e:
+
+Adicione manualmente:
+
+css
+Copiar
+Editar
+pointer-events: none;
+Se o botão voltar a funcionar, bingo — você confirmou a camada sobreposta
+
+📌 O que fazer?
+Se quiser que o Replit resolva, use este prompt pronto:
+
+🎯 Prompt para Replit corrigir problema de clique nos botões da tabela de planos
+Olá Replit, estamos com um problema visual no frontend da rota /admin/plans:
+
+Os botões de editar e excluir plano estão visíveis e renderizados corretamente
+
+Porém, não respondem a cliques
+
+Nenhum erro aparece no console
+
+O DevTools mostra que os botões existem e estão clicáveis, mas não há resposta
+
+Provável causa:
+Um div com position: absolute ou fixed está sendo renderizado por cima da tabela (ex: backdrop, section, modal oculto, notificação invisível, etc.).
+
+Tarefa
+Verifique se há camadas flutuantes cobrindo a <table> da listagem de planos
+
+Se encontrar, desmonte ou oculte corretamente quando não estiver sendo usada
+
+Verifique uso incorreto de z-index, backdrop ou portais montados de forma indevida
+
+Teste se após esse ajuste, os botões voltam a funcionar normalmente
+
+⚠️ Regras obrigatórias:
+
+Não criar nada novo
+
+Não modificar o layout principal
+
+Não remover componentes essenciais
+
+Todas mensagens devem estar em português
+
+Antes de iniciar, leia:
+
+README.md, rules.md, TAREFAS.md
+
+Em /docs: CRIACAO_PAGINAS.md, design_system.md, padrao_layout.md, INTEGRACAO_TEMP.md

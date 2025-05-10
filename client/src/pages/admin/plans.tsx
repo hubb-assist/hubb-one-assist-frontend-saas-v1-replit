@@ -230,32 +230,34 @@ export default function PlansPage() {
                 Novo Plano
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>{selectedPlan ? 'Editar Plano' : 'Novo Plano'}</DialogTitle>
-                <DialogDescription>
-                  {selectedPlan
-                    ? 'Edite as informações do plano existente.'
-                    : 'Preencha os dados para criar um novo plano.'}
-                </DialogDescription>
-              </DialogHeader>
-              {!isLoadingSegments && !isLoadingModules ? (
-                <PlanForm
-                  plan={selectedPlan || undefined}
-                  segments={segments}
-                  modules={modules}
-                  onSubmit={handleSubmit}
-                  onCancel={handleCloseForm}
-                  isSubmitting={createMutation.isPending || updateMutation.isPending}
-                />
-              ) : (
-                <div className="space-y-4 py-4">
-                  <Skeleton className="h-8 w-full" />
-                  <Skeleton className="h-8 w-3/4" />
-                  <Skeleton className="h-32 w-full" />
-                </div>
-              )}
-            </DialogContent>
+            {formOpen && (
+              <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>{selectedPlan ? 'Editar Plano' : 'Novo Plano'}</DialogTitle>
+                  <DialogDescription>
+                    {selectedPlan
+                      ? 'Edite as informações do plano existente.'
+                      : 'Preencha os dados para criar um novo plano.'}
+                  </DialogDescription>
+                </DialogHeader>
+                {!isLoadingSegments && !isLoadingModules ? (
+                  <PlanForm
+                    plan={selectedPlan || undefined}
+                    segments={segments}
+                    modules={modules}
+                    onSubmit={handleSubmit}
+                    onCancel={handleCloseForm}
+                    isSubmitting={createMutation.isPending || updateMutation.isPending}
+                  />
+                ) : (
+                  <div className="space-y-4 py-4">
+                    <Skeleton className="h-8 w-full" />
+                    <Skeleton className="h-8 w-3/4" />
+                    <Skeleton className="h-32 w-full" />
+                  </div>
+                )}
+              </DialogContent>
+            )}
           </Dialog>
         </div>
 
@@ -277,30 +279,32 @@ export default function PlansPage() {
       </div>
 
       {/* Dialog de confirmação de exclusão */}
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Excluir Plano</AlertDialogTitle>
-            <AlertDialogDescription>
-              Você tem certeza que deseja excluir o plano <strong>{selectedPlan?.name}</strong>?<br />
-              Esta ação não pode ser desfeita.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              disabled={deleteMutation.isPending}
-            >
-              {deleteMutation.isPending && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              Excluir
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {deleteDialogOpen && (
+        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Excluir Plano</AlertDialogTitle>
+              <AlertDialogDescription>
+                Você tem certeza que deseja excluir o plano <strong>{selectedPlan?.name}</strong>?<br />
+                Esta ação não pode ser desfeita.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={confirmDelete}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                disabled={deleteMutation.isPending}
+              >
+                {deleteMutation.isPending && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Excluir
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
     </AppShell>
   );
 }

@@ -57,7 +57,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
               href="/chat" 
               icon={<MessageSquareText className="h-5 w-5" />}
               label="Chat" 
-              active={window.location.pathname === "/chat"} 
+              active={false} 
             />
             
             <SidebarDivider />
@@ -68,14 +68,14 @@ export default function MainLayout({ children }: MainLayoutProps) {
               href="/configuracoes" 
               icon={<Settings className="h-5 w-5" />}
               label="Configurações" 
-              active={window.location.pathname === "/configuracoes"} 
+              active={false} 
             />
             
             <SidebarNavItem 
               href="/setup" 
               icon={<HelpCircle className="h-5 w-5" />}
               label="Setup" 
-              active={window.location.pathname === "/setup"} 
+              active={false} 
             />
           </SidebarMain>
           <SidebarToggle />

@@ -7,7 +7,8 @@ import {
   MessageSquareText, 
   Settings, 
   HelpCircle,
-  Layers
+  Layers,
+  AppWindow
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
@@ -114,6 +115,13 @@ export default function SidebarMain({ expanded }: SidebarMainProps) {
             label="Segmentos"
             expanded={expanded}
             active={pathname === '/admin/segments'}
+          />
+          <NavItem
+            href="/admin/modules"
+            icon={<AppWindow className="h-5 w-5" />}
+            label="Módulos"
+            expanded={expanded}
+            active={pathname === '/admin/modules'}
           />
         </div>
       </div>

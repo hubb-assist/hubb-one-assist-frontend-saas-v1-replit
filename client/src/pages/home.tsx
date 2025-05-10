@@ -2,11 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Home as HomeIcon, ArrowRight } from "lucide-react";
-import MainLayout from "@/components/layout/main-layout";
+import AppShell from "@/components/layout/app-shell";
 
 export default function Home() {
   return (
-    <MainLayout>
+    <AppShell>
       <div className="flex items-center justify-center">
         <Card className="w-full max-w-4xl shadow-sm">
           <CardContent className="p-6">
@@ -74,6 +74,6 @@ export default function Home() {
           </CardContent>
         </Card>
       </div>
-    </MainLayout>
+    </AppShell>
   );
 }

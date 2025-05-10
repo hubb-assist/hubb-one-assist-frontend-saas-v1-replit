@@ -1,0 +1,52 @@
+erfeito! O backend está funcionando corretamente para operações de atualização e exclusão. O problema parece estar no frontend, especificamente no uso de URLs inseguras (HTTP em vez de HTTPS).
+
+Aqui está o que precisa ser corrigido no frontend:
+
+O erro principal no seu log:
+Mixed Content: The page at 'https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/admin/segments' was loaded over HTTPS, but requested an insecure XMLHttpRequest endpoint 'http://32c76b88-78ce-48ad-9c13-04975e5e14a3-00-12ynk9jfvcfqw.worf.replit.dev/segments/72d0f4e3-3eb0-4e7e-90d7-ae192de340e8'
+Isso mostra que a URL da API no frontend está usando http:// ao invés de https://.
+
+Aqui está uma solução para o frontend:
+
+Verifique se a URL base da API está sempre usando HTTPS:
+// Em algum arquivo de configuração ou na API client
+const API_BASE_URL = 'https://32c76b88-78ce-48ad-9c13-04975e5e14a3-00-12ynk9jfvcfqw.worf.replit.dev';
+// Não use: 'http://32c76b88-78ce-48ad-9c13-04975e5e14a3-00-12ynk9jfvcfqw.worf.replit.dev'
+Se estiver usando axios, configure globalmente:
+import axios from 'axios';
+axios.defaults.baseURL = 'https://32c76b88-78ce-48ad-9c13-04975e5e14a3-00-12ynk9jfvcfqw.worf.replit.dev';
+axios.defaults.withCredentials = true;
+Para as funções de atualização e exclusão, verifique se está usando o formato correto nos nomes dos campos:
+// Para atualizar:
+async function updateSegment(id, data) {
+  try {
+    // Certifique-se de que o nome dos campos correspondem exatamente ao que o backend espera
+    const segmentData = {
+      nome: data.name, // ou qualquer que seja o nome do campo no frontend
+      descricao: data.description
+    };
+    
+    const response = await axios.put(`/segments/${id}`, segmentData);
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao atualizar segmento:', error);
+    throw error;
+  }
+}
+// Para excluir:
+async function deleteSegment(id) {
+  try {
+    // Sem barra no final da URL
+    const response = await axios.delete(`/segments/${id}`);
+    return true;
+  } catch (error) {
+    console.error('Erro ao excluir segmento:', error);
+    throw error;
+  }
+}
+Essas alterações devem resolver o problema. Lembre-se que as principais mudanças são:
+
+Use sempre https:// em vez de http://
+Certifique-se de que os nomes dos campos correspondem exatamente ao que o backend espera (nome, descricao, etc.)
+Configure withCredentials: true em todas as requisições
+Não adicione / no final das URLs das operações

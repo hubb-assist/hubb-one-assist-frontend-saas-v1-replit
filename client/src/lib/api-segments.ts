@@ -1,4 +1,4 @@
-import api, { API_HOSTNAME, API_BASE_URL } from './api';
+import api from './api';
 import { Segment, SegmentFormValues } from '@/components/segments/types';
 
 // Interface da resposta da API
@@ -9,27 +9,19 @@ interface ApiResponse {
   items: Segment[];
 }
 
-// Função para criar URL absoluta HTTPS para API
-function buildApiUrl(path: string): string {
+// Função para formatar caminhos de API (implementação simplificada)
+function formatApiPath(path: string): string {
   // Remover barra final se existir (conforme recomendação do backend)
   if (path.endsWith('/') && path !== '/') {
     path = path.slice(0, -1);
   }
   
-  // Se já começar com https://, retornamos como está
-  if (path.startsWith('https://')) {
-    return path;
+  // Garantir que caminho começa com barra
+  if (!path.startsWith('/')) {
+    path = `/${path}`;
   }
   
-  // Se começar com http://, substituímos por https://
-  if (path.startsWith('http://')) {
-    return path.replace('http://', 'https://');
-  }
-  
-  // Se não tiver protocolo, criamos URL absoluta com HTTPS
-  // Garantir formato correto do path
-  const cleanPath = path.startsWith('/') ? path : `/${path}`;
-  return `https://${API_HOSTNAME}${cleanPath}`;
+  return path;
 }
 
 // API de Segmentos
@@ -37,11 +29,11 @@ export const segmentsService = {
   // Listar todos os segmentos
   async getAll(params?: { skip?: number; limit?: number; nome?: string; is_active?: boolean }): Promise<Segment[]> {
     try {
-      // Usar URL absoluta HTTPS explícita
-      const url = buildApiUrl('/segments');
-      console.log('Fazendo requisição GET para URL absoluta HTTPS:', url, 'com params:', params);
+      // Usar caminho relativo através do proxy
+      const path = formatApiPath('/segments');
+      console.log('Buscando segmentos via proxy:', path, 'com params:', params);
       
-      const response = await api.get(url, { params });
+      const response = await api.get(path, { params });
       
       console.log('Resposta da API:', response.data);
       
@@ -65,11 +57,11 @@ export const segmentsService = {
   // Buscar um segmento por ID
   async getById(id: string): Promise<Segment> {
     try {
-      // Usar URL absoluta HTTPS explícita
-      const url = buildApiUrl(`/segments/${id}`);
-      console.log(`Buscando segmento com URL absoluta HTTPS: ${url}`);
+      // Usar caminho relativo através do proxy
+      const path = formatApiPath(`/segments/${id}`);
+      console.log(`Buscando segmento via proxy: ${path}`);
       
-      const response = await api.get(url);
+      const response = await api.get(path);
       return response.data;
     } catch (error) {
       console.error(`Erro ao buscar segmento ${id}:`, error);
@@ -88,12 +80,12 @@ export const segmentsService = {
         color: "#3B82F6" // Cor padrão azul, pode ser adicionada como campo no formulário mais tarde
       };
       
-      // Usar URL absoluta HTTPS explícita
-      const url = buildApiUrl('/segments');
-      console.log(`Criando segmento com URL absoluta HTTPS: ${url}`);
+      // Usar caminho relativo através do proxy
+      const path = formatApiPath('/segments');
+      console.log(`Criando segmento via proxy: ${path}`);
       console.log('Dados enviados para API:', apiData);
       
-      const response = await api.post(url, apiData);
+      const response = await api.post(path, apiData);
       return response.data;
     } catch (error) {
       console.error('Erro ao criar segmento:', error);
@@ -112,12 +104,12 @@ export const segmentsService = {
         // Não enviar color na atualização a menos que seja explicitamente alterado
       };
       
-      // Usar URL absoluta HTTPS explícita
-      const url = buildApiUrl(`/segments/${id}`);
-      console.log(`Atualizando segmento com URL absoluta HTTPS: ${url}`);
+      // Usar caminho relativo através do proxy
+      const path = formatApiPath(`/segments/${id}`);
+      console.log(`Atualizando segmento via proxy: ${path}`);
       console.log('Dados enviados para API:', apiData);
       
-      const response = await api.put(url, apiData);
+      const response = await api.put(path, apiData);
       return response.data;
     } catch (error) {
       console.error(`Erro ao atualizar segmento ${id}:`, error);
@@ -128,10 +120,10 @@ export const segmentsService = {
   // Excluir um segmento
   async delete(id: string): Promise<void> {
     try {
-      // Usar URL absoluta HTTPS explícita
-      const url = buildApiUrl(`/segments/${id}`);
-      console.log(`Excluindo segmento com URL absoluta HTTPS: ${url}`);
-      await api.delete(url);
+      // Usar caminho relativo através do proxy
+      const path = formatApiPath(`/segments/${id}`);
+      console.log(`Excluindo segmento via proxy: ${path}`);
+      await api.delete(path);
     } catch (error) {
       console.error(`Erro ao excluir segmento ${id}:`, error);
       throw error;
@@ -146,12 +138,11 @@ export const segmentsService = {
         ? `/segments/${id}/activate` 
         : `/segments/${id}/deactivate`;
       
-      // Usar URL absoluta HTTPS explícita
-      const url = buildApiUrl(endpoint);
-      console.log(`Atualizando status do segmento ${id} para ${isActive ? 'ativo' : 'inativo'}, URL absoluta HTTPS: ${url}`);
+      // Usar caminho relativo através do proxy
+      const path = formatApiPath(endpoint);
+      console.log(`Atualizando status do segmento ${id} para ${isActive ? 'ativo' : 'inativo'} via proxy: ${path}`);
       
-      // Usar a URL absoluta HTTPS
-      const response = await api.patch(url);
+      const response = await api.patch(path);
       return response.data;
     } catch (error) {
       console.error(`Erro ao atualizar status do segmento ${id}:`, error);

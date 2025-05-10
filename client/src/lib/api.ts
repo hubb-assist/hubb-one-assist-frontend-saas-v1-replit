@@ -1,43 +1,47 @@
 import axios from 'axios';
 import { toast } from 'sonner';
 
-// URL da API temporária (garantindo sempre HTTPS)
+// Info para referência - não será usado diretamente nas requisições
 export const API_HOSTNAME = '32c76b88-78ce-48ad-9c13-04975e5e14a3-00-12ynk9jfvcfqw.worf.replit.dev';
-export const API_BASE_URL = `https://${API_HOSTNAME}`;
+export const API_TARGET_URL = `https://${API_HOSTNAME}`;
 
 // URL do domínio temporário (para configuração de CORS no backend)
-export const FRONTEND_URL = 'https://977761fe-66ad-4e57-b1d5-f3356eb27515.id.replit.com';
+export const FRONTEND_URL = window.location.origin;
 
-// Não usar baseURL para evitar problemas de Mixed Content
-console.log("Configurando API - usando URLs absolutas");
+// Agora usamos o proxy local para todas as chamadas API
+// Todas as chamadas serão feitas para /api-proxy/... que vai redirecionar para a API externa
+const API_PROXY_PATH = '/api-proxy';
+
+console.log("Configurando API - usando proxy local em:", API_PROXY_PATH);
 const api = axios.create({
+  baseURL: API_PROXY_PATH,
   withCredentials: true, // Importante para os cookies HttpOnly
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
   timeout: 10000, // 10 segundos de timeout
-  // Permite URLs absolutas
-  baseURL: undefined,
-  allowAbsoluteUrls: true
 });
 
-// Interceptor para garantir HTTPS
+// Interceptor para URLs consistentes
 api.interceptors.request.use(config => {
-  // Se não for URL absoluta, convertermos em uma URL absoluta com HTTPS
-  if (config.url && !config.url.startsWith('http')) {
-    // Remove barra inicial se houver
-    const path = config.url.startsWith('/') ? config.url : `/${config.url}`;
-    // Cria URL absoluta com HTTPS
-    config.url = `https://${API_HOSTNAME}${path}`;
-  } 
-  // Se for URL absoluta com http, convertemos para https
-  else if (config.url && config.url.startsWith('http://')) {
-    config.url = config.url.replace('http://', 'https://');
+  // Garantir que a URL não tem barras duplas
+  if (config.url) {
+    // Remover barra final (exceto para raiz)
+    if (config.url.endsWith('/') && config.url !== '/') {
+      config.url = config.url.slice(0, -1);
+    }
+    
+    // Se não começar com /, adiciona
+    if (!config.url.startsWith('/')) {
+      config.url = `/${config.url}`; 
+    }
   }
   
-  // Log da URL final
-  console.log('Fazendo requisição para:', config.url);
+  // Log da URL final (com baseURL)
+  const baseUrl = config.baseURL || '';
+  const url = config.url || '';
+  console.log('Fazendo requisição via proxy:', baseUrl + url);
   
   return config;
 });

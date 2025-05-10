@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { toast } from 'sonner';
 
-// URL da API temporária
+// URL da API temporária (garantindo sempre HTTPS)
 const API_URL = 'https://32c76b88-78ce-48ad-9c13-04975e5e14a3-00-12ynk9jfvcfqw.worf.replit.dev';
 
 // URL do domínio temporário (para configuração de CORS no backend)
@@ -20,10 +20,21 @@ const api = axios.create({
   timeout: 10000, // 10 segundos de timeout
 });
 
+// Interceptor para garantir HTTPS
+api.interceptors.request.use(config => {
+  // Garantir que a URL de requisição sempre use HTTPS
+  if (config.url && config.url.startsWith('http://')) {
+    config.url = config.url.replace('http://', 'https://');
+    console.log('Convertida URL para HTTPS:', config.url);
+  }
+  return config;
+});
+
 // Interceptor para erros
 api.interceptors.response.use(
   response => response,
   error => {
+    console.error('Erro na requisição:', error);
     const mensagem = error.response?.data?.message || 'Erro ao comunicar com o servidor';
     toast.error(mensagem);
     return Promise.reject(error);

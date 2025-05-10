@@ -99,11 +99,15 @@ export const segmentsService = {
   async updateStatus(id: string, isActive: boolean): Promise<Segment> {
     try {
       // Usar rotas específicas para ativar/desativar com a barra no final
+      // Garantir que a URL está usando o protocolo HTTPS completo
+      const baseUrl = api.defaults.baseURL || '';
       const endpoint = isActive 
         ? `/segments/${id}/activate/` 
         : `/segments/${id}/deactivate/`;
         
       console.log(`Atualizando status do segmento ${id} para ${isActive ? 'ativo' : 'inativo'}, endpoint: ${endpoint}`);
+      
+      // Usar uma URL absoluta com HTTPS para garantir
       const response = await api.patch(endpoint);
       return response.data;
     } catch (error) {

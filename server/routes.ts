@@ -14,9 +14,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     target: API_TARGET,
     changeOrigin: true,
     secure: true, // Requer SSL certificates válidos
+    pathRewrite: {
+      '^/external-api': '' // Remove o prefixo antes de encaminhar para o destino
+    },
     // Para logging manual em vez de usar logLevel
     onProxyReq: (proxyReq, req, res) => {
-      log(`Proxy request: ${req.method} ${req.url} -> ${API_TARGET}${req.url}`);
+      log(`Proxy request: ${req.method} ${req.url} -> ${API_TARGET}`);
     },
     onProxyRes: (proxyRes, req, res) => {
       log(`Proxy response: ${proxyRes.statusCode} for ${req.method} ${req.url}`);
@@ -34,7 +37,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Rota de proxy para todas as requisições à API externa
-  app.use('/api-proxy', apiProxy);
+  // Mudamos de /api-proxy para /external-api para evitar conflitos com o Vite
+  app.use('/external-api', apiProxy);
 
   // Outras rotas da aplicação
   // prefix all routes with /api

@@ -9,28 +9,13 @@ interface ApiResponse {
   items: Segment[];
 }
 
-// Função para formatar caminhos de API (implementação simplificada)
-function formatApiPath(path: string): string {
-  // Remover barra final se existir (conforme recomendação do backend)
-  if (path.endsWith('/') && path !== '/') {
-    path = path.slice(0, -1);
-  }
-  
-  // Garantir que caminho começa com barra
-  if (!path.startsWith('/')) {
-    path = `/${path}`;
-  }
-  
-  return path;
-}
-
 // API de Segmentos
 export const segmentsService = {
   // Listar todos os segmentos
   async getAll(params?: { skip?: number; limit?: number; nome?: string; is_active?: boolean }): Promise<Segment[]> {
     try {
       // Usar caminho relativo através do proxy
-      const path = formatApiPath('/segments');
+      const path = '/segments';
       console.log('Buscando segmentos via proxy:', path, 'com params:', params);
       
       const response = await api.get(path, { params });
@@ -58,7 +43,7 @@ export const segmentsService = {
   async getById(id: string): Promise<Segment> {
     try {
       // Usar caminho relativo através do proxy
-      const path = formatApiPath(`/segments/${id}`);
+      const path = `/segments/${id}`;
       console.log(`Buscando segmento via proxy: ${path}`);
       
       const response = await api.get(path);
@@ -81,7 +66,7 @@ export const segmentsService = {
       };
       
       // Usar caminho relativo através do proxy
-      const path = formatApiPath('/segments');
+      const path = '/segments';
       console.log(`Criando segmento via proxy: ${path}`);
       console.log('Dados enviados para API:', apiData);
       
@@ -105,7 +90,7 @@ export const segmentsService = {
       };
       
       // Usar caminho relativo através do proxy
-      const path = formatApiPath(`/segments/${id}`);
+      const path = `/segments/${id}`;
       console.log(`Atualizando segmento via proxy: ${path}`);
       console.log('Dados enviados para API:', apiData);
       
@@ -121,7 +106,7 @@ export const segmentsService = {
   async delete(id: string): Promise<void> {
     try {
       // Usar caminho relativo através do proxy
-      const path = formatApiPath(`/segments/${id}`);
+      const path = `/segments/${id}`;
       console.log(`Excluindo segmento via proxy: ${path}`);
       await api.delete(path);
     } catch (error) {
@@ -134,12 +119,10 @@ export const segmentsService = {
   async updateStatus(id: string, isActive: boolean): Promise<Segment> {
     try {
       // Usar rotas específicas para ativar/desativar sem barra no final
-      const endpoint = isActive 
+      const path = isActive 
         ? `/segments/${id}/activate` 
         : `/segments/${id}/deactivate`;
       
-      // Usar caminho relativo através do proxy
-      const path = formatApiPath(endpoint);
       console.log(`Atualizando status do segmento ${id} para ${isActive ? 'ativo' : 'inativo'} via proxy: ${path}`);
       
       const response = await api.patch(path);

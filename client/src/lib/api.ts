@@ -9,8 +9,8 @@ export const API_TARGET_URL = `https://${API_HOSTNAME}`;
 export const FRONTEND_URL = window.location.origin;
 
 // Agora usamos o proxy local para todas as chamadas API
-// Todas as chamadas serão feitas para /api-proxy/... que vai redirecionar para a API externa
-const API_PROXY_PATH = '/api-proxy';
+// Todas as chamadas serão feitas para /external-api/... que vai redirecionar para a API externa
+const API_PROXY_PATH = '/external-api';
 
 console.log("Configurando API - usando proxy local em:", API_PROXY_PATH);
 const api = axios.create({

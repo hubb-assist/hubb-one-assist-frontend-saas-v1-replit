@@ -8,12 +8,16 @@ const API_URL = 'https://32c76b88-78ce-48ad-9c13-04975e5e14a3-00-12ynk9jfvcfqw.w
 // Adicione esta URL ao CORS no backend para permitir solicitações deste domínio
 export const FRONTEND_URL = 'https://977761fe-66ad-4e57-b1d5-f3356eb27515.id.replit.com';
 
+// Configuração do cliente axios
+console.log("Configurando API com URL base:", API_URL);
 const api = axios.create({
   baseURL: API_URL,
   withCredentials: true, // Importante para os cookies HttpOnly
   headers: {
     'Content-Type': 'application/json',
-  }
+    'Accept': 'application/json',
+  },
+  timeout: 10000, // 10 segundos de timeout
 });
 
 // Interceptor para erros

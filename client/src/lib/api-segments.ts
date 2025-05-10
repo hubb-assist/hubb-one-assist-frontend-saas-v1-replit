@@ -14,17 +14,27 @@ export const segmentsService = {
   // Listar todos os segmentos
   async getAll(params?: { skip?: number; limit?: number; nome?: string; is_active?: boolean }): Promise<Segment[]> {
     try {
+      console.log('Fazendo requisição GET para /segments/ com params:', params);
+      
       // Certifique-se de usar a URL com a barra no final
       const response = await api.get('/segments/', { params });
       
+      console.log('Resposta da API:', response.data);
+      
       // A resposta da API tem um formato específico com a lista em 'items'
       const apiResponse = response.data as ApiResponse;
+      
+      if (!apiResponse?.items) {
+        console.warn('A resposta da API não contém o campo "items":', apiResponse);
+        return [];
+      }
       
       // Retornar apenas o array de itens
       return apiResponse.items;
     } catch (error) {
       console.error('Erro ao buscar segmentos:', error);
-      throw error;
+      // Vamos retornar um array vazio em vez de lançar o erro, para evitar loops
+      return [];
     }
   },
 

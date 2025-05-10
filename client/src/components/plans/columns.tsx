@@ -93,15 +93,19 @@ export const columns: ColumnDef<Plan>[] = [
       
       // Ao receber as render props, assumimos onEdit, onDelete e updateModuleStatus
       // serão fornecidos pelo componente pai
+      
+      const handleStatusChange = (checked: boolean) => {
+        console.log("Switch status clicado para plano:", plan.name, "Novo valor:", checked);
+        ((row as any).table?.options?.meta || {})?.updatePlanStatus?.(plan.id, checked);
+      };
+      
       return (
-        <div className="flex items-center">
+        <div className="flex items-center pointer-events-auto">
           <Switch
             checked={plan.is_active}
-            onCheckedChange={(checked) => {
-              // Estas props serão passadas pelo DataTable
-              ((row as any).table?.options?.meta || {})?.updatePlanStatus?.(plan.id, checked);
-            }}
+            onCheckedChange={handleStatusChange}
             aria-label={`Status do plano ${plan.name}`}
+            className="pointer-events-auto"
           />
           <span className="ml-2 text-xs text-muted-foreground">
             {plan.is_active ? 'Ativo' : 'Inativo'}
@@ -128,13 +132,25 @@ export const columns: ColumnDef<Plan>[] = [
     cell: ({ row }) => {
       const plan = row.original;
       
+      // Adicionando log para debugging e envolvendo em div com pointer-events-auto
+      const handleEditClick = () => {
+        console.log("Botão editar clicado para plano:", plan.name);
+        ((row as any).table?.options?.meta || {})?.onEdit?.(plan);
+      };
+      
+      const handleDeleteClick = () => {
+        console.log("Botão excluir clicado para plano:", plan.name);
+        ((row as any).table?.options?.meta || {})?.onDelete?.(plan);
+      };
+      
       return (
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 pointer-events-auto">
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => ((row as any).table?.options?.meta || {})?.onEdit?.(plan)}
+            onClick={handleEditClick}
             aria-label={`Editar plano ${plan.name}`}
+            className="pointer-events-auto"
           >
             <Pencil className="h-4 w-4" />
           </Button>
@@ -142,9 +158,9 @@ export const columns: ColumnDef<Plan>[] = [
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => ((row as any).table?.options?.meta || {})?.onDelete?.(plan)}
+            onClick={handleDeleteClick}
             aria-label={`Excluir plano ${plan.name}`}
-            className="text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+            className="text-destructive hover:text-destructive/90 hover:bg-destructive/10 pointer-events-auto"
           >
             <Trash2 className="h-4 w-4" />
           </Button>

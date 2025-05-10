@@ -17,11 +17,19 @@ import PrivateRoute from "@/components/auth/private-route";
 import { useAuth } from "@/lib/auth";
 
 function Router() {
-  const { checkAuth, isAuthenticated, isLoading } = useAuth();
+  const { checkAuth, isAuthenticated, isLoading, user } = useAuth();
 
   // Flag para evitar login automático inesperado
   const [didPerformInitialCheck, setDidPerformInitialCheck] = useState(false);
   
+  // Validar autenticação mais rigorosamente (proteção extra)
+  const isReallyAuthenticated = 
+    isAuthenticated && 
+    user && 
+    user.id && 
+    user.email && 
+    (user.authenticated !== false);
+    
   // Verificar a autenticação ao carregar a aplicação
   useEffect(() => {
     // Executar verificação de autenticação
@@ -37,7 +45,20 @@ function Router() {
     }
     
     performAuthCheck();
-  }, [checkAuth]);
+    
+    // Limpar cookies e sessão se detectarmos uma condição inconsistente
+    if (isAuthenticated && !isReallyAuthenticated) {
+      console.warn("Estado de autenticação inconsistente detectado. Limpando estado...");
+      // Limpar qualquer sessão ou cookie inválidos
+      localStorage.removeItem("auth_session");
+      sessionStorage.removeItem("auth_token");
+      document.cookie.split(";").forEach((c) => {
+        document.cookie = c
+          .replace(/^ +/, "")
+          .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+      });
+    }
+  }, [checkAuth, isAuthenticated, isReallyAuthenticated]);
 
   return (
     <Switch>

@@ -7,6 +7,12 @@ export interface User {
   email: string;
   name?: string;
   role?: string;
+  // Campo adicional para verificar explicitamente status de autenticação
+  authenticated?: boolean;
+  // Outros campos que podem vir do backend
+  is_active?: boolean;
+  created_at?: string;
+  updated_at?: string;
 }
 
 // Interface do estado de autenticação

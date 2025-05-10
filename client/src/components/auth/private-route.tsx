@@ -38,11 +38,29 @@ export default function PrivateRoute({ children }: PrivateRouteProps) {
     verificarAutenticacao();
   }, [checkAuth, retryCount]);
 
-  // Sempre registre o estado de autenticação para debug
+  // Verificação adicional do estado do usuário obtido do Auth context
+  const { user } = useAuth();
+  
+  // Validar com mais rigor se o usuário está realmente autenticado
+  const isReallyAuthenticated = 
+    isAuthenticated && // Verificação básica do estado 
+    user && // Usuário existe
+    user.id && // ID do usuário existe
+    user.email && // Email do usuário existe
+    // Verificar que não há flag explícita indicando não autenticado 
+    (user.authenticated !== false); 
+  
+  // Log para debug com informações detalhadas
   console.log("Estado de autenticação:", { 
     isChecking, 
     isLoading, 
-    isAuthenticated, 
+    isAuthenticated,
+    isReallyAuthenticated,
+    user: user ? { 
+      id: user.id, 
+      email: user.email, 
+      authenticated: user.authenticated
+    } : null,
     currentRoute: location 
   });
 
@@ -55,8 +73,9 @@ export default function PrivateRoute({ children }: PrivateRouteProps) {
     );
   }
 
-  if (!isAuthenticated) {
-    console.log("Não autenticado, redirecionando para login");
+  // Usar a verificação mais rigorosa
+  if (!isReallyAuthenticated) {
+    console.log("Não autenticado ou autenticação inválida, redirecionando para login");
     // Armazenar a URL atual para redirecionamento após o login
     sessionStorage.setItem('redirectTo', location);
     toast.error("Acesso restrito. Por favor, faça login para continuar.");

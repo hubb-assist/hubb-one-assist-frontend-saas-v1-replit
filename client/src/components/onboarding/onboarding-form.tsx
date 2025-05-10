@@ -813,9 +813,25 @@ export default function OnboardingForm() {
                 {step === 3 && 'Escolha de Plano'} 
                 {step === 4 && 'Finalizar Cadastro'}
               </h3>
+              
+              {apiError && (
+                <div className="mt-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded" role="alert">
+                  <div className="flex">
+                    <div className="py-1">
+                      <svg className="w-6 h-6 mr-4 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="font-bold">Não foi possível carregar os dados</p>
+                      <p className="text-sm">{apiError}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             
-            {renderStep()}
+            {!apiError && renderStep()}
           </CardContent>
           
           <CardFooter className="flex justify-between">

@@ -87,9 +87,10 @@ export const modulesService = {
   // Criar um novo módulo
   async create(data: ModuleFormValues): Promise<Module> {
     try {
+      // Adaptando para os nomes de campo que a API espera (em português)
       const apiData = {
-        name: data.name,
-        description: data.description || null,
+        nome: data.name,
+        descricao: data.description || null,
         is_active: data.is_active
       };
       
@@ -108,9 +109,10 @@ export const modulesService = {
   // Atualizar um módulo existente
   async update(id: string, data: ModuleFormValues): Promise<Module> {
     try {
+      // Adaptando para os nomes de campo que a API espera (em português)
       const apiData = {
-        name: data.name,
-        description: data.description || null,
+        nome: data.name,
+        descricao: data.description || null,
         is_active: data.is_active
       };
       

@@ -1,0 +1,77 @@
+Ótimo! A API está retornando corretamente os 5 segmentos, incluindo os que você acabou de adicionar ("Odonologia" e "teste"). Isso confirma que a API está funcionando corretamente.
+
+O problema parece estar no frontend. Aqui estão algumas verificações importantes:
+
+URL correta no frontend: Certifique-se que o frontend está fazendo a requisição para a URL correta, incluindo a barra / no final:
+https://32c76b88-78ce-48ad-9c13-04975e5e14a3-00-12ynk9jfvcfqw.worf.replit.dev/segments/
+
+Autenticação correta: Verifique se o frontend está enviando os cookies de autenticação corretamente com credentials: 'include'
+
+Processamento dos dados: Verifique se o frontend está processando corretamente a resposta da API, que tem o formato:
+
+{
+  "total": 5,
+  "page": 1,
+  "size": 10,
+  "items": [/* array de segmentos */]
+}
+É importante que o código frontend acesse a propriedade items para obter a lista de segmentos.
+
+Atualização após criar: Verifique se o frontend está atualizando a lista após a criação de um novo segmento (fazendo uma nova requisição GET)
+
+Token de autenticação: O token pode estar expirado. Experimente fazer logout e login novamente.
+
+Console do navegador: Verifique o console do navegador para ver se há erros específicos relacionados à API.
+
+Para implementar esses endpoints no frontend, o código deve seguir este padrão:
+
+// Para listar segmentos
+async function listarSegmentos() {
+  try {
+    const response = await fetch('https://32c76b88-78ce-48ad-9c13-04975e5e14a3-00-12ynk9jfvcfqw.worf.replit.dev/segments/', {
+      credentials: 'include'
+    });
+    
+    if (!response.ok) {
+      throw new Error('Erro ao listar segmentos');
+    }
+    
+    const data = await response.json();
+    // Importante: os segmentos estão em data.items, não diretamente em data
+    const segmentos = data.items;
+    
+    // Atualizar a interface com os segmentos
+    console.log('Segmentos recebidos:', segmentos);
+    return segmentos;
+  } catch (error) {
+    console.error('Erro:', error);
+  }
+}
+// Para criar um segmento
+async function criarSegmento(dadosSegmento) {
+  try {
+    const response = await fetch('https://32c76b88-78ce-48ad-9c13-04975e5e14a3-00-12ynk9jfvcfqw.worf.replit.dev/segments/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify(dadosSegmento)
+    });
+    
+    if (!response.ok) {
+      throw new Error('Erro ao criar segmento');
+    }
+    
+    const novoSegmento = await response.json();
+    console.log('Segmento criado:', novoSegmento);
+    
+    // Importante: Recarregar a lista após criar
+    await listarSegmentos();
+    
+    return novoSegmento;
+  } catch (error) {
+    console.error('Erro:', error);
+  }
+}
+O importante é fazer uma nova requisição de listagem após criar um segmento, para atualizar a interface.

@@ -31,16 +31,16 @@ export const columns: ColumnDef<Segment>[] = [
   },
   
   // Coluna: Nome (com ordenação)
-  sortableHeader("nome", "Nome"),
+  sortableHeader("name", "Nome"),
   
   // Coluna: Descrição
   {
-    accessorKey: "descricao",
+    accessorKey: "description",
     header: "Descrição",
     cell: ({ row }) => {
-      const descricao = row.getValue("descricao") as string;
-      if (!descricao) return <span className="text-muted-foreground text-sm italic">Sem descrição</span>;
-      return <div className="max-w-[400px] truncate">{descricao}</div>;
+      const description = row.getValue("description") as string;
+      if (!description) return <span className="text-muted-foreground text-sm italic">Sem descrição</span>;
+      return <div className="max-w-[400px] truncate">{description}</div>;
     },
   },
   

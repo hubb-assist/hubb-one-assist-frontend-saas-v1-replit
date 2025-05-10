@@ -39,12 +39,12 @@ export function SegmentForm({
   onCancel, 
   isSubmitting 
 }: SegmentFormProps) {
-  // Configura o formulário com valores padrão
+  // Configura o formulário com valores padrão (mapeando de inglês para português)
   const form = useForm<SegmentFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      nome: segment?.nome || "",
-      descricao: segment?.descricao || "",
+      nome: segment?.name || "",  // Usar name da API
+      descricao: segment?.description || "", // Usar description da API
       is_active: segment?.is_active ?? true,
     },
   });

@@ -160,10 +160,8 @@ export default function PlansPage() {
 
   const handleSubmit = (values: PlanFormValues) => {
     if (selectedPlan) {
-      console.log(`Enviando atualização para plano ${selectedPlan.id}:`, values);
-      updateMutation.mutate({ id: selectedPlan.id, values: values });
+      updateMutation.mutate({ id: selectedPlan.id, values });
     } else {
-      console.log('Enviando dados para criar novo plano:', values);
       createMutation.mutate(values);
     }
   };
@@ -175,7 +173,6 @@ export default function PlansPage() {
 
   const confirmDelete = () => {
     if (selectedPlan) {
-      console.log(`Tentando excluir plano: ${selectedPlan.id} (${selectedPlan.name})`);
       deleteMutation.mutate(selectedPlan.id);
     }
   };

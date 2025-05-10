@@ -138,28 +138,8 @@ export function PlanForm({
       return;
     }
 
-    // Processar valores antes de enviar
-    const processedValues: PlanFormValues = {
-      ...values,
-      // Garantir que o preço base é um número com 2 casas decimais
-      base_price: parseFloat(values.base_price.toFixed(2)),
-      // Usar mesmo formato para os módulos conforme esperado pelo schema
-      modules: values.modules.map((m) => {
-        const modulePrice = m.is_free ? 0 : (m.custom_price || 0);
-        return {
-          module_id: m.module_id,
-          // Sempre usar o campo 'custom_price' para o frontend
-          custom_price: m.is_free ? null : parseFloat(modulePrice.toFixed(2)),
-          // Flag is_free
-          is_free: m.is_free === true || !modulePrice,
-          // Dias de teste padrão = 0
-          trial_days: m.trial_days || 0,
-        };
-      }),
-    };
-    
-    // Log para debug
-    console.log("Dados processados para envio:", JSON.stringify(processedValues, null, 2));
+    // Enviar valores sem processamento adicional para evitar conflitos
+    const processedValues = values;
 
     onSubmit(processedValues);
   };

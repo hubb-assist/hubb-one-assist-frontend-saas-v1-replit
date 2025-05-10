@@ -86,19 +86,22 @@ export const plansService = {
   // Criar novo plano
   async create(data: PlanFormValues): Promise<Plan> {
     try {
-      console.log('Enviando dados para criar plano:', JSON.stringify(data, null, 2));
-      const response = await plansApi.post(ENDPOINTS.PLANS, data);
-      console.log('Resposta da API (criar plano):', response.data);
+      // Converter dados para o formato esperado pela API
+      const apiData = {
+        ...data,
+        // Mapear módulos para o formato esperado pela API
+        modules: data.modules.map(m => ({
+          module_id: m.module_id,
+          price: m.is_free ? 0 : (m.custom_price || 0),
+          is_free: m.is_free === true,
+          trial_days: m.trial_days || 0
+        }))
+      };
+      
+      const response = await plansApi.post(ENDPOINTS.PLANS, apiData);
       return response.data;
     } catch (error: any) {
       console.error('Erro ao criar plano:', error);
-      if (error.response) {
-        console.error('Detalhes da resposta de erro:', {
-          status: error.response.status,
-          statusText: error.response.statusText,
-          data: error.response.data
-        });
-      }
       throw error;
     }
   },
@@ -108,8 +111,11 @@ export const plansService = {
     try {
       // Converter dados para o formato esperado pela API
       const apiData = {
-        ...data,
-        // Mapear módulos para o formato esperado pela API (com 'price', não 'custom_price')
+        name: data.name,
+        segment_id: data.segment_id,
+        base_price: data.base_price, 
+        description: data.description,
+        is_active: data.is_active,
         modules: data.modules.map(m => ({
           module_id: m.module_id,
           price: m.is_free ? 0 : (m.custom_price || 0),
@@ -118,19 +124,10 @@ export const plansService = {
         }))
       };
       
-      console.log(`Enviando dados convertidos para atualizar plano ${id}:`, JSON.stringify(apiData, null, 2));
       const response = await plansApi.put(`${ENDPOINTS.PLANS}/${id}`, apiData);
-      console.log('Resposta da API (atualizar plano):', response.data);
       return response.data;
     } catch (error: any) {
       console.error(`Erro ao atualizar plano com ID ${id}:`, error);
-      if (error.response) {
-        console.error('Detalhes da resposta de erro (atualizar):', {
-          status: error.response.status,
-          statusText: error.response.statusText,
-          data: error.response.data
-        });
-      }
       throw error;
     }
   },
@@ -138,18 +135,9 @@ export const plansService = {
   // Excluir plano
   async delete(id: string): Promise<void> {
     try {
-      console.log(`Tentando excluir plano com ID: ${id}`);
-      const response = await plansApi.delete(`${ENDPOINTS.PLANS}/${id}`);
-      console.log('Resposta da API (excluir plano):', response.status, response.statusText);
+      await plansApi.delete(`${ENDPOINTS.PLANS}/${id}`);
     } catch (error: any) {
       console.error(`Erro ao excluir plano com ID ${id}:`, error);
-      if (error.response) {
-        console.error('Detalhes da resposta de erro (excluir):', {
-          status: error.response.status,
-          statusText: error.response.statusText,
-          data: error.response.data
-        });
-      }
       throw error;
     }
   },

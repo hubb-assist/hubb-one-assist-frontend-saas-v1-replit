@@ -3,7 +3,8 @@ import {
   Bell,
   Menu,
   LogOut,
-  ChevronRight
+  ChevronRight,
+  UserCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -74,6 +75,14 @@ export default function AppHeader({ title, subtitle }: AppHeaderProps) {
               3
             </span>
             <span className="sr-only">Notificações</span>
+          </Button>
+          
+          <Button 
+            variant="ghost"
+            className="text-white/90 hover:bg-white/10 flex items-center gap-2"
+          >
+            <UserCircle className="h-5 w-5" />
+            <span>Meus Dados</span>
           </Button>
           
           <div className="flex items-center space-x-3">

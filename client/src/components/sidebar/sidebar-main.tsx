@@ -8,8 +8,10 @@ import {
   Settings, 
   HelpCircle,
   Layers,
-  AppWindow
+  AppWindow,
+  LogOut
 } from 'lucide-react';
+import { useAuth } from '@/lib/auth';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface NavItemProps {
@@ -54,6 +56,12 @@ interface SidebarMainProps {
 
 export default function SidebarMain({ expanded }: SidebarMainProps) {
   const pathname = window.location.pathname;
+  const { logout } = useAuth();
+  
+  const handleLogout = async () => {
+    console.log('Iniciando logout...');
+    await logout();
+  };
 
   return (
     <div className="space-y-4 py-4">
@@ -151,6 +159,34 @@ export default function SidebarMain({ expanded }: SidebarMainProps) {
             expanded={expanded}
             active={pathname === '/setup'}
           />
+          
+          {expanded ? (
+            <div 
+              onClick={handleLogout}
+              className={cn(
+                'flex items-center gap-x-2 rounded-md px-3 py-2 text-red-300 transition-all hover:bg-white/10 hover:text-red-200 cursor-pointer',
+              )}
+            >
+              <span className="flex-shrink-0"><LogOut className="h-5 w-5" /></span>
+              <span>Sair</span>
+            </div>
+          ) : (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div 
+                  onClick={handleLogout}
+                  className={cn(
+                    'flex items-center gap-x-2 rounded-md px-3 py-2 text-red-300 transition-all hover:bg-white/10 hover:text-red-200 cursor-pointer',
+                  )}
+                >
+                  <span className="flex-shrink-0"><LogOut className="h-5 w-5" /></span>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="bg-primary-foreground">
+                Sair
+              </TooltipContent>
+            </Tooltip>
+          )}
         </div>
       </div>
       

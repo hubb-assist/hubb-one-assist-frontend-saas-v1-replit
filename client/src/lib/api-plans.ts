@@ -106,8 +106,20 @@ export const plansService = {
   // Atualizar plano existente
   async update(id: string, data: PlanFormValues): Promise<Plan> {
     try {
-      console.log(`Enviando dados para atualizar plano ${id}:`, JSON.stringify(data, null, 2));
-      const response = await plansApi.put(`${ENDPOINTS.PLANS}/${id}`, data);
+      // Converter dados para o formato esperado pela API
+      const apiData = {
+        ...data,
+        // Mapear módulos para o formato esperado pela API (com 'price', não 'custom_price')
+        modules: data.modules.map(m => ({
+          module_id: m.module_id,
+          price: m.is_free ? 0 : (m.custom_price || 0),
+          is_free: m.is_free === true,
+          trial_days: m.trial_days || 0
+        }))
+      };
+      
+      console.log(`Enviando dados convertidos para atualizar plano ${id}:`, JSON.stringify(apiData, null, 2));
+      const response = await plansApi.put(`${ENDPOINTS.PLANS}/${id}`, apiData);
       console.log('Resposta da API (atualizar plano):', response.data);
       return response.data;
     } catch (error: any) {
@@ -126,9 +138,18 @@ export const plansService = {
   // Excluir plano
   async delete(id: string): Promise<void> {
     try {
-      await plansApi.delete(`${ENDPOINTS.PLANS}/${id}`);
-    } catch (error) {
+      console.log(`Tentando excluir plano com ID: ${id}`);
+      const response = await plansApi.delete(`${ENDPOINTS.PLANS}/${id}`);
+      console.log('Resposta da API (excluir plano):', response.status, response.statusText);
+    } catch (error: any) {
       console.error(`Erro ao excluir plano com ID ${id}:`, error);
+      if (error.response) {
+        console.error('Detalhes da resposta de erro (excluir):', {
+          status: error.response.status,
+          statusText: error.response.statusText,
+          data: error.response.data
+        });
+      }
       throw error;
     }
   },

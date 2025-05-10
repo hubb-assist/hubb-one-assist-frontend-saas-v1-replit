@@ -45,3 +45,15 @@
 - Integração completa com API para operações CRUD
 - Adição de item "Módulos" no menu lateral existente
 
+✅ TAREFA FRONTEND — CRUD de Usuários do Sistema (nível SaaS) implementado com sucesso.
+- Criação da página de usuários do sistema com layout responsivo (client/src/pages/admin/system-users.tsx)
+- Implementação de DataTable com ordenação, filtro e paginação
+- Formulário de criação/edição com suporte a diferentes papéis (roles)
+- Validação de formulários usando Zod
+- Ativação/desativação via switch diretamente na tabela
+- Confirmação de exclusão com AlertDialog
+- Feedback com toast para todas as operações
+- Integração completa com API para operações CRUD
+- Adição de item "Usuários do Sistema" no menu lateral
+- Sistema de autenticação e controle de acesso para administradores
+

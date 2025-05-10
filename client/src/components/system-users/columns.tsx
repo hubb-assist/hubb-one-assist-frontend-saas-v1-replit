@@ -1,15 +1,16 @@
 import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
+import { ArrowUpDown, Edit, Trash2 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
 
 import { SystemUser, roleLabels } from './types';
-import { ActionButtons } from './action-buttons';
-import { StatusSwitch } from './status-switch';
+// Importações de ActionButtons e StatusSwitch não são necessárias aqui,
+// pois usaremos renderização direta na tabela
 
 // Helper para cabeçalhos de colunas que podem ser ordenados
 function sortableHeader(column: any, header: string) {
@@ -66,10 +67,17 @@ export const columns: ColumnDef<SystemUser>[] = [
       const user = row.original;
       
       return (
-        <StatusSwitch
-          user={user}
-          onStatusChange={(e) => row.onStatusChange?.(e)}
-        />
+        <div className="flex items-center space-x-2">
+          <Switch
+            checked={user.is_active}
+            // Será vinculado externamente
+            id={`status-switch-${user.id}`}
+            aria-label="Ativar/Desativar usuário"
+          />
+          <span className={user.is_active ? "text-green-600" : "text-gray-400"}>
+            {user.is_active ? 'Ativo' : 'Inativo'}
+          </span>
+        </div>
       );
     },
   },
@@ -103,11 +111,29 @@ export const columns: ColumnDef<SystemUser>[] = [
       const user = row.original;
       
       return (
-        <ActionButtons
-          user={user}
-          onEdit={() => row.onEdit?.(user)}
-          onDelete={() => row.onDelete?.(user)}
-        />
+        <div className="flex gap-2 items-center justify-end">
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8"
+            // Será vinculado externamente
+            id={`edit-button-${user.id}`}
+          >
+            <ArrowUpDown className="h-4 w-4" />
+            <span className="sr-only">Editar</span>
+          </Button>
+          
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8 text-destructive hover:bg-destructive/10"
+            // Será vinculado externamente
+            id={`delete-button-${user.id}`}
+          >
+            <ArrowUpDown className="h-4 w-4" />
+            <span className="sr-only">Excluir</span>
+          </Button>
+        </div>
       );
     },
   },

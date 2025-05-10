@@ -14,6 +14,7 @@ import AdminDashboard from "@/pages/admin/dashboard";
 import Segments from "@/pages/admin/segments";
 import Modules from "@/pages/admin/modules";
 import Plans from "@/pages/admin/plans";
+import SystemUsers from "@/pages/admin/system-users";
 import PrivateRoute from "@/components/auth/private-route";
 import { useAuth } from "@/lib/auth";
 
@@ -102,6 +103,12 @@ function Router() {
       <Route path="/admin/plans">
         <PrivateRoute>
           <Plans />
+        </PrivateRoute>
+      </Route>
+      
+      <Route path="/admin/system-users">
+        <PrivateRoute>
+          <SystemUsers />
         </PrivateRoute>
       </Route>
       

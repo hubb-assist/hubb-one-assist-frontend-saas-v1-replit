@@ -67,7 +67,14 @@ export const useAuth = create<AuthState>((set, get) => ({
       
       const userData = await authService.verificarAutenticacao();
       
-      if (userData) {
+      // Validação mais rigorosa para verificar se o usuário está realmente autenticado
+      const isValidUser = userData && 
+                        userData.id && 
+                        userData.email && 
+                        // Verifica se não há flag explícita de não autenticado
+                        userData.authenticated !== false;
+      
+      if (isValidUser) {
         // Só exibe logs se não estiver na página de login
         if (!isLoginPage) {
           console.log("Usuário autenticado:", userData);
@@ -76,8 +83,13 @@ export const useAuth = create<AuthState>((set, get) => ({
       } else {
         // Só exibe logs se não estiver na página de login
         if (!isLoginPage) {
-          console.log("Usuário não autenticado (resposta vazia)");
+          if (userData) {
+            console.log("Usuário recebido, mas com status não autenticado:", userData);
+          } else {
+            console.log("Usuário não autenticado (resposta vazia)");
+          }
         }
+        // Limpar estado do usuário independentemente do tipo de resposta inválida
         set({ user: null, isAuthenticated: false });
       }
     } catch (error) {

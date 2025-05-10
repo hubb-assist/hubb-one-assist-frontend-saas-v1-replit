@@ -4,7 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Setup from "@/pages/setup";
@@ -17,11 +17,26 @@ import PrivateRoute from "@/components/auth/private-route";
 import { useAuth } from "@/lib/auth";
 
 function Router() {
-  const { checkAuth } = useAuth();
+  const { checkAuth, isAuthenticated, isLoading } = useAuth();
 
+  // Flag para evitar login automático inesperado
+  const [didPerformInitialCheck, setDidPerformInitialCheck] = useState(false);
+  
   // Verificar a autenticação ao carregar a aplicação
   useEffect(() => {
-    checkAuth();
+    // Executar verificação de autenticação
+    async function performAuthCheck() {
+      try {
+        await checkAuth();
+      } catch (error) {
+        console.error("Erro ao verificar autenticação inicial:", error);
+      } finally {
+        // Marcando que a verificação inicial foi realizada
+        setDidPerformInitialCheck(true);
+      }
+    }
+    
+    performAuthCheck();
   }, [checkAuth]);
 
   return (

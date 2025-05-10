@@ -99,6 +99,23 @@ export const authService = {
       
       const response = await api.get(ENDPOINTS.USER_ME);
       
+      // Se houver resposta bem-sucedida, verificar se o usuário está realmente autenticado
+      // Verifica se a resposta contém o campo 'authenticated' e se é falso
+      if (response.data && response.data.authenticated === false) {
+        if (!isLoginPage) {
+          console.log("Resposta indica que o usuário não está autenticado:", response.data);
+        }
+        return null; // Retorna null para indicar que não está autenticado
+      }
+      
+      // Verifica se a resposta não contém propriedades esperadas de um usuário (id, email)
+      if (response.data && (!response.data.id || !response.data.email)) {
+        if (!isLoginPage) {
+          console.log("Resposta não contém dados válidos de usuário:", response.data);
+        }
+        return null; // Retorna null para indicar que não está autenticado
+      }
+      
       // Se houver resposta bem-sucedida, registrar o sucesso (exceto na página de login)
       if (!isLoginPage) {
         console.log("Resposta de verificação de autenticação:", response.status, response.data);

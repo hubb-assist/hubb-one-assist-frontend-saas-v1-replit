@@ -128,14 +128,14 @@ export function DataTable<TData, TValue>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHeader key={header.id} className="px-4 py-2">
+                    <TableHead key={header.id} className="px-4 py-2">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
                             header.getContext()
                           )}
-                    </TableHeader>
+                    </TableHead>
                   );
                 })}
               </TableRow>

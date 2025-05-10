@@ -1,20 +1,18 @@
 import axios from 'axios';
 import { toast } from 'sonner';
 
-// Info para referência - não será usado diretamente nas requisições
+// Definindo a URL da API diretamente
 export const API_HOSTNAME = '32c76b88-78ce-48ad-9c13-04975e5e14a3-00-12ynk9jfvcfqw.worf.replit.dev';
-export const API_TARGET_URL = `https://${API_HOSTNAME}`;
+export const API_BASE_URL = `https://${API_HOSTNAME}`;
 
 // URL do domínio temporário (para configuração de CORS no backend)
 export const FRONTEND_URL = window.location.origin;
 
-// Agora usamos o proxy local para todas as chamadas API
-// Todas as chamadas serão feitas para /external-api/... que vai redirecionar para a API externa
-const API_PROXY_PATH = '/external-api';
-
-console.log("Configurando API - usando proxy local em:", API_PROXY_PATH);
+// Agora usamos a URL direta da API em vez de proxy
+// Esta abordagem evita problemas com Vite interceptando as requisições
+console.log("Configurando API - usando URL direta:", API_BASE_URL);
 const api = axios.create({
-  baseURL: API_PROXY_PATH,
+  baseURL: API_BASE_URL,
   withCredentials: true, // Importante para os cookies HttpOnly
   headers: {
     'Content-Type': 'application/json',
@@ -41,7 +39,7 @@ api.interceptors.request.use(config => {
   // Log da URL final (com baseURL)
   const baseUrl = config.baseURL || '';
   const url = config.url || '';
-  console.log('Fazendo requisição via proxy:', baseUrl + url);
+  console.log('Fazendo requisição para API:', baseUrl + url);
   
   return config;
 });
@@ -74,9 +72,12 @@ export const authService = {
   // Verificar se o usuário está autenticado
   async verificarAutenticacao() {
     try {
+      console.log("Solicitando verificação de autenticação: /users/me");
       const response = await api.get('/users/me');
+      console.log("Resposta de verificação de autenticação:", response.status, response.data);
       return response.data;
     } catch (error) {
+      console.error("Erro na verificação de autenticação:", error);
       return null;
     }
   },

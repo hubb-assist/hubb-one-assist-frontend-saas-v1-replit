@@ -14,12 +14,14 @@ export const segmentsService = {
   // Listar todos os segmentos
   async getAll(params?: { skip?: number; limit?: number; nome?: string; is_active?: boolean }): Promise<Segment[]> {
     try {
-      // Usar caminho relativo através do proxy
+      // Usar caminho direto para a API
       const path = '/segments';
-      console.log('Buscando segmentos via proxy:', path, 'com params:', params);
+      console.log('Buscando segmentos na API:', path, 'com params:', params);
       
+      // Logar informações detalhadas para debug
       const response = await api.get(path, { params });
-      
+      console.log('STATUS:', response.status);
+      console.log('HEADERS:', response.headers);
       console.log('Resposta da API:', response.data);
       
       // A resposta da API tem um formato específico com a lista em 'items'
@@ -42,9 +44,9 @@ export const segmentsService = {
   // Buscar um segmento por ID
   async getById(id: string): Promise<Segment> {
     try {
-      // Usar caminho relativo através do proxy
+      // Usar caminho direto para a API
       const path = `/segments/${id}`;
-      console.log(`Buscando segmento via proxy: ${path}`);
+      console.log(`Buscando segmento na API: ${path}`);
       
       const response = await api.get(path);
       return response.data;
@@ -65,9 +67,9 @@ export const segmentsService = {
         color: "#3B82F6" // Cor padrão azul, pode ser adicionada como campo no formulário mais tarde
       };
       
-      // Usar caminho relativo através do proxy
+      // Usar caminho direto para a API
       const path = '/segments';
-      console.log(`Criando segmento via proxy: ${path}`);
+      console.log(`Criando segmento na API: ${path}`);
       console.log('Dados enviados para API:', apiData);
       
       const response = await api.post(path, apiData);
@@ -89,9 +91,9 @@ export const segmentsService = {
         // Não enviar color na atualização a menos que seja explicitamente alterado
       };
       
-      // Usar caminho relativo através do proxy
+      // Usar caminho direto para a API
       const path = `/segments/${id}`;
-      console.log(`Atualizando segmento via proxy: ${path}`);
+      console.log(`Atualizando segmento na API: ${path}`);
       console.log('Dados enviados para API:', apiData);
       
       const response = await api.put(path, apiData);
@@ -105,9 +107,9 @@ export const segmentsService = {
   // Excluir um segmento
   async delete(id: string): Promise<void> {
     try {
-      // Usar caminho relativo através do proxy
+      // Usar caminho direto para a API
       const path = `/segments/${id}`;
-      console.log(`Excluindo segmento via proxy: ${path}`);
+      console.log(`Excluindo segmento na API: ${path}`);
       await api.delete(path);
     } catch (error) {
       console.error(`Erro ao excluir segmento ${id}:`, error);
@@ -123,7 +125,7 @@ export const segmentsService = {
         ? `/segments/${id}/activate` 
         : `/segments/${id}/deactivate`;
       
-      console.log(`Atualizando status do segmento ${id} para ${isActive ? 'ativo' : 'inativo'} via proxy: ${path}`);
+      console.log(`Atualizando status do segmento ${id} para ${isActive ? 'ativo' : 'inativo'} na API: ${path}`);
       
       const response = await api.patch(path);
       return response.data;

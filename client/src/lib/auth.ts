@@ -57,14 +57,19 @@ export const useAuth = create<AuthState>((set, get) => ({
   checkAuth: async () => {
     set({ isLoading: true });
     try {
+      console.log("Verificando autenticação...");
       const userData = await authService.verificarAutenticacao();
       if (userData) {
+        console.log("Usuário autenticado:", userData);
         set({ user: userData, isAuthenticated: true });
       } else {
+        console.log("Usuário não autenticado (resposta vazia)");
         set({ user: null, isAuthenticated: false });
       }
     } catch (error) {
+      console.error("Erro ao verificar autenticação:", error);
       set({ user: null, isAuthenticated: false });
+      throw error; // Propagar erro para permitir retry
     } finally {
       set({ isLoading: false });
     }

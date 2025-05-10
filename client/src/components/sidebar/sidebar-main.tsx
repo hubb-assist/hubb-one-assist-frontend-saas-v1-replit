@@ -64,7 +64,7 @@ export default function SidebarMain({ expanded }: SidebarMainProps) {
   };
 
   return (
-    <div className="space-y-4 py-4">
+    <div className="space-y-4 py-4 overflow-hidden">
       <div className="px-3 py-2">
         <h2 className={cn(
           "text-white/50 text-xs font-medium uppercase tracking-wider",

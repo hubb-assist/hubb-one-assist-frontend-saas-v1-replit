@@ -70,7 +70,7 @@ export default function AppShell({ children }: AppShellProps) {
         </div>
 
         {/* Sidebar Content */}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-hidden">
           <SidebarMain expanded={expanded || isMobile} />
         </div>
 

@@ -120,11 +120,14 @@ export default function OnboardingForm() {
       if (!selectedSegment) return;
 
       try {
+        // Buscar todos os planos ativos
         const data = await plansService.getAll({ 
-          is_active: true,
-          segment_id: selectedSegment
+          is_active: true
         });
-        setPlans(data);
+        
+        // Filtrar planos pelo segment_id manualmente
+        const filteredPlans = data.filter(plan => plan.segment_id === selectedSegment);
+        setPlans(filteredPlans);
       } catch (error) {
         console.error('Erro ao carregar planos:', error);
         toast.error('Não foi possível carregar os planos');
@@ -525,10 +528,10 @@ export default function OnboardingForm() {
                                   </p>
                                   <ul className="text-sm space-y-1">
                                     {plan.modules.map((planModule, index) => (
-                                      <li key={planModule.module_id || index} className="flex items-center gap-2">
+                                      <li key={index} className="flex items-center gap-2">
                                         <CheckCircle className="h-4 w-4 text-green-500" />
                                         <span>
-                                          {planModule.module?.name || 'Módulo'} 
+                                          {planModule.module?.name || `Módulo ${index + 1}`} 
                                           {planModule.is_free ? ' (incluído)' : ''}
                                         </span>
                                       </li>

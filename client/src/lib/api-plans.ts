@@ -20,7 +20,9 @@ const plansApi = axios.create({
 // Adicionar interceptors para debug e controle de erros
 plansApi.interceptors.request.use(config => {
   // Log da URL final
-  console.log('Requisição de planos para:', config.baseURL + config.url);
+  const baseURL = config.baseURL || '';
+  const url = config.url || '';
+  console.log('Requisição de planos para:', baseURL + url);
   return config;
 });
 

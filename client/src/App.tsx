@@ -13,6 +13,7 @@ import Login from "@/pages/login";
 import AdminDashboard from "@/pages/admin/dashboard";
 import Segments from "@/pages/admin/segments";
 import Modules from "@/pages/admin/modules";
+import Plans from "@/pages/admin/plans";
 import PrivateRoute from "@/components/auth/private-route";
 import { useAuth } from "@/lib/auth";
 
@@ -95,6 +96,12 @@ function Router() {
       <Route path="/admin/modules">
         <PrivateRoute>
           <Modules />
+        </PrivateRoute>
+      </Route>
+      
+      <Route path="/admin/plans">
+        <PrivateRoute>
+          <Plans />
         </PrivateRoute>
       </Route>
       

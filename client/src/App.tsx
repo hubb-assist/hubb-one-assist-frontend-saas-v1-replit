@@ -27,7 +27,14 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home}/>
-      <Route path="/setup" component={Setup}/>
+      
+      {/* Rota setup (também deve ser protegida) */}
+      <Route path="/setup">
+        <PrivateRoute>
+          <Setup />
+        </PrivateRoute>
+      </Route>
+      
       <Route path="/login" component={Login}/>
       
       {/* Rotas protegidas */}

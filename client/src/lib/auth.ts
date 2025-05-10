@@ -60,17 +60,32 @@ export const useAuth = create<AuthState>((set, get) => ({
     
     set({ isLoading: true });
     try {
-      console.log("Verificando autenticação...");
+      // Só exibe logs se não estiver na página de login
+      if (!isLoginPage) {
+        console.log("Verificando autenticação...");
+      }
+      
       const userData = await authService.verificarAutenticacao();
+      
       if (userData) {
-        console.log("Usuário autenticado:", userData);
+        // Só exibe logs se não estiver na página de login
+        if (!isLoginPage) {
+          console.log("Usuário autenticado:", userData);
+        }
         set({ user: userData, isAuthenticated: true });
       } else {
-        console.log("Usuário não autenticado (resposta vazia)");
+        // Só exibe logs se não estiver na página de login
+        if (!isLoginPage) {
+          console.log("Usuário não autenticado (resposta vazia)");
+        }
         set({ user: null, isAuthenticated: false });
       }
     } catch (error) {
-      console.log("Estado de autenticação:", { isChecking: false, isLoading: false, isAuthenticated: false, currentRoute: window.location.pathname });
+      // Só exibe logs se não estiver na página de login
+      if (!isLoginPage) {
+        console.log("Estado de autenticação:", { isChecking: false, isLoading: false, isAuthenticated: false, currentRoute: window.location.pathname });
+      }
+      
       set({ user: null, isAuthenticated: false });
       
       // Se estiver na página de login, não propaga o erro, pois é esperado

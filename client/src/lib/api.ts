@@ -40,6 +40,9 @@ api.interceptors.request.use(config => {
   return config;
 });
 
+// Função para verificar se estamos na página de login
+const isLoginPage = () => window.location.pathname === '/login';
+
 // Interceptor para erros
 api.interceptors.response.use(
   response => response,
@@ -50,7 +53,13 @@ api.interceptors.response.use(
     
     // Se for erro 401 em /users/me, tratamos silenciosamente sem exibir toast
     if (isUserMeEndpoint && isUnauthorized) {
-      console.log('Usuário não autenticado (401) - comportamento esperado na rota de login');
+      // Em vez de logar o erro, apenas retornamos sem mensagem
+      // console.log('Usuário não autenticado (401) - comportamento esperado na rota de login');
+      return Promise.reject(error);
+    }
+    
+    // Para outros erros, mas estamos na página de login, não mostrar toast para erros de autenticação
+    if (isLoginPage() && (isUnauthorized || error.response?.status === 403)) {
       return Promise.reject(error);
     }
     
@@ -83,15 +92,22 @@ export const authService = {
       // Verificar se a rota atual é a página de login
       const isLoginPage = window.location.pathname === '/login';
       
-      console.log(`Solicitando verificação de autenticação: ${ENDPOINTS.USER_ME}`);
+      // Se estiver na página de login, log silencioso
+      if (!isLoginPage) {
+        console.log(`Solicitando verificação de autenticação: ${ENDPOINTS.USER_ME}`);
+      }
+      
       const response = await api.get(ENDPOINTS.USER_ME);
-      console.log("Resposta de verificação de autenticação:", response.status, response.data);
+      
+      // Se houver resposta bem-sucedida, registrar o sucesso (exceto na página de login)
+      if (!isLoginPage) {
+        console.log("Resposta de verificação de autenticação:", response.status, response.data);
+      }
+      
       return response.data;
     } catch (error) {
-      // Se for página de login, silenciamos o erro no console
-      if (window.location.pathname === '/login') {
-        console.log("Usuário não autenticado na página de login - comportamento esperado");
-      } else {
+      // Silenciar todos os erros na página de login, não exibir nenhum log
+      if (window.location.pathname !== '/login') {
         console.error("Erro na verificação de autenticação:", error);
       }
       return null;

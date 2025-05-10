@@ -1,16 +1,15 @@
 import axios from 'axios';
 import { toast } from 'sonner';
 
-// Definindo a URL da API diretamente
-export const API_HOSTNAME = '32c76b88-78ce-48ad-9c13-04975e5e14a3-00-12ynk9jfvcfqw.worf.replit.dev';
+// Definindo a URL da API implantada
+export const API_HOSTNAME = 'hubb-one-assist-back-hubb-one.replit.app';
 export const API_BASE_URL = `https://${API_HOSTNAME}`;
 
 // URL do domínio temporário (para configuração de CORS no backend)
 export const FRONTEND_URL = window.location.origin;
 
-// Agora usamos a URL direta da API em vez de proxy
-// Esta abordagem evita problemas com Vite interceptando as requisições
-console.log("Configurando API - usando URL direta:", API_BASE_URL);
+// Usando a URL da API estável implantada
+console.log("Configurando API - usando URL estável implantada:", API_BASE_URL);
 const api = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true, // Importante para os cookies HttpOnly

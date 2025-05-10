@@ -1,9 +1,5 @@
-import api from './api';
+import api, { API_HOSTNAME, API_BASE_URL } from './api';
 import { Segment, SegmentFormValues } from '@/components/segments/types';
-
-// Hostname da API (para garantir URLs completas com HTTPS)
-const API_HOSTNAME = '32c76b88-78ce-48ad-9c13-04975e5e14a3-00-12ynk9jfvcfqw.worf.replit.dev';
-const API_BASE_URL = `https://${API_HOSTNAME}`;
 
 // Interface da resposta da API
 interface ApiResponse {
@@ -13,14 +9,14 @@ interface ApiResponse {
   items: Segment[];
 }
 
-// Função para garantir URL com HTTPS e formato correto
-function ensureHttpsUrl(path: string): string {
+// Função para criar URL absoluta HTTPS para API
+function buildApiUrl(path: string): string {
   // Remover barra final se existir (conforme recomendação do backend)
   if (path.endsWith('/') && path !== '/') {
     path = path.slice(0, -1);
   }
   
-  // Se já começar com https://, retornamos como está (sem barra final)
+  // Se já começar com https://, retornamos como está
   if (path.startsWith('https://')) {
     return path;
   }
@@ -30,13 +26,10 @@ function ensureHttpsUrl(path: string): string {
     return path.replace('http://', 'https://');
   }
   
-  // Se começar com /, é um caminho relativo (sem barra final no resultado)
-  if (path.startsWith('/')) {
-    return `${API_BASE_URL}${path}`;
-  }
-  
-  // Se não tiver nenhum prefixo, assumimos que é um caminho relativo
-  return `${API_BASE_URL}/${path}`;
+  // Se não tiver protocolo, criamos URL absoluta com HTTPS
+  // Garantir formato correto do path
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  return `https://${API_HOSTNAME}${cleanPath}`;
 }
 
 // API de Segmentos
@@ -44,8 +37,8 @@ export const segmentsService = {
   // Listar todos os segmentos
   async getAll(params?: { skip?: number; limit?: number; nome?: string; is_active?: boolean }): Promise<Segment[]> {
     try {
-      // Garantir URL absoluta com HTTPS - sem barra no final
-      const url = ensureHttpsUrl('/segments');
+      // Usar URL absoluta HTTPS explícita
+      const url = buildApiUrl('/segments');
       console.log('Fazendo requisição GET para URL absoluta HTTPS:', url, 'com params:', params);
       
       const response = await api.get(url, { params });
@@ -72,8 +65,8 @@ export const segmentsService = {
   // Buscar um segmento por ID
   async getById(id: string): Promise<Segment> {
     try {
-      // Garantir URL absoluta com HTTPS - sem barra no final
-      const url = ensureHttpsUrl(`/segments/${id}`);
+      // Usar URL absoluta HTTPS explícita
+      const url = buildApiUrl(`/segments/${id}`);
       console.log(`Buscando segmento com URL absoluta HTTPS: ${url}`);
       
       const response = await api.get(url);
@@ -95,8 +88,8 @@ export const segmentsService = {
         color: "#3B82F6" // Cor padrão azul, pode ser adicionada como campo no formulário mais tarde
       };
       
-      // Garantir URL absoluta com HTTPS
-      const url = ensureHttpsUrl('/segments');
+      // Usar URL absoluta HTTPS explícita
+      const url = buildApiUrl('/segments');
       console.log(`Criando segmento com URL absoluta HTTPS: ${url}`);
       console.log('Dados enviados para API:', apiData);
       
@@ -119,8 +112,8 @@ export const segmentsService = {
         // Não enviar color na atualização a menos que seja explicitamente alterado
       };
       
-      // Garantir URL absoluta com HTTPS sem barra no final
-      const url = ensureHttpsUrl(`/segments/${id}`);
+      // Usar URL absoluta HTTPS explícita
+      const url = buildApiUrl(`/segments/${id}`);
       console.log(`Atualizando segmento com URL absoluta HTTPS: ${url}`);
       console.log('Dados enviados para API:', apiData);
       
@@ -135,8 +128,8 @@ export const segmentsService = {
   // Excluir um segmento
   async delete(id: string): Promise<void> {
     try {
-      // Usar URL absoluta com HTTPS para garantir - sem barra no final
-      const url = ensureHttpsUrl(`/segments/${id}`);
+      // Usar URL absoluta HTTPS explícita
+      const url = buildApiUrl(`/segments/${id}`);
       console.log(`Excluindo segmento com URL absoluta HTTPS: ${url}`);
       await api.delete(url);
     } catch (error) {
@@ -153,8 +146,8 @@ export const segmentsService = {
         ? `/segments/${id}/activate` 
         : `/segments/${id}/deactivate`;
       
-      // Garantir URL absoluta com HTTPS
-      const url = ensureHttpsUrl(endpoint);
+      // Usar URL absoluta HTTPS explícita
+      const url = buildApiUrl(endpoint);
       console.log(`Atualizando status do segmento ${id} para ${isActive ? 'ativo' : 'inativo'}, URL absoluta HTTPS: ${url}`);
       
       // Usar a URL absoluta HTTPS

@@ -7,11 +7,11 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 
-function sortableHeader(column: string, header: string) {
+function sortableHeader(column: any, header: string) {
   return (
     <Button
       variant="ghost"
-      onClick={() => column}
+      onClick={() => column && typeof column === 'function' && column()}
       className="pl-1 font-medium"
     >
       {header}
@@ -23,7 +23,7 @@ function sortableHeader(column: string, header: string) {
 export const columns: ColumnDef<Module>[] = [
   {
     accessorKey: 'name',
-    header: ({ column }) => sortableHeader(column.getToggleSortingHandler() as string, 'Nome'),
+    header: ({ column }) => sortableHeader(column.getToggleSortingHandler(), 'Nome'),
     cell: ({ row }) => (
       <div className="font-medium">{row.getValue('name')}</div>
     ),
@@ -66,7 +66,7 @@ export const columns: ColumnDef<Module>[] = [
   },
   {
     accessorKey: 'created_at',
-    header: ({ column }) => sortableHeader(column.getToggleSortingHandler() as string, 'Criação'),
+    header: ({ column }) => sortableHeader(column.getToggleSortingHandler(), 'Criação'),
     cell: ({ row }) => {
       const date = row.getValue('created_at') as string;
       if (!date) return '-';

@@ -35,3 +35,13 @@
 - Criação de script de interceptação (api-config.js) para garantir compatibilidade
 - Documentação completa das diretrizes de API em docs/API_GUIDELINES.md
 
+✅ TAREFA FRONTEND 005 — CRUD de módulos implementado com sucesso, com integração total com backend, controle de ativação, e layout padrão.
+- Criação da página de módulos com layout responsivo (client/src/pages/admin/modules.tsx)
+- Implementação de DataTable com ordenação, filtro e paginação
+- Formulário de criação/edição validado com Zod
+- Ativação/desativação via switch diretamente na tabela
+- Confirmação de exclusão com AlertDialog
+- Feedback com toast para todas as operações
+- Integração completa com API para operações CRUD
+- Adição de item "Módulos" no menu lateral existente
+

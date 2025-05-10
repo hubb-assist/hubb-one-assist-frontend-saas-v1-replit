@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable, SortingState, getSortedRowModel, getPaginationRowModel, ColumnFiltersState, getFilteredRowModel } from '@tanstack/react-table';
+import { ColumnDef, flexRender, getCoreRowModel, useReactTable, SortingState, getSortedRowModel, getPaginationRowModel, ColumnFiltersState, getFilteredRowModel, Row } from '@tanstack/react-table';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -53,13 +53,21 @@ export function DataTable<TData, TValue>({
 
   // Setando as ações nas linhas
   const rows = table.getRowModel().rows.map(row => {
-    row.onEdit = onEdit;
-    row.onDelete = onDelete;
-    row.onStatusChange = (checked: boolean) => {
+    // Estender a row com as propriedades customizadas
+    const extendedRow = row as Row<TData> & {
+      onEdit: typeof onEdit;
+      onDelete: typeof onDelete;
+      onStatusChange: (checked: boolean) => void;
+    };
+    
+    extendedRow.onEdit = onEdit;
+    extendedRow.onDelete = onDelete;
+    extendedRow.onStatusChange = (checked: boolean) => {
       const module = row.original as Module;
       updateModuleStatus(module.id, checked);
     };
-    return row;
+    
+    return extendedRow;
   });
 
   return (

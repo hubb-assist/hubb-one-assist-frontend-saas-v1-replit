@@ -121,7 +121,7 @@ export const plansService = {
   async update(id: string, data: PlanFormValues): Promise<Plan> {
     try {
       // Converter dados para o formato esperado pela API
-      const apiData = {
+      const apiData: any = {
         name: data.name,
         segment_id: data.segment_id,
         base_price: data.base_price, 
@@ -131,7 +131,7 @@ export const plansService = {
       
       // Adicionar módulos apenas se houver algum selecionado
       if (data.modules && data.modules.length > 0) {
-        apiData['modules'] = data.modules.map(m => ({
+        apiData.modules = data.modules.map(m => ({
           module_id: m.module_id,
           price: m.is_free ? 0 : (m.custom_price || 0),
           is_free: m.is_free === true,
@@ -139,7 +139,7 @@ export const plansService = {
         }));
       } else {
         // Enviar um array vazio de módulos quando não houver módulos selecionados
-        apiData['modules'] = [];
+        apiData.modules = [];
         console.log('Atualizando plano sem módulos:', apiData);
       }
       

@@ -8,8 +8,8 @@ import { CheckCircle } from "lucide-react";
 
 export default function Setup() {
   return (
-    <AppLayout title="Configuração" subtitle="Detalhes Técnicos">
-      <div className="bg-white shadow rounded-lg">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="bg-white shadow rounded-lg max-w-4xl w-full">
         <div className="px-6 py-6 sm:px-8">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">Configuração Inicial do Projeto</h2>
           
@@ -47,7 +47,6 @@ export default function Setup() {
                 Erro
               </Button>
               <Button 
-                variant="default"
                 onClick={() => toast.info("Configuração inicial concluída.")}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >
@@ -57,8 +56,26 @@ export default function Setup() {
           </div>
 
           <ChartDemo />
+          
+          <div className="mt-8 border-t border-gray-200 pt-6 flex justify-between">
+            <Button 
+              variant="outline"
+              onClick={() => window.location.href = "/"}
+            >
+              Voltar para Início
+            </Button>
+            
+            <Button 
+              onClick={() => {
+                toast.success("Navegando para o Dashboard");
+                window.location.href = "/dashboard";
+              }}
+            >
+              Ver Dashboard
+            </Button>
+          </div>
         </div>
       </div>
-    </AppLayout>
+    </div>
   );
 }

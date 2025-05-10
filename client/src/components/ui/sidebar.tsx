@@ -135,13 +135,13 @@ export function SidebarLogo({ className, ...props }: SidebarLogoProps) {
       <div className="flex items-center justify-center w-full">
         {isExpanded ? (
           <img
-            src="https://sq360.com.br/logo-hubb-novo/logo_hubb_assisit.png"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgNjAiIGZpbGw9Im5vbmUiPgogIDxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iNjAiIHJ4PSI4IiBmaWxsPSIjMkQxMTNGIi8+CiAgPHBhdGggZD0iTTQyIDE1SDMwVjQ1SDQyVjE1WiIgZmlsbD0id2hpdGUiLz4KICA8cGF0aCBkPSJNNjAgMTVINDhWMzBINjBWMTVaIiBmaWxsPSJ3aGl0ZSIvPgogIDxwYXRoIGQ9Ik02MCAzMEg0OFY0NUg2MFYzMFoiIGZpbGw9IndoaXRlIi8+CiAgPHBhdGggZD0iTTc4IDE1SDY2VjQ1SDc4VjE1WiIgZmlsbD0id2hpdGUiLz4KICA8cGF0aCBkPSJNOTYgMTVIODRWNDVIOTZWMTVaIiBmaWxsPSJ3aGl0ZSIvPgogIDxwYXRoIGQ9Ik0xMTQgMTVIMTAyVjMwSDExNFYxNVoiIGZpbGw9IndoaXRlIi8+CiAgPHBhdGggZD0iTTEzMiAzMEgxMDJWNDVIMTE0VjM3LjVIMTMyVjMwWiIgZmlsbD0id2hpdGUiLz4KICA8cGF0aCBkPSJNMTQ3IDE1SDEzNVY0NUgxNDdWMTVaIiBmaWxsPSJ3aGl0ZSIvPgogIDxwYXRoIGQ9Ik0xNjUgMTVIMTUzVjMwSDE2NVYxNVoiIGZpbGw9IndoaXRlIi8+CiAgPHBhdGggZD0iTTE2NSAzMEgxNTNWNDVIMTY1VjMwWiIgZmlsbD0id2hpdGUiLz4KICA8cGF0aCBkPSJNMTcwIDE1VjQ1SDE4MlYxNUgxNzBaIiBmaWxsPSIjQzUyMzM5Ii8+Cjwvc3ZnPg=="
             alt="HUBB Assist Logo"
             className="h-8"
           />
         ) : (
           <img
-            src="https://sq360.com.br/logo-hubb-novo/hubb_pet_icon.png"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MCA2MCIgZmlsbD0ibm9uZSI+CiAgPHJlY3Qgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiByeD0iMzAiIGZpbGw9IiMyRDExM0YiLz4KICA8cGF0aCBkPSJNMzAgMjBDMjUuNiAyMCAyMiAyMy42IDIyIDI4VjM2QzIyIDQwLjQgMjUuNiA0NCAzMCA0NEMzNC40IDQ0IDM4IDQwLjQgMzggMzZWMjhDMzggMjMuNiAzNC40IDIwIDMwIDIwWiIgZmlsbD0id2hpdGUiLz4KICA8cGF0aCBkPSJNMzAgMjZDMjguOSAyNiAyOCAyNi45IDI4IDI4VjMyQzI4IDMzLjEgMjguOSAzNCAzMCAzNEMzMS4xIDM0IDMyIDMzLjEgMzIgMzJWMjhDMzIgMjYuOSAzMS4xIDI2IDMwIDI2WiIgZmlsbD0iI0M1MjMzOSIvPgogIDxwYXRoIGQ9Ik0zNiAxMkwzMCAyMEgzOEwzNiAxMloiIGZpbGw9IndoaXRlIi8+CiAgPHBhdGggZD0iTTI0IDEyTDMwIDIwSDIyTDI0IDEyWiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+"
             alt="HUBB Icon"
             className="h-8 w-auto"
           />

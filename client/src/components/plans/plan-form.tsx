@@ -129,19 +129,9 @@ export function PlanForm({
   };
 
   const handleSubmit = (values: PlanFormValues) => {
-    // Verificar se há pelo menos um módulo selecionado
-    if (values.modules.length === 0) {
-      form.setError('modules', {
-        type: 'custom',
-        message: 'Selecione pelo menos um módulo para o plano',
-      });
-      return;
-    }
-
-    // Enviar valores sem processamento adicional para evitar conflitos
-    const processedValues = values;
-
-    onSubmit(processedValues);
+    // Não precisamos mais validar se há pelo menos um módulo selecionado
+    // Apenas enviamos os valores para processamento
+    onSubmit(values);
   };
 
   // Encontrar o nome do módulo pelo ID

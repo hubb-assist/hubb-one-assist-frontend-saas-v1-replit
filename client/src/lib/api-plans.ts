@@ -87,16 +87,27 @@ export const plansService = {
   async create(data: PlanFormValues): Promise<Plan> {
     try {
       // Converter dados para o formato esperado pela API
-      const apiData = {
-        ...data,
-        // Mapear módulos para o formato esperado pela API
-        modules: data.modules.map(m => ({
+      const apiData: any = {
+        name: data.name,
+        segment_id: data.segment_id,
+        base_price: data.base_price,
+        description: data.description,
+        is_active: data.is_active,
+      };
+      
+      // Adicionar módulos apenas se houver algum selecionado
+      if (data.modules && data.modules.length > 0) {
+        apiData.modules = data.modules.map(m => ({
           module_id: m.module_id,
           price: m.is_free ? 0 : (m.custom_price || 0),
           is_free: m.is_free === true,
           trial_days: m.trial_days || 0
-        }))
-      };
+        }));
+      } else {
+        // Enviar um array vazio de módulos quando não houver módulos selecionados
+        apiData.modules = [];
+        console.log('Criando plano sem módulos:', apiData);
+      }
       
       const response = await plansApi.post(ENDPOINTS.PLANS, apiData);
       return response.data;
@@ -116,13 +127,21 @@ export const plansService = {
         base_price: data.base_price, 
         description: data.description,
         is_active: data.is_active,
-        modules: data.modules.map(m => ({
+      };
+      
+      // Adicionar módulos apenas se houver algum selecionado
+      if (data.modules && data.modules.length > 0) {
+        apiData['modules'] = data.modules.map(m => ({
           module_id: m.module_id,
           price: m.is_free ? 0 : (m.custom_price || 0),
           is_free: m.is_free === true,
           trial_days: m.trial_days || 0
-        }))
-      };
+        }));
+      } else {
+        // Enviar um array vazio de módulos quando não houver módulos selecionados
+        apiData['modules'] = [];
+        console.log('Atualizando plano sem módulos:', apiData);
+      }
       
       const response = await plansApi.put(`${ENDPOINTS.PLANS}/${id}`, apiData);
       return response.data;

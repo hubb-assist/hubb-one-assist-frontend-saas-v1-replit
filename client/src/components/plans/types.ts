@@ -48,7 +48,7 @@ export const planFormSchema = z.object({
   base_price: z.number().min(0, { message: 'O preço não pode ser negativo' }),
   description: z.string().nullable().optional(),
   is_active: z.boolean().default(true),
-  modules: z.array(planModuleSchema).min(1, { message: 'Selecione pelo menos um módulo' }),
+  modules: z.array(planModuleSchema).default([]), // Removida validação .min(1) para permitir arrays vazios
 });
 
 // Tipo inferido do schema para uso no formulário

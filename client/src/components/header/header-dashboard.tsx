@@ -1,4 +1,4 @@
-import { Menu, Bell, LogOut } from "lucide-react";
+import { Menu, Bell, LogOut, UserCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from '@/lib/auth';
@@ -43,6 +43,14 @@ export default function HeaderDashboard({ title, onToggleSidebar }: HeaderDashbo
             3
           </span>
           <span className="sr-only">Notificações</span>
+        </Button>
+        
+        <Button 
+          variant="ghost"
+          className="text-white/90 hover:bg-white/10 flex items-center gap-2"
+        >
+          <UserCircle className="h-5 w-5" />
+          <span>Meus Dados</span>
         </Button>
         
         <div className="flex items-center">

@@ -22,11 +22,14 @@ function sortableHeader(column: any, header: string) {
 
 export const columns: ColumnDef<Module>[] = [
   {
-    accessorKey: 'name',
+    accessorKey: 'nome',
     header: ({ column }) => sortableHeader(column.getToggleSortingHandler(), 'Nome'),
-    cell: ({ row }) => (
-      <div className="font-medium">{row.getValue('name')}</div>
-    ),
+    cell: ({ row }) => {
+      const module = row.original;
+      // Usa 'nome' (vindo da API) ou 'name' (caso antigo)
+      const displayName = module.nome || module.name || '';
+      return <div className="font-medium">{displayName}</div>;
+    },
   },
   /* Coluna de descrição removida conforme solicitado */
   {

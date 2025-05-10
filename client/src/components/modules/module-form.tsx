@@ -26,8 +26,8 @@ export function ModuleForm({
   const form = useForm<ModuleFormValues>({
     resolver: zodResolver(moduleFormSchema),
     defaultValues: {
-      name: module?.name || '',
-      description: module?.description || '',
+      name: module?.nome || module?.name || '',
+      description: module?.descricao || module?.description || '',
       is_active: module?.is_active ?? true,
     },
   });

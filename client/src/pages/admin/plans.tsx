@@ -27,6 +27,7 @@ import {
 
 import { columns } from '@/components/plans/columns';
 import { DataTable } from '@/components/plans/data-table';
+import { PlansTable } from './plans-table';
 import { PlanForm } from '@/components/plans/plan-form';
 import { Plan, PlanFormValues } from '@/components/plans/types';
 import { plansService } from '@/lib/api-plans';
@@ -149,31 +150,42 @@ export default function PlansPage() {
 
   // Handlers
   const handleOpenForm = (plan?: Plan) => {
+    console.log("Abrindo formulário para plano:", plan?.name || "novo");
     setSelectedPlan(plan || null);
     setFormOpen(true);
   };
 
   const handleCloseForm = () => {
+    console.log("Fechando formulário");
     setFormOpen(false);
     setSelectedPlan(null);
   };
 
   const handleSubmit = (values: PlanFormValues) => {
+    console.log("Enviando dados do formulário:", values);
     if (selectedPlan) {
+      console.log("Atualizando plano existente:", selectedPlan.id);
       updateMutation.mutate({ id: selectedPlan.id, values });
     } else {
+      console.log("Criando novo plano");
       createMutation.mutate(values);
     }
   };
 
   const handleDelete = (plan: Plan) => {
-    console.log("Botão excluir clicado para o plano:", plan);
+    console.log("PlansPage: handleDelete chamado para plano:", plan.name);
+    // Simples verificação para garantir que o plano é válido
+    if (!plan || !plan.id) {
+      console.error("Plano inválido recebido em handleDelete");
+      toast.error("Erro ao selecionar plano para exclusão");
+      return;
+    }
     setSelectedPlan(plan);
     setDeleteDialogOpen(true);
   };
 
   const confirmDelete = () => {
-    console.log("Confirmação de exclusão para o plano:", selectedPlan);
+    console.log("PlansPage: confirmDelete chamado para plano:", selectedPlan?.name);
     if (selectedPlan) {
       console.log("Chamando API para excluir plano ID:", selectedPlan.id);
       deleteMutation.mutate(selectedPlan.id);
@@ -181,6 +193,7 @@ export default function PlansPage() {
   };
 
   const handleUpdateStatus = (id: string, isActive: boolean) => {
+    console.log("PlansPage: handleUpdateStatus chamado para plano ID:", id, "novo status:", isActive);
     updateStatusMutation.mutate({ id, isActive });
   };
 
@@ -267,13 +280,12 @@ export default function PlansPage() {
             <Skeleton className="h-96 w-full" />
           </div>
         ) : (
-          <DataTable
-            columns={columns}
-            data={processedPlans}
-            isLoading={isLoading}
+          // Usando a nova tabela personalizada que não depende do meta
+          <PlansTable
+            plans={processedPlans}
             onEdit={handleOpenForm}
             onDelete={handleDelete}
-            updatePlanStatus={handleUpdateStatus}
+            onUpdateStatus={handleUpdateStatus}
           />
         )}
       </div>

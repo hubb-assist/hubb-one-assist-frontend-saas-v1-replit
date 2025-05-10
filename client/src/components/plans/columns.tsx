@@ -128,54 +128,18 @@ export const columns: ColumnDef<Plan>[] = [
     cell: ({ row }) => {
       const plan = row.original;
       
-      // Obter as funções diretamente do meta
       // @ts-ignore - row.table existe mas o TS não reconhece
       const meta = (row.table?.options?.meta as any) || {};
       const onEdit = meta.onEdit;
       const onDelete = meta.onDelete;
       
-      // Adicionando log para debugging e envolvendo em div com pointer-events-auto
-      const handleEditClick = () => {
-        console.log("Botão editar clicado para plano:", plan.name);
-        if (typeof onEdit === 'function') {
-          onEdit(plan);
-        } else {
-          console.error("Função onEdit não está disponível");
-        }
-      };
+      if (!onEdit || !onDelete) {
+        return <div>Ações indisponíveis</div>;
+      }
       
-      const handleDeleteClick = () => {
-        console.log("Botão excluir clicado para plano:", plan.name);
-        if (typeof onDelete === 'function') {
-          onDelete(plan);
-        } else {
-          console.error("Função onDelete não está disponível");
-        }
-      };
-      
-      return (
-        <div className="flex items-center space-x-2 pointer-events-auto">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleEditClick}
-            aria-label={`Editar plano ${plan.name}`}
-            className="pointer-events-auto"
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
-          
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleDeleteClick}
-            aria-label={`Excluir plano ${plan.name}`}
-            className="text-destructive hover:text-destructive/90 hover:bg-destructive/10 pointer-events-auto"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
-      );
+      // Usando ActionButtons ao invés de código direto
+      const ActionButtons = require('./action-buttons').ActionButtons;
+      return <ActionButtons plan={plan} onEdit={onEdit} onDelete={onDelete} />;
     },
   },
 ];

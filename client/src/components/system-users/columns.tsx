@@ -15,14 +15,13 @@ import { SystemUser, roleLabels } from './types';
 // Helper para cabeçalhos de colunas que podem ser ordenados
 function sortableHeader(column: any, header: string) {
   return (
-    <Button
-      variant="ghost"
+    <div 
+      className="flex items-center cursor-pointer"
       onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-      className="whitespace-nowrap"
     >
       {header}
       <ArrowUpDown className="ml-2 h-4 w-4" />
-    </Button>
+    </div>
   )
 }
 

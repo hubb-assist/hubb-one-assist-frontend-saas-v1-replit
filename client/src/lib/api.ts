@@ -44,6 +44,17 @@ api.interceptors.request.use(config => {
 api.interceptors.response.use(
   response => response,
   error => {
+    // Verificando se é um erro 401 na rota /users/me (esperado quando não autenticado)
+    const isUserMeEndpoint = error.config?.url?.includes(ENDPOINTS.USER_ME);
+    const isUnauthorized = error.response?.status === 401;
+    
+    // Se for erro 401 em /users/me, tratamos silenciosamente sem exibir toast
+    if (isUserMeEndpoint && isUnauthorized) {
+      console.log('Usuário não autenticado (401) - comportamento esperado na rota de login');
+      return Promise.reject(error);
+    }
+    
+    // Para outros erros, mantemos o comportamento original
     console.error('Erro na requisição:', error);
     const mensagem = error.response?.data?.message || 'Erro ao comunicar com o servidor';
     toast.error(mensagem);
@@ -69,12 +80,20 @@ export const authService = {
   // Verificar se o usuário está autenticado
   async verificarAutenticacao() {
     try {
+      // Verificar se a rota atual é a página de login
+      const isLoginPage = window.location.pathname === '/login';
+      
       console.log(`Solicitando verificação de autenticação: ${ENDPOINTS.USER_ME}`);
       const response = await api.get(ENDPOINTS.USER_ME);
       console.log("Resposta de verificação de autenticação:", response.status, response.data);
       return response.data;
     } catch (error) {
-      console.error("Erro na verificação de autenticação:", error);
+      // Se for página de login, silenciamos o erro no console
+      if (window.location.pathname === '/login') {
+        console.log("Usuário não autenticado na página de login - comportamento esperado");
+      } else {
+        console.error("Erro na verificação de autenticação:", error);
+      }
       return null;
     }
   },

@@ -55,6 +55,9 @@ export const useAuth = create<AuthState>((set, get) => ({
 
   // Verificar autenticação
   checkAuth: async () => {
+    // Verificar se a rota atual é a página de login
+    const isLoginPage = window.location.pathname === '/login';
+    
     set({ isLoading: true });
     try {
       console.log("Verificando autenticação...");
@@ -67,9 +70,13 @@ export const useAuth = create<AuthState>((set, get) => ({
         set({ user: null, isAuthenticated: false });
       }
     } catch (error) {
-      console.error("Erro ao verificar autenticação:", error);
+      console.log("Estado de autenticação:", { isChecking: false, isLoading: false, isAuthenticated: false, currentRoute: window.location.pathname });
       set({ user: null, isAuthenticated: false });
-      throw error; // Propagar erro para permitir retry
+      
+      // Se estiver na página de login, não propaga o erro, pois é esperado
+      if (!isLoginPage) {
+        throw error; // Propagar erro apenas se não estiver na página de login
+      }
     } finally {
       set({ isLoading: false });
     }

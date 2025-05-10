@@ -4,7 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
     <!-- API Config Loader - Carrega antes de tudo para interceptar chamadas à API -->
-    <script src="/src/api-config.js"></script>
+    <script type="module">
+      // Importando configuração da API direto no HTML para evitar erro "Unexpected token '<'"
+      import { API_CONFIG } from '/src/lib/config.ts';
+      window.API_CONFIG = API_CONFIG;
+      console.log("[API CONFIG] Arquivo de configuração carregado com sucesso");
+      console.log("[API CONFIG] BASE_URL:", window.API_CONFIG.BASE_URL);
+      
+      // Corrigir problema de CORS desabilitando credentials nos requests
+      if (typeof XMLHttpRequest !== 'undefined') {
+        const originalXHROpen = XMLHttpRequest.prototype.open;
+        
+        XMLHttpRequest.prototype.open = function() {
+          const result = originalXHROpen.apply(this, arguments);
+          this.withCredentials = false;
+          return result;
+        };
+      };
+    </script>
   </head>
   <body>
     <div id="root"></div>

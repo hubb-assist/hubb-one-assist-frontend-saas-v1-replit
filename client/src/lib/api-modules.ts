@@ -1,9 +1,21 @@
 import api from './api';
+import axios from 'axios';
 import { Module, ModuleFormValues } from '@/components/modules/types';
 import { API_CONFIG } from './config';
 
 // Importando configuração centralizada
-const { ENDPOINTS } = API_CONFIG;
+const { ENDPOINTS, BASE_URL } = API_CONFIG;
+
+// Configuração específica para módulos
+const modulesApi = axios.create({
+  baseURL: BASE_URL,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  },
+  timeout: 30000
+});
 
 // Interface da resposta da API
 interface ApiResponse {

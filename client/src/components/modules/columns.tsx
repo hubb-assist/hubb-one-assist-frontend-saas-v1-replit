@@ -28,15 +28,7 @@ export const columns: ColumnDef<Module>[] = [
       <div className="font-medium">{row.getValue('name')}</div>
     ),
   },
-  {
-    accessorKey: 'description',
-    header: 'Descrição',
-    cell: ({ row }) => (
-      <div className="text-sm text-muted-foreground max-w-[400px] truncate">
-        {row.getValue('description') || '-'}
-      </div>
-    ),
-  },
+  /* Coluna de descrição removida conforme solicitado */
   {
     accessorKey: 'is_active',
     header: 'Status',

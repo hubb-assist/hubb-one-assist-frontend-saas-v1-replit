@@ -393,21 +393,15 @@ export default function OnboardingForm() {
         admin_password: data.admin_password,
       };
       
-      if (useFallbackData) {
-        // Modo de demonstração - simular cadastro bem-sucedido
-        console.log('Modo de demonstração: simulando cadastro com sucesso');
-        console.log('Dados do formulário:', formData);
-        
-        // Simulação de tempo de processamento
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        toast.success('Demonstração: conta seria criada com sucesso!');
-        navigate('/login');
-      } else {
-        // Modo real - enviar para API
+      try {
+        // Enviar para API
+        console.log('Enviando dados para API:', formData);
         await publicService.registerSubscriber(formData);
         toast.success('Assinatura criada com sucesso!');
         navigate('/login');
+      } catch (error) {
+        console.error('Erro ao registrar assinante:', error);
+        toast.error('Não foi possível completar o cadastro. Por favor, tente novamente mais tarde.');
       }
     } catch (error: any) {
       console.error('Erro ao enviar formulário:', error);

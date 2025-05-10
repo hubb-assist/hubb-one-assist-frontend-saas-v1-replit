@@ -116,10 +116,11 @@ export default function SidebarMain({ expanded }: SidebarMainProps) {
             expanded={expanded}
             active={pathname === '/admin/segments'}
           />
+          {/* Item de Módulos */}
           <NavItem
             href="/admin/modules"
             icon={<AppWindow className="h-5 w-5" />}
-            label="Módulos"
+            label="Módulos Funcionais"
             expanded={expanded}
             active={pathname === '/admin/modules'}
           />

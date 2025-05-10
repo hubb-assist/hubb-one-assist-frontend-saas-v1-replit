@@ -149,6 +149,15 @@ export default function SidebarMain({ expanded }: SidebarMainProps) {
             expanded={expanded}
             active={pathname === '/admin/system-users'}
           />
+          
+          {/* Item de teste solicitado */}
+          <NavItem
+            href="/estou-aqui"
+            icon={<HelpCircle className="h-5 w-5" />}
+            label="Estou aqui"
+            expanded={expanded}
+            active={pathname === '/estou-aqui'}
+          />
         </div>
       </div>
 

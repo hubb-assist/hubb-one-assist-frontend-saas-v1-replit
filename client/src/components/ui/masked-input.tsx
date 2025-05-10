@@ -3,6 +3,16 @@ import InputMask from 'react-input-mask';
 import { Input } from './input';
 import { cn } from '@/lib/utils';
 
+// Interface para o estado de máscara
+interface MaskedState {
+  value: string;
+  selection: {
+    start: number;
+    end: number;
+  };
+  mask?: string;
+}
+
 // Componente para input com máscara que mantém compatibilidade com react-hook-form
 export const MaskedInput = forwardRef<
   HTMLInputElement,
@@ -126,7 +136,7 @@ export const DocumentInput = forwardRef<
       onChange={onChange}
       {...rest}
       ref={ref}
-      beforeMaskedStateChange={(state) => {
+      beforeMaskedStateChange={(state: MaskedState) => {
         // Se o valor estiver vazio, não aplicar máscara
         if (!state.value) {
           return state;

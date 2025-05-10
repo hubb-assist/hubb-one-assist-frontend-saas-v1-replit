@@ -559,26 +559,10 @@ export default function OnboardingForm() {
                   <FormLabel>CEP</FormLabel>
                   <FormControl>
                     <div className="flex items-center space-x-2">
-                      <Input 
-                        placeholder="00000-000" 
-                        {...field} 
+                      <CEPInput
+                        placeholder="00000-000"
+                        {...field}
                         onBlur={handleCepBlur}
-                        type="text"
-                        maxLength={9}
-                        onChange={(e) => {
-                          // Formatar o CEP enquanto digita (99999-999)
-                          const value = e.target.value.replace(/\D/g, '');
-                          let formatted = '';
-                          
-                          if (value.length > 0) {
-                            formatted = value.substring(0, 5);
-                            if (value.length > 5) {
-                              formatted += '-' + value.substring(5, 8);
-                            }
-                          }
-                          
-                          field.onChange(formatted);
-                        }}
                       />
                       {fetchingCep && (
                         <Loader2 className="h-4 w-4 animate-spin text-primary" />

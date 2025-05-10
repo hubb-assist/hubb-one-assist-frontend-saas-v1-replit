@@ -17,6 +17,21 @@ const modulesApi = axios.create({
   timeout: 30000
 });
 
+// Adicionar interceptors para debug e controle de erros
+modulesApi.interceptors.request.use(config => {
+  // Log da URL final
+  console.log('Requisição de módulos para:', config.baseURL + config.url);
+  return config;
+});
+
+modulesApi.interceptors.response.use(
+  response => response,
+  error => {
+    console.error('Erro na requisição de módulos:', error);
+    return Promise.reject(error);
+  }
+);
+
 // Interface da resposta da API
 interface ApiResponse {
   total: number;
@@ -33,7 +48,7 @@ export const modulesService = {
       const path = ENDPOINTS.MODULES;
       console.log('Buscando módulos na API:', path, 'com params:', params);
       
-      const response = await api.get(path, { params });
+      const response = await modulesApi.get(path, { params });
       console.log('STATUS:', response.status);
       console.log('HEADERS:', response.headers);
       console.log('Resposta da API:', response.data);
@@ -61,7 +76,7 @@ export const modulesService = {
       const path = `${ENDPOINTS.MODULES}/${id}`;
       console.log(`Buscando módulo na API: ${path}`);
       
-      const response = await api.get(path);
+      const response = await modulesApi.get(path);
       return response.data;
     } catch (error) {
       console.error(`Erro ao buscar módulo ${id}:`, error);
@@ -82,7 +97,7 @@ export const modulesService = {
       console.log(`Criando módulo na API: ${path}`);
       console.log('Dados enviados para API:', apiData);
       
-      const response = await api.post(path, apiData);
+      const response = await modulesApi.post(path, apiData);
       return response.data;
     } catch (error) {
       console.error('Erro ao criar módulo:', error);
@@ -103,7 +118,7 @@ export const modulesService = {
       console.log(`Atualizando módulo na API: ${path}`);
       console.log('Dados enviados para API:', apiData);
       
-      const response = await api.put(path, apiData);
+      const response = await modulesApi.put(path, apiData);
       return response.data;
     } catch (error) {
       console.error(`Erro ao atualizar módulo ${id}:`, error);
@@ -116,7 +131,7 @@ export const modulesService = {
     try {
       const path = `${ENDPOINTS.MODULES}/${id}`;
       console.log(`Excluindo módulo na API: ${path}`);
-      await api.delete(path);
+      await modulesApi.delete(path);
     } catch (error) {
       console.error(`Erro ao excluir módulo ${id}:`, error);
       throw error;
@@ -133,7 +148,7 @@ export const modulesService = {
       
       console.log(`Atualizando status do módulo ${id} para ${isActive ? 'ativo' : 'inativo'} na API: ${path}`);
       
-      const response = await api.patch(path);
+      const response = await modulesApi.patch(path);
       return response.data;
     } catch (error) {
       console.error(`Erro ao atualizar status do módulo ${id}:`, error);

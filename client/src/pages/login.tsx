@@ -25,6 +25,21 @@ export default function Login() {
   const [, navigate] = useLocation();
   const { login, isAuthenticated, isLoading } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
+  
+  // Efeito para evitar verificação desnecessária de autenticação na página de login
+  useEffect(() => {
+    // Definir o documento.title para a página de login
+    document.title = "Login | HUBB ONE Assist";
+    
+    // Remover qualquer toast de erro que possa estar visível
+    // Isso evita que mensagens de erro de autenticação apareçam na tela de login
+    const toasts = document.querySelectorAll('[data-sonner-toast]');
+    toasts.forEach((toast) => {
+      if (toast.innerHTML.includes('Erro') || toast.innerHTML.includes('falha')) {
+        toast.remove();
+      }
+    });
+  }, []);
 
   // Configuração do formulário com react-hook-form e validação zod
   const {
@@ -67,17 +82,17 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <div className="w-full max-w-md">
+    <AppSetupLayout>
+      <div className="w-full max-w-md p-4">
         <div className="flex justify-center mb-6">
           <img
             src="https://sq360.com.br/logo-hubb-novo/logo_hubb_assisit.png"
             alt="HUBB Assist Logo"
-            className="h-12"
+            className="h-20" // Aumentado para maior visibilidade
           />
         </div>
         
-        <Card>
+        <Card className="shadow-lg border-0">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold text-center">Acesse sua conta</CardTitle>
             <CardDescription className="text-center">
@@ -95,6 +110,7 @@ export default function Login() {
                   placeholder="seu@email.com"
                   {...register('email')}
                   className={errors.email ? 'border-red-500' : ''}
+                  autoComplete="email"
                 />
                 {errors.email && (
                   <p className="text-red-500 text-sm">{errors.email.message}</p>
@@ -110,6 +126,7 @@ export default function Login() {
                     placeholder="********"
                     {...register('password')}
                     className={errors.password ? 'border-red-500 pr-10' : 'pr-10'}
+                    autoComplete="current-password"
                   />
                   <Button
                     type="button"
@@ -135,7 +152,7 @@ export default function Login() {
               
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full bg-primary hover:bg-primary/90" // Cores destacadas para melhor UX
                 disabled={isSubmitting || isLoading}
               >
                 {(isSubmitting || isLoading) && (
@@ -153,6 +170,6 @@ export default function Login() {
           </CardFooter>
         </Card>
       </div>
-    </div>
+    </AppSetupLayout>
   );
 }

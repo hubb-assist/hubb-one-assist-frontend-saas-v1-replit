@@ -20,7 +20,9 @@ const modulesApi = axios.create({
 // Adicionar interceptors para debug e controle de erros
 modulesApi.interceptors.request.use(config => {
   // Log da URL final
-  console.log('Requisição de módulos para:', config.baseURL + config.url);
+  const baseURL = config.baseURL || '';
+  const url = config.url || '';
+  console.log('Requisição de módulos para:', baseURL + url);
   return config;
 });
 

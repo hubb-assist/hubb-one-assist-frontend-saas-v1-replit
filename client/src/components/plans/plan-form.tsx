@@ -140,11 +140,12 @@ export function PlanForm({
     // Processar valores antes de enviar
     const processedValues = {
       ...values,
+      // Remover propriedade is_free dos módulos quando enviar para a API
       modules: values.modules.map((m) => ({
         module_id: m.module_id,
         custom_price: m.is_free ? 0 : m.custom_price,
         trial_days: m.trial_days,
-      })),
+      })) as any,
     };
 
     onSubmit(processedValues);

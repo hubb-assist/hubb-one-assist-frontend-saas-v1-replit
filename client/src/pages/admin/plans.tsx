@@ -160,9 +160,9 @@ export default function PlansPage() {
 
   const handleSubmit = (values: PlanFormValues) => {
     if (selectedPlan) {
-      updateMutation.mutate({ id: selectedPlan.id, values });
+      updateMutation.mutate({ id: selectedPlan.id, values: values as any });
     } else {
-      createMutation.mutate(values);
+      createMutation.mutate(values as any);
     }
   };
 

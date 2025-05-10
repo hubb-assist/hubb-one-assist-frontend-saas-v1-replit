@@ -1,5 +1,5 @@
 import React from 'react';
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef, Row } from '@tanstack/react-table';
 import { Pencil, Trash2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -77,7 +77,7 @@ export const columns: ColumnDef<Plan>[] = [
             checked={plan.is_active}
             onCheckedChange={(checked) => {
               // Estas props serão passadas pelo DataTable
-              (row.table.options.meta as any)?.updatePlanStatus(plan.id, checked);
+              ((row as any).table?.options?.meta || {})?.updatePlanStatus?.(plan.id, checked);
             }}
             aria-label={`Status do plano ${plan.name}`}
           />
@@ -111,7 +111,7 @@ export const columns: ColumnDef<Plan>[] = [
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => (row.table.options.meta as any)?.onEdit(plan)}
+            onClick={() => ((row as any).table?.options?.meta || {})?.onEdit?.(plan)}
             aria-label={`Editar plano ${plan.name}`}
           >
             <Pencil className="h-4 w-4" />
@@ -120,7 +120,7 @@ export const columns: ColumnDef<Plan>[] = [
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => (row.table.options.meta as any)?.onDelete(plan)}
+            onClick={() => ((row as any).table?.options?.meta || {})?.onDelete?.(plan)}
             aria-label={`Excluir plano ${plan.name}`}
             className="text-destructive hover:text-destructive/90 hover:bg-destructive/10"
           >

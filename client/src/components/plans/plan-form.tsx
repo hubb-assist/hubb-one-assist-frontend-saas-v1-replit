@@ -245,20 +245,35 @@ export function PlanForm({
                           value = parts[0] + ',' + parts.slice(1).join('');
                         }
                         
-                        // Se o valor tiver vírgula, formatá-lo corretamente
+                        // Se o valor tiver vírgula, formatá-lo corretamente para dois decimais
                         let numericValue = 0;
+                        
                         if (value.includes(',')) {
                           // Dividir em parte inteira e parte decimal
-                          const [intPart, decPart] = value.split(',');
-                          // Converter para número com ponto decimal 
-                          numericValue = parseFloat(intPart + '.' + decPart);
+                          let [intPart, decPart] = value.split(',');
+                          
+                          // Garantir sempre dois dígitos decimais
+                          if (decPart.length > 2) {
+                            decPart = decPart.substring(0, 2);
+                          }
+                          
+                          // Se a parte decimal tiver menos de dois dígitos, completar com zeros
+                          if (decPart.length === 1) {
+                            decPart = decPart + '0';
+                          }
+                          
+                          // Converter para número com ponto decimal
+                          const valueWithPoint = intPart + '.' + decPart;
+                          numericValue = parseFloat(valueWithPoint);
+                          
+                          console.log('Valor com ponto:', valueWithPoint, 'Número:', numericValue);
                         } else {
-                          // Se não tiver vírgula, é um número inteiro
-                          numericValue = parseInt(value) || 0;
+                          // Se o valor for inteiro, converter para número
+                          numericValue = value ? parseInt(value) : 0;
+                          console.log('Valor inteiro:', value, 'Número:', numericValue);
                         }
                         
                         field.onChange(numericValue);
-                        console.log('Valor convertido:', numericValue);
                       }}
                     />
                   </FormControl>
@@ -413,16 +428,29 @@ export function PlanForm({
                                               value = parts[0] + ',' + parts.slice(1).join('');
                                             }
                                             
-                                            // Se o valor tiver vírgula, formatá-lo corretamente
+                                            // Se o valor tiver vírgula, formatá-lo corretamente para dois decimais
                                             let numericValue = 0;
+                                            
                                             if (value.includes(',')) {
                                               // Dividir em parte inteira e parte decimal
-                                              const [intPart, decPart] = value.split(',');
-                                              // Converter para número com ponto decimal 
-                                              numericValue = parseFloat(intPart + '.' + decPart);
+                                              let [intPart, decPart] = value.split(',');
+                                              
+                                              // Garantir sempre dois dígitos decimais
+                                              if (decPart.length > 2) {
+                                                decPart = decPart.substring(0, 2);
+                                              }
+                                              
+                                              // Se a parte decimal tiver menos de dois dígitos, completar com zeros
+                                              if (decPart.length === 1) {
+                                                decPart = decPart + '0';
+                                              }
+                                              
+                                              // Converter para número com ponto decimal
+                                              const valueWithPoint = intPart + '.' + decPart;
+                                              numericValue = parseFloat(valueWithPoint);
                                             } else {
-                                              // Se não tiver vírgula, é um número inteiro
-                                              numericValue = parseInt(value) || 0;
+                                              // Se o valor for inteiro, converter para número
+                                              numericValue = value ? parseInt(value) : 0;
                                             }
                                             
                                             field.onChange(numericValue);

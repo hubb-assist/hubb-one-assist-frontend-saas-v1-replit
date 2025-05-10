@@ -1,0 +1,129 @@
+✅ TAREFA FRONTEND 004 — CRUD de Módulos Funcionais (ex: HUBB HOF)
+📘 Antes de iniciar qualquer tarefa, o desenvolvedor DEVE obrigatoriamente ler:
+Arquivos na raiz:
+README.md — Documentação principal do projeto
+
+rules.md — Regras e diretrizes gerais
+
+TAREFAS.md — Lista de tarefas concluídas/pedentes
+
+Arquivos na pasta /docs:
+API_GUIDELINES.md — Diretrizes para integração com APIs
+
+CORS_CONFIGURATION.md — Resolução de problemas de CORS
+
+CRIACAO_PAGINAS.md — Guia de criação de novas páginas
+
+design_system.md — Cores, componentes e identidade visual
+
+ESTRUTURA_COMPONENTES.md — Hierarquia e padrão de arquivos
+
+INTEGRACAO_TEMP.md — Histórico de integração (ambiente)
+
+PADRAO_LAYOUT.md — Regras de layout fixas
+
+README.md — Índice geral da documentação
+
+⚠️ Regras de conduta obrigatórias:
+Todas as mensagens e respostas devem estar em português
+
+❗ Não criar absolutamente nada fora do escopo da tarefa
+
+❌ Não sugerir melhorias, componentes, páginas ou rotas que não foram solicitadas
+
+✅ Utilizar Tailwind CSS + ShadCN UI
+
+❗ A página criada deve usar o layout padrão da aplicação
+
+❌ Não criar outro sidebar. Apenas adicionar o item "Módulos" no menu existente
+
+❗ Seguir rigorosamente as diretrizes de integração de API descritas em docs/API_GUIDELINES.md
+
+🧭 Objetivo:
+Criar a tela de Módulos Funcionais para cadastrar funcionalidades como HUBB HOF, HUBB Vision, etc., que mais tarde serão utilizadas nos planos.
+
+📁 Local da página:
+bash
+Copiar
+Editar
+src/pages/admin/modules.tsx
+A página deve usar o layout global existente e aparecer corretamente no menu lateral.
+
+🧩 Modelo de dados esperado:
+ts
+Copiar
+Editar
+interface Module {
+  id: string;
+  name: string;
+  description: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+📤 Endpoints da API (produção):
+Base URL:
+
+arduino
+Copiar
+Editar
+https://hubb-one-assist-back-hubb-one.replit.app
+Método	Endpoint	Ação
+GET	/modules/	Listar módulos
+POST	/modules/	Criar módulo
+PUT	/modules/{id}	Editar módulo
+DELETE	/modules/{id}	Excluir módulo
+
+✅ Certifique-se de que withCredentials: true está habilitado no Axios.
+
+ts
+Copiar
+Editar
+const api = axios.create({
+  baseURL: "https://hubb-one-assist-back-hubb-one.replit.app",
+  withCredentials: true,
+});
+🖥️ Requisitos da interface:
+Listagem em DataTable com colunas:
+
+Nome do módulo
+
+Descrição
+
+Status (ativo/inativo com Switch)
+
+Ações: Editar / Excluir
+
+Ações CRUD:
+
+Dialog para criar e editar
+
+AlertDialog para confirmação de exclusão
+
+Skeleton durante carregamento
+
+Sonner (toast) para feedback de ações
+
+Validação via Zod
+
+Nome: obrigatório
+
+Descrição: opcional
+
+Status: padrão ativo
+
+📥 Ao concluir:
+Atualizar o TAREFAS.md com:
+
+md
+Copiar
+Editar
+✅ TAREFA FRONTEND 004 — CRUD de módulos implementado com sucesso, com integração total com backend, controle de ativação, e layout padrão.
+Verificar visualmente:
+
+Se o menu lateral "Módulos" aparece
+
+Se a página usa o layout correto
+
+Se os dados estão sendo persistidos via API
+

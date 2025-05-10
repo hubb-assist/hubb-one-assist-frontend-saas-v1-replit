@@ -17,6 +17,9 @@ export const API_CONFIG = {
     
     // Segmentos
     SEGMENTS: '/segments',
+    
+    // Módulos
+    MODULES: '/modules',
   }
 };
 

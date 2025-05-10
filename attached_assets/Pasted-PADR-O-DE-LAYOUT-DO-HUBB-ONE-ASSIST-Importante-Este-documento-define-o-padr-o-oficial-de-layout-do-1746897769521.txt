@@ -1,0 +1,55 @@
+PADRÃO DE LAYOUT DO HUBB ONE ASSIST
+Importante
+Este documento define o padrão oficial de layout do HUBB ONE Assist. Não modifique esta estrutura.
+
+Estrutura de Componentes
+Layout Principal
+O componente AppShell é o container principal de toda a aplicação.
+Todas as páginas devem ser encapsuladas pelo componente AppShell.
+Localização: client/src/components/layout/app-shell.tsx
+Sidebar
+Menu lateral com cor de fundo #2D113F (primária)
+Possui funcionalidade de expansão/colapso
+Apenas os ícones são exibidos quando colapsado
+Localização: client/src/components/sidebar/sidebar-main.tsx
+Cores oficiais
+Primária: #2D113F (roxo escuro)
+Secundária: #C52339 (vermelho)
+Logo
+Logo principal: https://sq360.com.br/logo-hubb-novo/logo_hubb_assisit.png
+Ícone: https://sq360.com.br/logo-hubb-novo/hubb_pet_icon.png
+Padrão para Criar Novas Páginas
+Para criar uma nova página, siga o seguinte template:
+
+import React from "react";
+import AppShell from "@/components/layout/app-shell";
+export default function NovaPagina() {
+  return (
+    <AppShell>
+      <div className="flex-1">
+        <h2 className="text-2xl font-bold mb-6">Título da Página</h2>
+        
+        {/* Conteúdo da página */}
+        <div>
+          Conteúdo da página aqui
+        </div>
+      </div>
+    </AppShell>
+  );
+}
+Responsabilidades
+AppShell
+Gerenciar o estado de abertura/fechamento da sidebar
+Renderizar o layout principal com sidebar e área de conteúdo
+Garantir responsividade em dispositivos móveis e desktop
+SidebarMain
+Exibir links de navegação
+Adaptar visualização baseado no estado de expansão/colapso
+Destacar o item de menu ativo baseado na rota atual
+Regras Importantes
+NÃO MODIFIQUE a estrutura básica do AppShell
+NÃO MODIFIQUE as cores primária e secundária
+NÃO ALTERE a lógica de expansão/colapso da sidebar
+SEMPRE ENVOLVA novas páginas com o componente AppShell
+MANTENHA a estrutura de pastas e componentes organizadas
+Esta estrutura é um padrão estabelecido para o HUBB ONE Assist e deve ser seguida rigorosamente em todas as novas páginas ou recursos.

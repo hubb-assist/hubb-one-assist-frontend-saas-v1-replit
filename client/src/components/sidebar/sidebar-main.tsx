@@ -6,7 +6,8 @@ import {
   Users, 
   MessageSquareText, 
   Settings, 
-  HelpCircle 
+  HelpCircle,
+  Layers
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
@@ -94,6 +95,25 @@ export default function SidebarMain({ expanded }: SidebarMainProps) {
             label="Chat"
             expanded={expanded}
             active={pathname === '/chat'}
+          />
+        </div>
+      </div>
+
+      <div className="px-3 py-2">
+        <h2 className={cn(
+          "text-white/50 text-xs font-medium uppercase tracking-wider",
+          !expanded && "sr-only"
+        )}>
+          Cadastros
+        </h2>
+        
+        <div className="mt-2 space-y-1">
+          <NavItem
+            href="/admin/segments"
+            icon={<Layers className="h-5 w-5" />}
+            label="Segmentos"
+            expanded={expanded}
+            active={pathname === '/admin/segments'}
           />
         </div>
       </div>

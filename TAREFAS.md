@@ -19,3 +19,12 @@
 - Implementação do toggle de visibilidade da senha usando ícones Eye e EyeOff
 - Redirecionamento para dashboard após login bem-sucedido
 
+✅ TAREFA FRONTEND 003 — CRUD de segmentos implementado com sucesso, com listagem, criação, edição, exclusão e ativação (is_active).
+- Criação da página de segmentos com layout responsivo
+- Implementação de DataTable com ordenação, filtro e paginação
+- Formulário de criação/edição validado com Zod
+- Ativação/desativação via switch diretamente na tabela
+- Confirmação de exclusão com AlertDialog
+- Feedback com toast para todas as operações
+- Integração completa com API para operações CRUD
+

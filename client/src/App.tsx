@@ -11,6 +11,7 @@ import Setup from "@/pages/setup";
 import Dashboard from "@/pages/dashboard";
 import Login from "@/pages/login";
 import AdminDashboard from "@/pages/admin/dashboard";
+import Segments from "@/pages/admin/segments";
 import PrivateRoute from "@/components/auth/private-route";
 import { useAuth } from "@/lib/auth";
 
@@ -38,6 +39,12 @@ function Router() {
       <Route path="/admin/dashboard">
         <PrivateRoute>
           <AdminDashboard />
+        </PrivateRoute>
+      </Route>
+      
+      <Route path="/admin/segments">
+        <PrivateRoute>
+          <Segments />
         </PrivateRoute>
       </Route>
       

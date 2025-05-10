@@ -2,13 +2,14 @@ import React from "react";
 import {
   Bell,
   Menu,
-  User,
+  LogOut,
   ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useSidebar } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+import { useAuth } from '@/lib/auth';
 
 interface AppHeaderProps {
   title?: string;
@@ -17,6 +18,12 @@ interface AppHeaderProps {
 
 export default function AppHeader({ title, subtitle }: AppHeaderProps) {
   const { toggleSidebar, state, isMobile } = useSidebar();
+  const { user, logout } = useAuth();
+  
+  const handleLogout = async () => {
+    console.log('Iniciando logout...');
+    await logout();
+  };
   
   return (
     <header
@@ -69,11 +76,24 @@ export default function AppHeader({ title, subtitle }: AppHeaderProps) {
             <span className="sr-only">Notificações</span>
           </Button>
           
-          <div className="flex items-center space-x-1">
+          <div className="flex items-center space-x-3">
             <Avatar className="h-8 w-8 border-2 border-white/20">
               <AvatarImage src="" alt="Avatar" />
-              <AvatarFallback className="bg-primary-700 text-white">UA</AvatarFallback>
+              <AvatarFallback className="bg-white/10 text-white">
+                {user?.name ? user.name.substring(0, 2).toUpperCase() : 'UA'}
+              </AvatarFallback>
             </Avatar>
+            
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 text-white/90 hover:bg-white/10 hover:text-red-300"
+              onClick={handleLogout}
+              title="Sair"
+            >
+              <LogOut className="h-5 w-5" />
+              <span className="sr-only">Sair</span>
+            </Button>
           </div>
         </div>
       </div>

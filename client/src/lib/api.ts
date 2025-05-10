@@ -9,7 +9,7 @@ const { BASE_URL, TIMEOUT, ENDPOINTS } = API_CONFIG;
 console.log("Configurando API - usando URL implantada:", BASE_URL);
 const api = axios.create({
   baseURL: BASE_URL,
-  withCredentials: true, // Importante para os cookies HttpOnly
+  withCredentials: false, // Desabilitado para evitar problemas de CORS
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',

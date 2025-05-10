@@ -28,3 +28,10 @@
 - Feedback com toast para todas as operações
 - Integração completa com API para operações CRUD
 
+✅ TAREFA FRONTEND 004 — Atualização da configuração de API e resolução de problemas de CORS
+- Migração para URL de produção da API: https://hubb-one-assist-back-hubb-one.replit.app
+- Criação do arquivo de configuração centralizada em config.ts
+- Implementação de solução para problemas de CORS desabilitando withCredentials
+- Criação de script de interceptação (api-config.js) para garantir compatibilidade
+- Documentação completa das diretrizes de API em docs/API_GUIDELINES.md
+

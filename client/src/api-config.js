@@ -9,6 +9,18 @@ window.API_CONFIG = {
 console.log("[API CONFIG] Arquivo de configuração carregado com sucesso");
 console.log("[API CONFIG] BASE_URL:", window.API_CONFIG.BASE_URL);
 
+// Corrigir problema de CORS desabilitando credentials nos requests
+// Tenta corrigir XMLHttpRequest para não enviar credentials
+if (typeof XMLHttpRequest !== 'undefined') {
+  const originalXHROpen = XMLHttpRequest.prototype.open;
+  
+  XMLHttpRequest.prototype.open = function() {
+    const result = originalXHROpen.apply(this, arguments);
+    this.withCredentials = false;
+    return result;
+  };
+};
+
 // Isso irá redirecionar todas as chamadas da URL antiga para a nova
 const originalFetch = window.fetch;
 window.fetch = function(url, options) {

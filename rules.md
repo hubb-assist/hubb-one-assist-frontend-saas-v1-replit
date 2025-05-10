@@ -5,6 +5,7 @@
 - Não sugerir componentes extras, páginas informativas, ajustes visuais ou novas rotas se não forem solicitadas.
 - Seguir os padrões de estilo com Tailwind + ShadCN.
 - Este projeto é parte de uma stack integrada com backend FastAPI.
+- **IMPORTANTE**: Seguir as diretrizes de integração com API documentadas em [docs/API_GUIDELINES.md](docs/API_GUIDELINES.md).
 
 ## 🚫 Proibições:
 - ❌ Não criar telas ou interfaces ainda

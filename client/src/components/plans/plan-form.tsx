@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { Plus, Minus, Loader2 } from 'lucide-react';
+import { NumericFormat } from 'react-number-format';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -228,52 +229,18 @@ export function PlanForm({
                 <FormItem>
                   <FormLabel>Preço Base</FormLabel>
                   <FormControl>
-                    <Input
-                      type="text"
-                      inputMode="numeric"
+                    <NumericFormat
+                      customInput={Input}
+                      thousandSeparator="."
+                      decimalSeparator=","
+                      decimalScale={2}
+                      fixedDecimalScale
+                      allowNegative={false}
                       placeholder="0,00"
-                      {...field}
-                      value={field.value ? String(field.value).replace('.', ',') : ''}
-                      onChange={(e) => {
-                        // Remover caracteres não numéricos exceto vírgula
-                        let value = e.target.value.replace(/[^\d,]/g, '');
-                        
-                        // Garantir que apenas uma vírgula é usada
-                        const commaCount = (value.match(/,/g) || []).length;
-                        if (commaCount > 1) {
-                          const parts = value.split(',');
-                          value = parts[0] + ',' + parts.slice(1).join('');
-                        }
-                        
-                        // Se o valor tiver vírgula, formatá-lo corretamente para dois decimais
-                        let numericValue = 0;
-                        
-                        if (value.includes(',')) {
-                          // Dividir em parte inteira e parte decimal
-                          let [intPart, decPart] = value.split(',');
-                          
-                          // Garantir sempre dois dígitos decimais
-                          if (decPart.length > 2) {
-                            decPart = decPart.substring(0, 2);
-                          }
-                          
-                          // Se a parte decimal tiver menos de dois dígitos, completar com zeros
-                          if (decPart.length === 1) {
-                            decPart = decPart + '0';
-                          }
-                          
-                          // Converter para número com ponto decimal
-                          const valueWithPoint = intPart + '.' + decPart;
-                          numericValue = parseFloat(valueWithPoint);
-                          
-                          console.log('Valor com ponto:', valueWithPoint, 'Número:', numericValue);
-                        } else {
-                          // Se o valor for inteiro, converter para número
-                          numericValue = value ? parseInt(value) : 0;
-                          console.log('Valor inteiro:', value, 'Número:', numericValue);
-                        }
-                        
-                        field.onChange(numericValue);
+                      value={field.value}
+                      onValueChange={(values) => {
+                        const { floatValue } = values;
+                        field.onChange(floatValue || 0);
                       }}
                     />
                   </FormControl>

@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "sonner";
 import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight, UserCircle, Bell, LogOut } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useAuth } from "@/lib/auth";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import SidebarMain from "@/components/sidebar/sidebar-main";
+import Header from "@/components/layout/header";
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -40,11 +40,6 @@ export default function AppShell({ children }: AppShellProps) {
   };
 
   const { user, logout } = useAuth();
-  
-  const handleLogout = async () => {
-    console.log('Iniciando logout...');
-    await logout();
-  };
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -114,64 +109,13 @@ export default function AppShell({ children }: AppShellProps) {
           expanded && !isMobile ? "ml-60" : "ml-0 sm:ml-20"
         )}
       >
-        {/* Header */}
-        <header className="bg-secondary h-16 sticky top-0 z-10 flex items-center justify-between shadow-md px-4">
-          <div className="flex items-center">
-            {isMobile && (
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="mr-2 text-white/90 hover:bg-white/10"
-                onClick={toggleSidebar}
-              >
-                <ChevronRight className="h-5 w-5 text-white" />
-                <span className="sr-only">Menu</span>
-              </Button>
-            )}
-            <h1 className="text-white text-lg font-medium">HUBB ONE Assist</h1>
-          </div>
-          
-          <div className="flex items-center space-x-4">
-            <Button 
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9 text-white/90 hover:bg-white/10 relative"
-            >
-              <Bell className="h-5 w-5" />
-              <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-white text-[10px] font-medium text-primary">
-                3
-              </span>
-              <span className="sr-only">Notificações</span>
-            </Button>
-            
-            <Button 
-              variant="ghost"
-              className="text-white/90 hover:bg-white/10 flex items-center gap-2"
-            >
-              <UserCircle className="h-5 w-5" />
-              <span>Meus Dados</span>
-            </Button>
-            
-            <div className="flex items-center space-x-3">
-              <Avatar className="h-8 w-8 border-2 border-white/20">
-                <AvatarFallback className="bg-white/10 text-white">
-                  {user?.name ? user.name.substring(0, 2).toUpperCase() : 'UA'}
-                </AvatarFallback>
-              </Avatar>
-              
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 text-white/90 hover:bg-white/10 hover:text-red-300"
-                onClick={handleLogout}
-                title="Sair"
-              >
-                <LogOut className="h-5 w-5" />
-                <span className="sr-only">Sair</span>
-              </Button>
-            </div>
-          </div>
-        </header>
+        {/* Header Component */}
+        <Header 
+          user={user}
+          onLogout={logout}
+          isMobile={isMobile}
+          onToggleSidebar={toggleSidebar}
+        />
 
         {/* Content */}
         <div className="p-6">

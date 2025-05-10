@@ -84,10 +84,14 @@ export const authService = {
     try {
       console.log(`Executando logout no endpoint: ${ENDPOINTS.LOGOUT}`);
       await api.post(ENDPOINTS.LOGOUT);
+      console.log('Logout bem-sucedido');
       return true;
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
       return false;
+    } finally {
+      // Mesmo que falhe no backend, redireciona para login
+      window.location.href = '/login';
     }
   }
 };

@@ -9,7 +9,8 @@ import {
   HelpCircle,
   Layers,
   AppWindow,
-  LogOut
+  LogOut,
+  LayoutTemplate
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -131,6 +132,14 @@ export default function SidebarMain({ expanded }: SidebarMainProps) {
             label="Módulos Funcionais"
             expanded={expanded}
             active={pathname === '/admin/modules'}
+          />
+          {/* Item de Planos */}
+          <NavItem
+            href="/admin/plans"
+            icon={<LayoutTemplate className="h-5 w-5" />}
+            label="Planos"
+            expanded={expanded}
+            active={pathname === '/admin/plans'}
           />
         </div>
       </div>

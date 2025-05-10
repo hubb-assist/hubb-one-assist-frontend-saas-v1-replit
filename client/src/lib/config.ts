@@ -20,6 +20,9 @@ export const API_CONFIG = {
     
     // Módulos
     MODULES: '/modules',
+    
+    // Planos
+    PLANS: '/plans',
   }
 };
 

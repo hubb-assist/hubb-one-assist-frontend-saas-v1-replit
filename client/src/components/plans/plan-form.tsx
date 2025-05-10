@@ -141,16 +141,26 @@ export function PlanForm({
     // Processar valores antes de enviar
     const processedValues = {
       ...values,
+      // Garantir que o preço base é um número com 2 casas decimais
+      base_price: parseFloat(values.base_price.toFixed(2)),
       // Mapear módulos para o formato esperado pela API
-      modules: values.modules.map((m) => ({
-        module_id: m.module_id,
-        // A API espera o campo 'price', não 'custom_price'
-        price: m.is_free ? 0 : (m.custom_price || 0),
-        // Flag is_free é usado apenas no frontend
-        is_free: m.is_free === true,
-        trial_days: m.trial_days || 0,
-      })) as any,
+      modules: values.modules.map((m) => {
+        const modulePrice = m.is_free ? 0 : (m.custom_price || 0);
+        return {
+          module_id: m.module_id,
+          // A API espera o campo 'price', não 'custom_price' 
+          // Garantir que o preço tem 2 casas decimais
+          price: parseFloat(modulePrice.toFixed(2)),
+          // Considerar gratuito se is_free for true OU se não tiver preço
+          is_free: m.is_free === true || !modulePrice,
+          // Dias de teste padrão = 0
+          trial_days: m.trial_days || 0,
+        };
+      }),
     };
+    
+    // Log para debug
+    console.log("Dados processados para envio:", JSON.stringify(processedValues, null, 2));
 
     onSubmit(processedValues);
   };
@@ -240,6 +250,7 @@ export function PlanForm({
                       value={field.value}
                       onValueChange={(values) => {
                         const { floatValue } = values;
+                        console.log("Input value:", values.value, "Float value:", floatValue);
                         field.onChange(floatValue || 0);
                       }}
                     />
@@ -371,56 +382,26 @@ export function PlanForm({
                                     <FormItem>
                                       <FormLabel>Preço</FormLabel>
                                       <FormControl>
-                                        <Input
-                                          type="text"
-                                          inputMode="numeric"
+                                        <NumericFormat
+                                          customInput={Input}
+                                          thousandSeparator="."
+                                          decimalSeparator=","
+                                          decimalScale={2}
+                                          fixedDecimalScale
+                                          allowNegative={false}
                                           placeholder="0,00"
                                           disabled={isFree}
-                                          {...field}
-                                          value={field.value !== null ? String(field.value).replace('.', ',') : ''}
-                                          onChange={(e) => {
-                                            // Remover caracteres não numéricos exceto vírgula
-                                            let value = e.target.value.replace(/[^\d,]/g, '');
+                                          value={field.value !== null ? field.value : ''}
+                                          onValueChange={(values) => {
+                                            const { floatValue } = values;
+                                            console.log("Módulo preço - Input:", values.value, "Float:", floatValue);
                                             
-                                            // Se o campo estiver vazio, definir como null
-                                            if (!value) {
+                                            // Se o valor estiver vazio ou for zero e o módulo for gratuito
+                                            if (!values.value || isFree) {
                                               field.onChange(null);
-                                              return;
-                                            }
-                                            
-                                            // Garantir que apenas uma vírgula é usada
-                                            const commaCount = (value.match(/,/g) || []).length;
-                                            if (commaCount > 1) {
-                                              const parts = value.split(',');
-                                              value = parts[0] + ',' + parts.slice(1).join('');
-                                            }
-                                            
-                                            // Se o valor tiver vírgula, formatá-lo corretamente para dois decimais
-                                            let numericValue = 0;
-                                            
-                                            if (value.includes(',')) {
-                                              // Dividir em parte inteira e parte decimal
-                                              let [intPart, decPart] = value.split(',');
-                                              
-                                              // Garantir sempre dois dígitos decimais
-                                              if (decPart.length > 2) {
-                                                decPart = decPart.substring(0, 2);
-                                              }
-                                              
-                                              // Se a parte decimal tiver menos de dois dígitos, completar com zeros
-                                              if (decPart.length === 1) {
-                                                decPart = decPart + '0';
-                                              }
-                                              
-                                              // Converter para número com ponto decimal
-                                              const valueWithPoint = intPart + '.' + decPart;
-                                              numericValue = parseFloat(valueWithPoint);
                                             } else {
-                                              // Se o valor for inteiro, converter para número
-                                              numericValue = value ? parseInt(value) : 0;
+                                              field.onChange(floatValue || 0);
                                             }
-                                            
-                                            field.onChange(numericValue);
                                           }}
                                         />
                                       </FormControl>

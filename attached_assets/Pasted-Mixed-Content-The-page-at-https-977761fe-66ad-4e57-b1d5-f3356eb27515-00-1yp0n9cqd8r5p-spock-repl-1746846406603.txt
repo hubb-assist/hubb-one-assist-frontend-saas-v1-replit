@@ -1,0 +1,62 @@
+Mixed Content: The page at 'https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/admin/segments' was loaded over HTTPS, but requested an insecure XMLHttpRequest endpoint 'http://32c76b88-78ce-48ad-9c13-04975e5e14a3-00-12ynk9jfvcfqw.worf.replit.dev/segments/72d0f4e3-3eb0-4e7e-90d7-ae192de340e8'. This request has been blocked; the content must be served over HTTPS.Understand this error
+api.ts:37 Erro na requisição: AxiosError {message: 'Network Error', name: 'AxiosError', code: 'ERR_NETWORK', config: {…}, request: XMLHttpRequest, …}code: "ERR_NETWORK"config: {transitional: {…}, adapter: Array(3), transformRequest: Array(1), transformResponse: Array(1), timeout: 10000, …}message: "Network Error"name: "AxiosError"request: XMLHttpRequest {onreadystatechange: null, readyState: 4, timeout: 10000, withCredentials: true, upload: XMLHttpRequestUpload, …}stack: "AxiosError: Network Error\n    at XMLHttpRequest.handleError (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/axios.js?v=fd4db404:1591:14)\n    at Axios.request (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/axios.js?v=fd4db404:2119:41)\n    at async Object.delete (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/lib/api-segments.ts?t=1746846292862:64:7)"[[Prototype]]: Error
+(anonymous) @ api.ts:37
+Promise.then
+_request @ axios.js?v=fd4db404:2206
+request @ axios.js?v=fd4db404:2115
+Axios.<computed> @ axios.js?v=fd4db404:2243
+wrap @ axios.js?v=fd4db404:8
+delete @ api-segments.ts:91
+mutationFn @ segments.tsx:107
+fn @ @tanstack_react-query.js?v=fd4db404:1189
+run @ @tanstack_react-query.js?v=fd4db404:494
+start @ @tanstack_react-query.js?v=fd4db404:536
+execute @ @tanstack_react-query.js?v=fd4db404:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=fd4db404:2630
+(anonymous) @ @tanstack_react-query.js?v=fd4db404:3295
+confirmDelete @ segments.tsx:158
+handleEvent @ chunk-VIFX6DEG.js?v=fd4db404:14
+callCallback2 @ chunk-WERSD76P.js?v=fd4db404:3674
+invokeGuardedCallbackDev @ chunk-WERSD76P.js?v=fd4db404:3699
+invokeGuardedCallback @ chunk-WERSD76P.js?v=fd4db404:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-WERSD76P.js?v=fd4db404:3736
+executeDispatch @ chunk-WERSD76P.js?v=fd4db404:7014
+processDispatchQueueItemsInOrder @ chunk-WERSD76P.js?v=fd4db404:7034
+processDispatchQueue @ chunk-WERSD76P.js?v=fd4db404:7043
+dispatchEventsForPlugins @ chunk-WERSD76P.js?v=fd4db404:7051
+(anonymous) @ chunk-WERSD76P.js?v=fd4db404:7174
+batchedUpdates$1 @ chunk-WERSD76P.js?v=fd4db404:18913
+batchedUpdates @ chunk-WERSD76P.js?v=fd4db404:3579
+dispatchEventForPluginEventSystem @ chunk-WERSD76P.js?v=fd4db404:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-WERSD76P.js?v=fd4db404:5478
+dispatchEvent @ chunk-WERSD76P.js?v=fd4db404:5472
+dispatchDiscreteEvent @ chunk-WERSD76P.js?v=fd4db404:5449Understand this error
+api-segments.ts:93 Erro ao excluir segmento 72d0f4e3-3eb0-4e7e-90d7-ae192de340e8: AxiosError {message: 'Network Error', name: 'AxiosError', code: 'ERR_NETWORK', config: {…}, request: XMLHttpRequest, …}code: "ERR_NETWORK"config: {transitional: {…}, adapter: Array(3), transformRequest: Array(1), transformResponse: Array(1), timeout: 10000, …}message: "Network Error"name: "AxiosError"request: XMLHttpRequest {onreadystatechange: null, readyState: 4, timeout: 10000, withCredentials: true, upload: XMLHttpRequestUpload, …}stack: "AxiosError: Network Error\n    at XMLHttpRequest.handleError (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/axios.js?v=fd4db404:1591:14)\n    at Axios.request (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/axios.js?v=fd4db404:2119:41)\n    at async Object.delete (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/lib/api-segments.ts?t=1746846292862:64:7)"[[Prototype]]: Error
+delete @ api-segments.ts:93
+await in delete
+mutationFn @ segments.tsx:107
+fn @ @tanstack_react-query.js?v=fd4db404:1189
+run @ @tanstack_react-query.js?v=fd4db404:494
+start @ @tanstack_react-query.js?v=fd4db404:536
+execute @ @tanstack_react-query.js?v=fd4db404:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=fd4db404:2630
+(anonymous) @ @tanstack_react-query.js?v=fd4db404:3295
+confirmDelete @ segments.tsx:158
+handleEvent @ chunk-VIFX6DEG.js?v=fd4db404:14
+callCallback2 @ chunk-WERSD76P.js?v=fd4db404:3674
+invokeGuardedCallbackDev @ chunk-WERSD76P.js?v=fd4db404:3699
+invokeGuardedCallback @ chunk-WERSD76P.js?v=fd4db404:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-WERSD76P.js?v=fd4db404:3736
+executeDispatch @ chunk-WERSD76P.js?v=fd4db404:7014
+processDispatchQueueItemsInOrder @ chunk-WERSD76P.js?v=fd4db404:7034
+processDispatchQueue @ chunk-WERSD76P.js?v=fd4db404:7043
+dispatchEventsForPlugins @ chunk-WERSD76P.js?v=fd4db404:7051
+(anonymous) @ chunk-WERSD76P.js?v=fd4db404:7174
+batchedUpdates$1 @ chunk-WERSD76P.js?v=fd4db404:18913
+batchedUpdates @ chunk-WERSD76P.js?v=fd4db404:3579
+dispatchEventForPluginEventSystem @ chunk-WERSD76P.js?v=fd4db404:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-WERSD76P.js?v=fd4db404:5478
+dispatchEvent @ chunk-WERSD76P.js?v=fd4db404:5472
+dispatchDiscreteEvent @ chunk-WERSD76P.js?v=fd4db404:5449Understand this error

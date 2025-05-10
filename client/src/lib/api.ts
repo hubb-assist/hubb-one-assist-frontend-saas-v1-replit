@@ -2,7 +2,9 @@ import axios from 'axios';
 import { toast } from 'sonner';
 
 // URL da API temporária (garantindo sempre HTTPS)
-const API_URL = 'https://32c76b88-78ce-48ad-9c13-04975e5e14a3-00-12ynk9jfvcfqw.worf.replit.dev';
+// Extrair apenas o hostname para evitar problemas de protocolo
+const hostname = '32c76b88-78ce-48ad-9c13-04975e5e14a3-00-12ynk9jfvcfqw.worf.replit.dev';
+const API_URL = `https://${hostname}`;
 
 // URL do domínio temporário (para configuração de CORS no backend)
 // Adicione esta URL ao CORS no backend para permitir solicitações deste domínio
@@ -22,11 +24,32 @@ const api = axios.create({
 
 // Interceptor para garantir HTTPS
 api.interceptors.request.use(config => {
-  // Garantir que a URL de requisição sempre use HTTPS
-  if (config.url && config.url.startsWith('http://')) {
-    config.url = config.url.replace('http://', 'https://');
-    console.log('Convertida URL para HTTPS:', config.url);
+  // Verificar se temos uma URL absoluta (com protocolo)
+  if (config.url) {
+    // Verificar se a URL começa com http://
+    if (config.url.startsWith('http://')) {
+      // Substituir http:// por https://
+      config.url = config.url.replace('http://', 'https://');
+      console.log('Convertida URL para HTTPS:', config.url);
+    } 
+    // Se for uma URL relativa e temos um hostname, forçamos a URL absoluta
+    else if (!config.url.startsWith('https://') && !config.url.startsWith('http://')) {
+      // Se a URL contém o hostname mas sem protocolo
+      if (config.url.includes(hostname)) {
+        config.url = `https://${config.url}`;
+        console.log('Adicionado protocolo HTTPS à URL absoluta:', config.url);
+      }
+      // Caso seja apenas um caminho relativo, deixamos o axios usar o baseURL
+    }
   }
+  
+  // Log da URL final que será usada
+  console.log('Fazendo requisição para:', 
+    config.baseURL ? 
+      (config.url?.startsWith('http') ? config.url : `${config.baseURL}${config.url}`) 
+      : config.url
+  );
+  
   return config;
 });
 

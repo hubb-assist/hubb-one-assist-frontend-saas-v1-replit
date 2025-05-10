@@ -1,0 +1,181 @@
+xcelente, Luis. A seguir está a organização perfeita da documentação para o seu projeto frontend, consolidando:
+
+Padrões de desenvolvimento (SOLID, DDD, Clean Code)
+
+Organização de pastas e componentes
+
+Integração com o backend (com o URL temporário do Replit já configurado)
+
+Regras de layout e criação de páginas
+
+📁 Arquivos de documentação a criar no frontend
+✅ 1. README.md – Visão geral do projeto
+markdown
+Copiar
+Editar
+# HUBB ONE Assist — Frontend (SaaS v1)
+
+Este projeto é o frontend oficial do sistema HUBB ONE Assist, construído com:
+
+- React + Vite
+- Tailwind CSS
+- ShadCN UI
+- Sonner (toast)
+- Lucide (ícones)
+- Recharts (gráficos)
+
+Integra-se com o backend FastAPI, com autenticação via JWT (cookies HttpOnly).
+
+## 📦 Instalação
+
+```bash
+npm install
+npm run dev
+🔗 API (temporária)
+cpp
+Copiar
+Editar
+https://32c76b88-78ce-48ad-9c13-04975e5e14a3-00-12ynk9jfvcfqw.worf.replit.dev/
+👤 Acesso de teste
+Email: admin@hubbassist.com
+
+Senha: admin123
+
+🔐 CORS liberado para:
+http://localhost:5173
+
+http://localhost:3000
+
+Qualquer subdomínio *.replit.dev
+
+🔗 Swagger da API:
+Documentação Swagger
+
+yaml
+Copiar
+Editar
+
+---
+
+### ✅ 2. `PADRAO_LAYOUT.md` – Padrão oficial de layout
+
+```markdown
+# 🧱 Padrão de Layout - HUBB Assist
+
+- Sidebar: Cor primária `#2D113F`, colapsável
+- Header: Cor secundária `#C52339`, fixo no topo
+- Layout base: Sidebar + Header + Main content
+
+## Elementos obrigatórios
+
+- Botão de colapsar o menu
+- Logo adaptável: expandido e colapsado
+- Toast (Sonner) para mensagens
+- Skeleton para carregamento
+- Dialog e AlertDialog para CRUD e confirmação
+- Charts com degradê via Recharts
+- Responsividade obrigatória
+✅ 3. CRIACAO_PAGINAS.md – Guia de criação de páginas
+markdown
+Copiar
+Editar
+# 📄 Guia de Criação de Páginas
+
+Toda nova página deve seguir:
+
+- Local: `src/pages/`
+- Usar layout global
+- Título da página no topo
+- Toast (sonner) para feedback
+- Modal Dialog para criação/edição
+- AlertDialog para confirmação de deleção
+
+Requisições API devem ser feitas via `axios` com `withCredentials = true`.
+✅ 4. ESTRUTURA_COMPONENTES.md – Hierarquia de componentes
+markdown
+Copiar
+Editar
+# 📁 Estrutura e Organização de Componentes
+
+src/
+├── components/
+│ ├── ui/ → Botões, Inputs (via ShadCN)
+│ ├── layout/ → Sidebar, Header, Footer
+│ ├── charts/ → Componente de gráficos
+│ ├── dialogs/ → Dialogs reusáveis
+│ └── cards/ → Cards de dashboard
+
+bash
+Copiar
+Editar
+
+Use `@/components/...` como importação (via alias).
+
+Todos os componentes devem ser reusáveis, limpos e respeitar SOLID.
+✅ 5. rules.md – Regras obrigatórias para desenvolvimento
+markdown
+Copiar
+Editar
+# 🛡️ Regras do Projeto Frontend - HUBB ONE Assist
+
+- ❗Só implemente o que for descrito em cada tarefa.
+- ❗Não crie telas, modais ou endpoints extras sem solicitação.
+- ✅ Todas as mensagens devem estar em **português**.
+- ✅ Usar React + Vite (não usar Next.js).
+- ✅ Seguir os princípios de arquitetura: **SOLID**, **DDD**, **Clean Code**.
+- ✅ Cada tarefa finalizada deve ser registrada em `TAREFAS.md`.
+✅ 6. TAREFAS.md – Controle de progresso
+markdown
+Copiar
+Editar
+# 📋 Histórico de Tarefas Frontend — HUBB ONE Assist
+
+✅ TAREFA FRONTEND 001 — Setup do projeto com React + Vite, Tailwind, ShadCN, Sonner e Recharts concluída com sucesso.
+
+🚧 TAREFA FRONTEND 002 — Tela de login funcional com integração com API em andamento.
+✅ 7. INTEGRACAO_FRONT_BACK.md – Como integrar com o backend
+markdown
+Copiar
+Editar
+# 🔗 Integração Frontend ↔ Backend
+
+## URL da API (temporária)
+https://32c76b88-78ce-48ad-9c13-04975e5e14a3-00-12ynk9jfvcfqw.worf.replit.dev/
+
+php
+Copiar
+Editar
+
+## CORS configurado para:
+- http://localhost:5173
+- http://localhost:3000
+- *.replit.dev
+
+## Exemplo de login (fetch)
+
+```ts
+fetch('/auth/login', {
+  method: 'POST',
+  credentials: 'include',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ email: 'admin@hubbassist.com', password: 'admin123' })
+});
+Exemplo de login (axios)
+ts
+Copiar
+Editar
+axios.defaults.withCredentials = true;
+await axios.post('/auth/login', { email, password });
+Verificar autenticação:
+Chamar GET /users/me após login.
+
+Cookies:
+JWT via HttpOnly Cookie (não armazenar tokens no front)
+
+yaml
+Copiar
+Editar
+
+---
+
+Deseja que eu salve todos esses arquivos em um ZIP prontos para colar no repositório ou gerar

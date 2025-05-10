@@ -20,13 +20,16 @@ type SidebarContextProps = {
 
 const SidebarContext = React.createContext<SidebarContextProps | undefined>(undefined);
 
-export function useSidebar() {
+// Hook para acessar o contexto da Sidebar
+const useSidebar = () => {
   const context = React.useContext(SidebarContext);
   if (!context) {
     throw new Error("useSidebar deve ser usado dentro de um SidebarProvider");
   }
   return context;
 }
+
+export { useSidebar };
 
 interface SidebarProviderProps {
   children: React.ReactNode;
@@ -104,7 +107,7 @@ export function Sidebar({ className, ...props }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "fixed left-0 top-0 z-30 flex h-screen flex-col border-r bg-[#2D113F] transition-all duration-300",
+        "fixed left-0 top-0 z-30 flex h-screen flex-col border-r bg-primary transition-all duration-300",
         state === "expanded" ? "w-60" : "w-20",
         isMobile && "w-60",
         className

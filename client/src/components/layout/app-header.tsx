@@ -21,7 +21,7 @@ export default function AppHeader({ title, subtitle }: AppHeaderProps) {
   return (
     <header
       className={cn(
-        "fixed top-0 right-0 z-20 border-b bg-[#C52339] transition-all duration-300",
+        "fixed top-0 right-0 z-20 border-b bg-secondary transition-all duration-300",
         state === "expanded" ? "left-60" : "left-20",
         isMobile && "left-0"
       )}

@@ -1,4 +1,4 @@
-import AppSetupLayout from "@/components/layout/app-setup-layout";
+import AppLayout from "@/components/layout/app-layout";
 import { toast } from "sonner";
 import PackageCards from "@/components/setup/package-cards";
 import ProjectStructure from "@/components/setup/project-structure";
@@ -8,7 +8,7 @@ import { CheckCircle } from "lucide-react";
 
 export default function Setup() {
   return (
-    <AppSetupLayout>
+    <AppLayout title="Configuração" subtitle="Detalhes Técnicos">
       <div className="bg-white shadow rounded-lg">
         <div className="px-6 py-6 sm:px-8">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">Configuração Inicial do Projeto</h2>
@@ -35,7 +35,6 @@ export default function Setup() {
             <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">Demonstração do Sonner</h3>
             <div className="flex space-x-2">
               <Button 
-                variant="success"
                 onClick={() => toast.success("Operação realizada com sucesso!")}
                 className="bg-green-600 hover:bg-green-700 text-white"
               >
@@ -60,6 +59,6 @@ export default function Setup() {
           <ChartDemo />
         </div>
       </div>
-    </AppSetupLayout>
+    </AppLayout>
   );
 }

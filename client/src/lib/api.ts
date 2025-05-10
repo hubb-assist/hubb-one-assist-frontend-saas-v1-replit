@@ -1,23 +1,20 @@
 import axios from 'axios';
 import { toast } from 'sonner';
+import { API_CONFIG } from './config';
 
-// Definindo a URL da API implantada
-export const API_HOSTNAME = 'hubb-one-assist-back-hubb-one.replit.app';
-export const API_BASE_URL = `https://${API_HOSTNAME}`;
+// Importando configuração da aplicação
+const { BASE_URL, TIMEOUT, ENDPOINTS } = API_CONFIG;
 
-// URL do domínio temporário (para configuração de CORS no backend)
-export const FRONTEND_URL = window.location.origin;
-
-// Usando a URL da API estável implantada
-console.log("Configurando API - usando URL estável implantada:", API_BASE_URL);
+// Utilizando a URL da API implantada a partir da configuração central
+console.log("Configurando API - usando URL implantada:", BASE_URL);
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: BASE_URL,
   withCredentials: true, // Importante para os cookies HttpOnly
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
-  timeout: 10000, // 10 segundos de timeout
+  timeout: TIMEOUT, // Timeout configurável
 });
 
 // Interceptor para URLs consistentes
@@ -61,7 +58,8 @@ export const authService = {
   // Login com email e senha
   async login(email: string, password: string) {
     try {
-      const response = await api.post('/auth/login', { email, password });
+      console.log(`Tentando login no endpoint: ${ENDPOINTS.LOGIN}`);
+      const response = await api.post(ENDPOINTS.LOGIN, { email, password });
       return response.data;
     } catch (error) {
       throw error;
@@ -71,8 +69,8 @@ export const authService = {
   // Verificar se o usuário está autenticado
   async verificarAutenticacao() {
     try {
-      console.log("Solicitando verificação de autenticação: /users/me");
-      const response = await api.get('/users/me');
+      console.log(`Solicitando verificação de autenticação: ${ENDPOINTS.USER_ME}`);
+      const response = await api.get(ENDPOINTS.USER_ME);
       console.log("Resposta de verificação de autenticação:", response.status, response.data);
       return response.data;
     } catch (error) {
@@ -84,9 +82,11 @@ export const authService = {
   // Fazer logout
   async logout() {
     try {
-      await api.post('/auth/logout');
+      console.log(`Executando logout no endpoint: ${ENDPOINTS.LOGOUT}`);
+      await api.post(ENDPOINTS.LOGOUT);
       return true;
     } catch (error) {
+      console.error("Erro ao fazer logout:", error);
       return false;
     }
   }

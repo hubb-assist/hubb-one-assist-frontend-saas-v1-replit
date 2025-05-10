@@ -1,5 +1,9 @@
 import api from './api';
 import { Segment, SegmentFormValues } from '@/components/segments/types';
+import { API_CONFIG } from './config';
+
+// Importando configuração centralizada
+const { ENDPOINTS } = API_CONFIG;
 
 // Interface da resposta da API
 interface ApiResponse {

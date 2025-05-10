@@ -26,10 +26,15 @@ function Router() {
     <Switch>
       <Route path="/" component={Home}/>
       <Route path="/setup" component={Setup}/>
-      <Route path="/dashboard" component={Dashboard}/>
       <Route path="/login" component={Login}/>
       
       {/* Rotas protegidas */}
+      <Route path="/dashboard">
+        <PrivateRoute>
+          <Dashboard />
+        </PrivateRoute>
+      </Route>
+      
       <Route path="/admin/dashboard">
         <PrivateRoute>
           <AdminDashboard />

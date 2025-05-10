@@ -4,6 +4,10 @@ import { toast } from 'sonner';
 // URL da API temporária
 const API_URL = 'https://32c76b88-78ce-48ad-9c13-04975e5e14a3-00-12ynk9jfvcfqw.worf.replit.dev';
 
+// URL do domínio temporário (para configuração de CORS no backend)
+// Adicione esta URL ao CORS no backend para permitir solicitações deste domínio
+export const FRONTEND_URL = 'https://977761fe-66ad-4e57-b1d5-f3356eb27515.id.replit.com';
+
 const api = axios.create({
   baseURL: API_URL,
   withCredentials: true, // Importante para os cookies HttpOnly

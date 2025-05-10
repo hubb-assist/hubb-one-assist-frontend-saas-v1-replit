@@ -226,12 +226,18 @@ export function PlanForm({
                   <FormLabel>Preço Base</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
-                      placeholder="0.00"
-                      min={0}
-                      step="0.01"
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="0,00"
                       {...field}
-                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                      value={field.value ? String(field.value).replace('.', ',') : ''}
+                      onChange={(e) => {
+                        // Remover caracteres não numéricos e permitir apenas vírgula
+                        const value = e.target.value.replace(/[^\d,]/g, '');
+                        // Substituir vírgula por ponto para conversão para número
+                        const numericValue = parseFloat(value.replace(',', '.')) || 0;
+                        field.onChange(numericValue);
+                      }}
                     />
                   </FormControl>
                   <FormDescription>
@@ -362,14 +368,19 @@ export function PlanForm({
                                       <FormLabel>Preço</FormLabel>
                                       <FormControl>
                                         <Input
-                                          type="number"
-                                          placeholder="0.00"
-                                          min={0}
-                                          step="0.01"
+                                          type="text"
+                                          inputMode="numeric"
+                                          placeholder="0,00"
                                           disabled={isFree}
                                           {...field}
-                                          value={field.value === null ? '' : field.value}
-                                          onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : null)}
+                                          value={field.value !== null ? String(field.value).replace('.', ',') : ''}
+                                          onChange={(e) => {
+                                            // Remover caracteres não numéricos e permitir apenas vírgula
+                                            const value = e.target.value.replace(/[^\d,]/g, '');
+                                            // Substituir vírgula por ponto para conversão para número
+                                            const numericValue = value ? parseFloat(value.replace(',', '.')) : null;
+                                            field.onChange(numericValue);
+                                          }}
                                         />
                                       </FormControl>
                                       <FormMessage />
@@ -467,15 +478,39 @@ export function PlanForm({
                          'Não definido'}
                       </p>
                     </div>
+                    
+                    {/* Preços */}
                     <div>
                       <span className="text-sm text-muted-foreground">Preço Base:</span>
                       <p className="font-medium">{formatCurrency(form.watch('base_price'))}</p>
                     </div>
                     <div>
+                      <span className="text-sm text-muted-foreground">Preço Módulos:</span>
+                      <p className="font-medium">
+                        {formatCurrency(form.watch('modules').reduce((total, module) => 
+                          total + (module.is_free ? 0 : (module.custom_price || 0)), 0)
+                        )}
+                      </p>
+                    </div>
+                    
+                    {/* Preço Total */}
+                    <div className="col-span-2 border-t pt-2 mt-2">
+                      <span className="text-sm font-medium">Preço Total:</span>
+                      <p className="text-lg font-bold text-primary">
+                        {formatCurrency(
+                          form.watch('base_price') + 
+                          form.watch('modules').reduce((total, module) => 
+                            total + (module.is_free ? 0 : (module.custom_price || 0)), 0)
+                        )}
+                      </p>
+                    </div>
+                    
+                    <div>
                       <span className="text-sm text-muted-foreground">Status:</span>
                       <p className="font-medium">{form.watch('is_active') ? 'Ativo' : 'Inativo'}</p>
                     </div>
-                    <div className="col-span-2">
+                    
+                    <div>
                       <span className="text-sm text-muted-foreground">Módulos Incluídos:</span>
                       <p className="font-medium">{selectedModules.length}</p>
                     </div>

@@ -55,6 +55,25 @@ export const columns: ColumnDef<Plan>[] = [
     ),
   },
   {
+    id: 'total_price',
+    header: 'Preço Total',
+    cell: ({ row }) => {
+      const basePrice = row.original.base_price || 0;
+      const modulesPrice = row.original.modules?.reduce((total, mod) => {
+        // Calcular o preço dos módulos - verificar diferentes formatos possíveis
+        const modulePrice = mod.price || mod.custom_price || 0;
+        return total + (mod.is_free ? 0 : modulePrice);
+      }, 0) || 0;
+      
+      // Somar preço base + preço dos módulos
+      const totalPrice = basePrice + modulesPrice;
+      
+      return (
+        <div className="font-medium">{formatCurrency(totalPrice)}</div>
+      );
+    },
+  },
+  {
     accessorKey: 'modules',
     header: 'Módulos',
     cell: ({ row }) => (

@@ -1,0 +1,93 @@
+ Objetivo:
+Criar a página de login do projeto HUBB ONE Assist, que será a porta de entrada para acessar o painel administrativo.
+A autenticação deve ser feita via API backend, utilizando cookies HttpOnly, e após o login, o usuário deve ser redirecionado para o painel (/admin/dashboard).
+
+📁 Arquivo que o desenvolvedor DEVE ler antes de iniciar:
+README.md
+
+rules.md
+
+PADRAO_LAYOUT.md
+
+CRIACAO_PAGINAS.md
+
+ESTRUTURA_COMPONENTES.md
+
+docs/INTEGRACAO_TEMP.md
+
+✅ Requisitos técnicos:
+Criar a página src/pages/login.tsx
+
+Layout com ShadCN UI
+
+Campos:
+
+email (tipo email)
+
+senha (tipo password)
+
+Botão: "Entrar"
+
+Validar os campos com Zod
+
+Exibir erros com sonner (toast)
+
+Chamada à API:
+
+Rota: POST /auth/login
+
+Payload: { email, password }
+
+Headers: Content-Type: application/json
+
+credentials: 'include' ativado
+
+Após sucesso:
+
+Redirecionar para: /admin/dashboard
+
+Fazer chamada GET /users/me para obter dados do usuário logado
+
+Em caso de erro:
+
+Exibir toast "Credenciais inválidas" ou mensagem retornada pela API
+
+🔐 Controle de Acesso
+Após o login, salvar o estado do usuário em zustand ou context
+
+Criar um wrapper de rota protegida (ex: <PrivateRoute>)
+
+Qualquer rota de sistema (ex: /admin/*) só pode ser acessada se o usuário estiver autenticado
+
+Usar GET /users/me para verificar sessão ativa
+
+🎨 Layout esperado (resumo visual)
+Centralizado na tela
+
+Logo no topo
+
+Título: Acesse sua conta
+
+Inputs com label, placeholder
+
+Botão com estado loading ao enviar
+
+Responsivo (funcionar em mobile)
+
+⚙️ Extras obrigatórios
+Usar o layout padrão definido em PADRAO_LAYOUT.md
+
+Usar componentes padrão do projeto (<Input>, <Button>, etc.)
+
+Seguir a hierarquia de componentes documentada
+
+📥 Após concluir:
+Atualizar TAREFAS.md com:
+
+markdown
+Copiar
+Editar
+✅ TAREFA FRONTEND 002 — Tela de login implementada, integrada com backend via cookies HttpOnly e redirecionamento funcional para painel protegido.
+Validar se o login está armazenando corretamente os cookies e redirecionando para rotas protegidas
+
+📌 Deseja que eu gere um login.tsx base ou a estrutura do <PrivateRoute> agora como próximo passo?

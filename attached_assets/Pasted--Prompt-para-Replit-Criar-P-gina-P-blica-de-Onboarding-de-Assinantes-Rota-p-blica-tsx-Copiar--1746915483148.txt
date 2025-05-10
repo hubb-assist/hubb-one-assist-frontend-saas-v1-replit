@@ -1,0 +1,127 @@
+✅ Prompt para Replit — Criar Página Pública de Onboarding de Assinantes
+🧭 Rota pública:
+tsx
+Copiar
+Editar
+/src/pages/public/onboarding.tsx
+Esta página será acessível sem login, e funcionará como o canal oficial de cadastro de assinantes do HUBB ONE Assist.
+
+🎯 Objetivo da tarefa:
+Implementar um formulário público multi-etapas para criar um novo assinante (subscriber) com base nos dados e endpoints já disponíveis no backend.
+
+✅ Estrutura do Formulário:
+O formulário será dividido em 4 etapas:
+
+1️⃣ Etapa 1 – Dados do Responsável
+Campo	Tipo	Validação
+Nome completo	texto	obrigatório
+CPF / CNPJ	texto	obrigatório, com máscara
+E-mail	email	obrigatório e único
+Senha	senha	obrigatório (mínimo 6)
+Telefone / WhatsApp	texto	obrigatório
+Nome da clínica	texto	obrigatório
+Segmento	select	carregar de GET /segments
+
+2️⃣ Etapa 2 – Endereço
+Campo	Tipo	Observações
+CEP	texto	obrigatório, busca com ViaCEP
+Endereço	texto	preenchido automaticamente
+Número	texto	obrigatório
+Cidade	texto	preenchido automaticamente
+Estado	texto	preenchido automaticamente
+
+3️⃣ Etapa 3 – Escolha de Plano
+Listar planos com:
+
+Nome
+
+Preço final
+
+Descrição
+
+Módulos incluídos
+
+🔗 Endpoint: GET /plans?is_active=true&segment_id=
+
+✅ Somente um plano pode ser selecionado.
+
+4️⃣ Etapa 4 – Simulação de Pagamento
+Exibir um botão “Simular pagamento”
+
+Ao clicar:
+
+Mostrar feedback de criação: “Estamos criando seu sistema, aguarde...”
+
+Enviar dados via POST /subscribers/
+
+Redirecionar para /login ou /dashboard
+
+📤 Requisição final esperada:
+json
+Copiar
+Editar
+{
+  "name": "João Silva",
+  "clinic_name": "Clínica Saúde Total",
+  "email": "joao@example.com",
+  "phone": "(11) 98765-4321",
+  "document": "123.456.789-00",
+  "zip_code": "01234-567",
+  "address": "Rua das Flores",
+  "number": "123",
+  "city": "São Paulo",
+  "state": "SP",
+  "segment_id": "uuid",
+  "plan_id": "uuid",
+  "password": "senha123",
+  "admin_password": "admin123"
+}
+✅ Regras obrigatórias para a tarefa:
+Não reescreva layout, Sidebar, nem rotas protegidas
+
+Não crie arquivos fora de escopo
+
+Não altere nenhuma lógica de autenticação existente
+
+Não adicione nenhuma lógica de dashboard ou redirecionamento global
+
+Não reutilize rotas do painel admin
+
+🧠 Técnicas recomendadas:
+Utilizar react-hook-form com validação zod por etapa
+
+Utilizar Sonner para feedback (toast)
+
+Requisições com axios (baseURL configurada)
+
+Armazenamento temporário entre etapas com useState ou Zustand
+
+📚 Antes de começar:
+O desenvolvedor DEVE obrigatoriamente ler:
+
+Na raiz:
+README.md
+
+rules.md
+
+TAREFAS.md
+
+Em docs/:
+CRIACAO_PAGINAS.md
+
+design_system.md
+
+ESTRUTURA_COMPONENTES.md
+
+PADRAO_LAYOUT.md
+
+INTEGRACAO_TEMP.md
+
+API_GUIDELINES.md
+
+Após finalizar a página, registrar a tarefa como concluída no arquivo TAREFAS.md com:
+
+md
+Copiar
+Editar
+✅ TAREFA FRONTEND — Formulário público de onboarding de assinantes implementado com sucesso.

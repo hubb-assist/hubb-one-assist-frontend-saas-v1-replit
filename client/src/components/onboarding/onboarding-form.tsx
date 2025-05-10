@@ -21,11 +21,8 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { ArrowLeft, ArrowRight, CheckCircle, Loader2 } from 'lucide-react';
 
-import { segmentsService } from '@/lib/api-segments';
-import { plansService } from '@/lib/api-plans';
-import { subscribersService, viaCepService, type SubscriberFormData } from '@/lib/api-subscribers';
-import { Segment } from '@/components/segments/types';
-import { Plan } from '@/components/plans/types';
+import { viaCepService, type SubscriberFormData } from '@/lib/api-subscribers';
+import { publicService, type PublicSegment, type PublicPlan, getFallbackSegments, getFallbackPlans } from '@/lib/api-public';
 
 // Schema de validação para a Etapa 1 - Dados do Responsável
 const step1Schema = z.object({
@@ -66,12 +63,13 @@ type FormValues = z.infer<typeof completeSchema>;
 
 export default function OnboardingForm() {
   const [step, setStep] = useState(1);
-  const [segments, setSegments] = useState<Segment[]>([]);
-  const [plans, setPlans] = useState<Plan[]>([]);
+  const [segments, setSegments] = useState<PublicSegment[]>([]);
+  const [plans, setPlans] = useState<PublicPlan[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [fetchingCep, setFetchingCep] = useState(false);
   const [selectedSegment, setSelectedSegment] = useState<string | null>(null);
   const [, navigate] = useLocation();
+  const [useFallbackData, setUseFallbackData] = useState(false);
 
   // Formulário completo
   const form = useForm<FormValues>({
@@ -99,15 +97,29 @@ export default function OnboardingForm() {
   useEffect(() => {
     async function loadSegments() {
       try {
-        const data = await segmentsService.getAll({ 
-          is_active: true,
-          // Usando 'nome' em vez de 'name' conforme esperado pela API
-          nome: undefined
-        });
-        setSegments(data);
+        console.log('Tentando carregar segmentos públicos');
+        // Tentar carregar da API primeiro
+        const data = await publicService.getSegments();
+        
+        if (data && data.length > 0) {
+          console.log('Segmentos públicos carregados com sucesso:', data);
+          setSegments(data);
+          setUseFallbackData(false);
+        } else {
+          // Se a API falhar ou retornar vazio, use os dados de fallback
+          console.log('Sem dados da API, usando fallback');
+          const fallbackData = getFallbackSegments();
+          setSegments(fallbackData);
+          setUseFallbackData(true);
+          toast.warning('Usando dados de demonstração (API indisponível)');
+        }
       } catch (error) {
         console.error('Erro ao carregar segmentos:', error);
-        toast.error('Não foi possível carregar os segmentos');
+        // Usar dados de fallback em caso de erro
+        const fallbackData = getFallbackSegments();
+        setSegments(fallbackData);
+        setUseFallbackData(true);
+        toast.warning('Usando dados de demonstração (API indisponível)');
       }
     }
 
@@ -120,24 +132,41 @@ export default function OnboardingForm() {
       if (!selectedSegment) return;
 
       try {
-        // Buscar todos os planos ativos
-        const data = await plansService.getAll({ 
-          is_active: true
-        });
+        console.log(`Tentando carregar planos para o segmento ${selectedSegment}`);
         
-        // Filtrar planos pelo segment_id manualmente
-        const filteredPlans = data.filter(plan => plan.segment_id === selectedSegment);
-        setPlans(filteredPlans);
+        if (useFallbackData) {
+          // Se estamos usando dados de fallback para segmentos, também usaremos para planos
+          console.log('Usando planos de fallback');
+          const fallbackData = getFallbackPlans(selectedSegment);
+          setPlans(fallbackData);
+        } else {
+          // Tentar carregar da API
+          const data = await publicService.getPlans(selectedSegment);
+          
+          if (data && data.length > 0) {
+            console.log('Planos carregados com sucesso:', data);
+            setPlans(data);
+          } else {
+            // Se a API não retornar planos, usar fallback específico para este segmento
+            console.log('Sem planos retornados da API, usando fallback');
+            const fallbackData = getFallbackPlans(selectedSegment);
+            setPlans(fallbackData);
+            toast.warning('Usando planos de demonstração (API indisponível)');
+          }
+        }
       } catch (error) {
         console.error('Erro ao carregar planos:', error);
-        toast.error('Não foi possível carregar os planos');
+        // Usar planos de fallback em caso de erro
+        const fallbackData = getFallbackPlans(selectedSegment);
+        setPlans(fallbackData);
+        toast.warning('Usando planos de demonstração (API indisponível)');
       }
     }
 
     if (selectedSegment) {
       loadPlans();
     }
-  }, [selectedSegment]);
+  }, [selectedSegment, useFallbackData]);
 
   // Atualizar segmento selecionado quando mudar no formulário
   useEffect(() => {
@@ -246,12 +275,22 @@ export default function OnboardingForm() {
         admin_password: data.admin_password,
       };
       
-      await subscribersService.create(formData);
-      
-      toast.success('Assinatura criada com sucesso!');
-      
-      // Redirecionar para a página de login após o cadastro
-      navigate('/login');
+      if (useFallbackData) {
+        // Modo de demonstração - simular cadastro bem-sucedido
+        console.log('Modo de demonstração: simulando cadastro com sucesso');
+        console.log('Dados do formulário:', formData);
+        
+        // Simulação de tempo de processamento
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        toast.success('Demonstração: conta seria criada com sucesso!');
+        navigate('/login');
+      } else {
+        // Modo real - enviar para API
+        await publicService.registerSubscriber(formData);
+        toast.success('Assinatura criada com sucesso!');
+        navigate('/login');
+      }
     } catch (error: any) {
       console.error('Erro ao enviar formulário:', error);
       toast.error(error.response?.data?.message || 'Ocorreu um erro ao criar sua assinatura. Tente novamente.');
@@ -531,7 +570,7 @@ export default function OnboardingForm() {
                                       <li key={index} className="flex items-center gap-2">
                                         <CheckCircle className="h-4 w-4 text-green-500" />
                                         <span>
-                                          {planModule.module?.name || `Módulo ${index + 1}`} 
+                                          {planModule.module_name || `Módulo ${index + 1}`} 
                                           {planModule.is_free ? ' (incluído)' : ''}
                                         </span>
                                       </li>

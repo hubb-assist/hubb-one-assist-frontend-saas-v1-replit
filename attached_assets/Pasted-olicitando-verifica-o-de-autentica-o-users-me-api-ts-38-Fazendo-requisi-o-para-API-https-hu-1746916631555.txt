@@ -1,0 +1,76 @@
+olicitando verificação de autenticação: /users/me
+api.ts:38 Fazendo requisição para API: https://hubb-one-assist-back-hubb-one.replit.app/segments
+api.ts:38 Fazendo requisição para API: https://hubb-one-assist-back-hubb-one.replit.app/users/me
+
+ Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
+api.ts:106 Resposta indica que o usuário não está autenticado: 
+{authenticated: false, status: 'not_authenticated', message: 'Usuário não autenticado'}
+auth.ts:95 Usuário não autenticado (resposta vazia)
+api-segments.ts:26 
+ GET https://hubb-one-assist-back-hubb-one.replit.app/segments/?is_active=true 401 (Unauthorized)
+Promise.then		
+getAll	@	api-segments.ts:26
+loadSegments	@	onboarding-form.tsx:102
+(anonymous)	@	onboarding-form.tsx:114
+api.ts:67 Erro na requisição: 
+AxiosError {message: 'Request failed with status code 401', name: 'AxiosError', code: 'ERR_BAD_REQUEST', config: {…}, request: XMLHttpRequest, …}
+code
+: 
+"ERR_BAD_REQUEST"
+config
+: 
+{transitional: {…}, adapter: Array(3), transformRequest: Array(1), transformResponse: Array(1), timeout: 15000, …}
+message
+: 
+"Request failed with status code 401"
+name
+: 
+"AxiosError"
+request
+: 
+XMLHttpRequest {onreadystatechange: null, readyState: 4, timeout: 15000, withCredentials: true, upload: XMLHttpRequestUpload, …}
+response
+: 
+{data: {…}, status: 401, statusText: '', headers: AxiosHeaders, config: {…}, …}
+status
+: 
+401
+stack
+: 
+"AxiosError: Request failed with status code 401\n    at settle (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/axios.js?v=28387cc6:1229:12)\n    at XMLHttpRequest.onloadend (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/axios.js?v=28387cc6:1561:7)\n    at Axios.request (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/axios.js?v=28387cc6:2119:41)\n    at async Object.getAll (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/lib/api-segments.ts:10:24)\n    at async loadSegments (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/components/onboarding/onboarding-form.tsx?t=1746916198318:100:22)"
+[[Prototype]]
+: 
+Error
+api-segments.ts:42 Erro ao buscar segmentos: 
+AxiosError {message: 'Request failed with status code 401', name: 'AxiosError', code: 'ERR_BAD_REQUEST', config: {…}, request: XMLHttpRequest, …}
+code
+: 
+"ERR_BAD_REQUEST"
+config
+: 
+{transitional: {…}, adapter: Array(3), transformRequest: Array(1), transformResponse: Array(1), timeout: 15000, …}
+message
+: 
+"Request failed with status code 401"
+name
+: 
+"AxiosError"
+request
+: 
+XMLHttpRequest {onreadystatechange: null, readyState: 4, timeout: 15000, withCredentials: true, upload: XMLHttpRequestUpload, …}
+response
+: 
+{data: {…}, status: 401, statusText: '', headers: AxiosHeaders, config: {…}, …}
+status
+: 
+401
+stack
+: 
+"AxiosError: Request failed with status code 401\n    at settle (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/axios.js?v=28387cc6:1229:12)\n    at XMLHttpRequest.onloadend (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/axios.js?v=28387cc6:1561:7)\n    at Axios.request (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/axios.js?v=28387cc6:2119:41)\n    at async Object.getAll (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/lib/api-segments.ts:10:24)\n    at async loadSegments (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/components/onboarding/onboarding-form.tsx?t=1746916198318:100:22)"
+[[Prototype]]
+: 
+Error
+getAll	@	api-segments.ts:42
+await in getAll		
+loadSegments	@	onboarding-form.tsx:102
+(anonymous)	@	onboarding-form.tsx:114

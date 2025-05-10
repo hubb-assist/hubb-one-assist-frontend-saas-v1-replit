@@ -1,5 +1,5 @@
 import React from "react";
-import AppLayout from "@/components/layout/app-layout";
+import MainLayout from "@/components/layout/main-layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { ArrowUp, ArrowDown, DollarSign, ShoppingCart, Users, Percent } from "lucide-react";
@@ -51,7 +51,7 @@ const chartData = [
 
 export default function Dashboard() {
   return (
-    <AppLayout title="Dashboard" subtitle="Visão Geral">
+    <MainLayout>
       <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
         {cardData.map((card, i) => (
           <Card key={i} className="shadow-sm">
@@ -135,6 +135,6 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
-    </AppLayout>
+    </MainLayout>
   );
 }

@@ -45,7 +45,7 @@ export const publicService = {
   async getSegments(): Promise<PublicSegment[]> {
     try {
       console.log('Buscando segmentos públicos');
-      const response = await apiPublic.get('/public/segments/');
+      const response = await apiPublic.get('/public/segments');
       return response.data;
     } catch (error) {
       console.error('Erro ao buscar segmentos públicos:', error);
@@ -57,7 +57,7 @@ export const publicService = {
   async getPlans(segmentId: string): Promise<PublicPlan[]> {
     try {
       console.log(`Buscando planos públicos para o segmento ${segmentId}`);
-      const response = await apiPublic.get('/public/plans/');
+      const response = await apiPublic.get('/public/plans');
       
       // Filtrar apenas os planos do segmento solicitado
       return response.data.filter((plan: PublicPlan) => plan.segment_id === segmentId);

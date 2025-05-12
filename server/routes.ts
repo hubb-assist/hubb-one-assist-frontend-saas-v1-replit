@@ -34,7 +34,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Rota para lidar explicitamente com OPTIONS para preflight CORS
+  // Rota para lidar explicitamente com OPTIONS para preflight CORS (para /external-api)
   app.options('/external-api/*', (req: Request, res: Response) => {
     res.header('Access-Control-Allow-Origin', req.headers.origin as string || '*');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
@@ -42,9 +42,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.header('Access-Control-Allow-Credentials', 'true');
     res.status(200).send();
   });
+  
+  // Rota para lidar explicitamente com OPTIONS para preflight CORS (para /subscribers)
+  app.options('/subscribers*', (req: Request, res: Response) => {
+    res.header('Access-Control-Allow-Origin', req.headers.origin as string || '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.status(200).send();
+  });
 
+  // Configurar proxy para rota raiz direta
+  // @ts-ignore - Ignorando erro de propriedade 'logLevel'
+  const directApiProxy = createProxyMiddleware({
+    target: API_TARGET,
+    changeOrigin: true,
+    secure: false,
+    pathRewrite: {} // Sem reescrever caminhos
+  });
+  
   // Aplicar middlewares na ordem correta
   app.use('/external-api', logProxyRequests, addCorsHeaders, apiProxy);
+  
+  // Adicionar suporte à rota raiz também (/subscribers, etc)
+  app.use('/subscribers', logProxyRequests, addCorsHeaders, directApiProxy);
   
   // API endpoint para verificar se o proxy está funcionando
   app.get('/api/check-proxy', (req: Request, res: Response) => {

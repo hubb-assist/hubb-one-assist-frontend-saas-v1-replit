@@ -104,9 +104,12 @@ export const subscribersService = {
         is_active: params?.is_active
       };
       
-      console.log('Fazendo requisição para API:', '/external-api/subscribers', 'com parâmetros:', paginationParams);
-      // Usando o proxy local que foi configurado pelo backend
-      const response = await axios.get<ApiResponse>('/external-api/subscribers', { 
+      // URL correta para a API: direto na raiz (sem /api/ ou /external-api/)
+      console.log('Fazendo requisição para API:', '/subscribers', 'com parâmetros:', paginationParams);
+      
+      // ✅ URL corrigida: /subscribers (sem prefixos)
+      // ✅ withCredentials: true para enviar cookies de autenticação
+      const response = await axios.get<ApiResponse>('/subscribers', { 
         params: paginationParams,
         withCredentials: true,
         headers: {
@@ -133,22 +136,8 @@ export const subscribersService = {
         console.log('Mensagem do servidor:', axiosError.response.data.message);
       }
       
-      try {
-        // Tentar o endpoint de fallback caso a API principal falhe
-        console.log('Tentando endpoint fallback');
-        const fallbackResponse = await api.get<ApiResponse>('/api/subscribers/fallback');
-        console.log('Usando dados de fallback');
-        
-        // Retornar também a estrutura de paginação para o fallback
-        return {
-          data: fallbackResponse.data.items,
-          total: fallbackResponse.data.total || fallbackResponse.data.items.length,
-          page: 1,
-          pageSize: fallbackResponse.data.items.length
-        };
-      } catch (fallbackError) {
-        console.error('Erro ao usar endpoint fallback:', fallbackError);
-      }
+      // ✅ Removido código de fallback para expor o erro real
+      // ✅ Agora podemos ver o erro verdadeiro sem máscaras
       
       // Retornar objeto vazio para evitar erros na tela
       return {
@@ -163,45 +152,19 @@ export const subscribersService = {
   // Buscar assinante por ID 
   async getById(id: string): Promise<SubscriberDetail> {
     try {
-      // Tentar usar o proxy local configurado pelo backend
-      console.log(`Fazendo requisição GET para API: /external-api/subscribers/${id}`);
+      // ✅ URL corrigida: direto na raiz (sem /api/ ou /external-api/)
+      console.log(`Fazendo requisição GET para API: /subscribers/${id}`);
       
-      try {
-        const response = await axios.get<SubscriberDetail>(`/external-api/subscribers/${id}`, {
-          withCredentials: true,
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          }
-        });
-        
-        console.log('Resposta de detalhes recebida:', response.status);
-        return response.data;
-      } catch (directError) {
-        console.error(`Erro ao buscar assinante diretamente. Tentando abordagem alternativa...`, directError);
-        
-        // Plano B: buscar via listagem completa
-        console.log(`Buscando assinante ${id} pela listagem completa`);
-        
-        const response = await this.getAll({ limit: 100 }); // Pegar um limite grande para garantir
-        const subscribers = response.data;
-        
-        // Encontrar o assinante pelo ID
-        const subscriber = subscribers.find(s => s.id === id);
-        
-        if (!subscriber) {
-          throw new Error(`Assinante com ID ${id} não encontrado`);
+      const response = await axios.get<SubscriberDetail>(`/subscribers/${id}`, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         }
-        
-        console.log('Assinante encontrado na listagem:', subscriber);
-        
-        // Converter para o formato SubscriberDetail
-        const subscriberDetail: SubscriberDetail = {
-          ...subscriber as any,
-        };
-        
-        return subscriberDetail;
-      }
+      });
+      
+      console.log('Resposta de detalhes recebida:', response.status);
+      return response.data;
     } catch (error) {
       console.error(`Erro ao buscar assinante com ID ${id}:`, error);
       
@@ -211,6 +174,7 @@ export const subscribersService = {
         console.log('Mensagem do servidor:', axiosError.response.data.message);
       }
       
+      // Simplificando o código para ver o erro real
       throw error;
     }
   },
@@ -218,11 +182,11 @@ export const subscribersService = {
   // Editar assinante
   async update(id: string, data: Partial<SubscriberFormData>): Promise<Subscriber> {
     try {
-      // Usar o endpoint correto com o proxy local
-      console.log(`Fazendo requisição PUT para API: /external-api/subscribers/${id}`);
+      // ✅ URL corrigida: direto na raiz (sem /api/ ou /external-api/)
+      console.log(`Fazendo requisição PUT para API: /subscribers/${id}`);
       console.log('Dados enviados para atualização:', data);
       
-      const response = await axios.put<Subscriber>(`/external-api/subscribers/${id}`, data, {
+      const response = await axios.put<Subscriber>(`/subscribers/${id}`, data, {
         withCredentials: true,
         headers: {
           'Content-Type': 'application/json',
@@ -248,10 +212,11 @@ export const subscribersService = {
   // Atualizar status do assinante (ativar/desativar)
   async updateStatus(id: string, isActive: boolean): Promise<Subscriber> {
     try {
-      // IMPORTANTE: Usar URLs sem barras no final
+      // ✅ URL corrigida: direto na raiz (sem /api/ ou /external-api/)
+      // ✅ IMPORTANTE: Usar URLs sem barras no final
       const endpoint = isActive 
-        ? `/external-api/subscribers/${id}/activate` 
-        : `/external-api/subscribers/${id}/deactivate`;
+        ? `/subscribers/${id}/activate` 
+        : `/subscribers/${id}/deactivate`;
       
       console.log(`Fazendo requisição PATCH para API: ${endpoint}`);
       const response = await axios.patch<Subscriber>(endpoint, {}, {

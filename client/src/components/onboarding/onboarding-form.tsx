@@ -434,7 +434,7 @@ export default function OnboardingForm() {
     switch (step) {
       case 1:
         return (
-          <div className="space-y-4">
+          <div className="space-y-4" key="step-1-form">
             <FormField
               control={form.control}
               name="name"
@@ -554,7 +554,7 @@ export default function OnboardingForm() {
         
       case 2:
         return (
-          <div className="space-y-4">
+          <div className="space-y-4" key="step-2-form">
             <FormField
               control={form.control}
               name="zip_code"
@@ -640,7 +640,7 @@ export default function OnboardingForm() {
         
       case 3:
         return (
-          <div className="space-y-6">
+          <div className="space-y-6" key="step-3-form">
             <FormField
               control={form.control}
               name="plan_id"

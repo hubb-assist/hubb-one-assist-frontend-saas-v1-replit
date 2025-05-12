@@ -2,8 +2,8 @@
 
 // URLs da API
 export const API_CONFIG = {
-  // URL da API de produção via proxy para evitar problemas de CORS
-  BASE_URL: '/external-api',
+  // URL da API de produção (voltando à URL direta original)
+  BASE_URL: 'https://hubb-one-assist-back-hubb-one.replit.app',
   
   // Timeout para requisições (em milissegundos)
   TIMEOUT: 15000,

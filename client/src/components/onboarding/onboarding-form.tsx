@@ -191,6 +191,7 @@ export default function OnboardingForm() {
   // Formulário completo
   const form = useForm<FormValues>({
     resolver: zodResolver(completeSchema),
+    shouldUnregister: true, // Importante: garantir que campos removidos do DOM sejam desregistrados
     defaultValues: {
       name: '',
       document: '',
@@ -241,6 +242,21 @@ export default function OnboardingForm() {
     loadSegments();
   }, []);
 
+  // Resetar campos da etapa 2 quando mudar para essa etapa
+  useEffect(() => {
+    if (step === 2) {
+      console.log('Resetando campos da etapa 2...');
+      form.reset({
+        ...form.getValues(), // Manter valores existentes de outros campos
+        zip_code: '',        // Limpar campos específicos da etapa 2
+        address: '',
+        number: '',
+        city: '',
+        state: ''
+      });
+    }
+  }, [step, form]);
+  
   // Carregar planos quando o segmento for selecionado
   useEffect(() => {
     async function loadPlans() {

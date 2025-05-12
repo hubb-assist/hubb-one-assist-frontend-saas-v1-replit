@@ -361,6 +361,15 @@ export default function OnboardingForm() {
     }
   };
 
+  // Monitorar mudança de step para realizar tarefas específicas
+  useEffect(() => {
+    // Garantir que os dados do resumo na etapa 4 estejam atualizados
+    if (step === 4) {
+      // Forçar atualização dos valores para exibição no resumo
+      form.trigger();
+    }
+  }, [step, form]);
+
   // Validação específica por etapa
   const validateCurrentStep = async () => {
     try {
@@ -415,7 +424,15 @@ export default function OnboardingForm() {
 
   // Enviar formulário completo
   const onSubmit = async (data: FormValues) => {
+    // Verificar se estamos na última etapa e se os campos obrigatórios estão preenchidos
+    const isLastStepValid = await validateCurrentStep();
+    if (!isLastStepValid) {
+      toast.error('Por favor, preencha todos os campos obrigatórios antes de enviar o formulário.');
+      return;
+    }
+    
     setIsLoading(true);
+    
     try {
       toast('Estamos criando seu sistema, aguarde...', {
         duration: 5000,
@@ -438,19 +455,18 @@ export default function OnboardingForm() {
         admin_password: data.password, // Usar a mesma senha para admin
       };
       
-      try {
-        // Enviar para API
-        console.log('Enviando dados para API:', formData);
-        await publicService.registerSubscriber(formData);
-        toast.success('Assinatura criada com sucesso!');
-        navigate('/login');
-      } catch (error) {
-        console.error('Erro ao registrar assinante:', error);
-        toast.error('Não foi possível completar o cadastro. Por favor, tente novamente mais tarde.');
-      }
+      console.log('Enviando dados para API:', formData);
+      const response = await publicService.registerSubscriber(formData);
+      console.log('Resposta da API:', response);
+      
+      toast.success('Assinatura criada com sucesso!');
+      // Redirecionamento para a página de login após o registro
+      navigate('/login');
     } catch (error: any) {
-      console.error('Erro ao enviar formulário:', error);
-      toast.error(error.response?.data?.message || 'Ocorreu um erro ao criar sua assinatura. Tente novamente.');
+      console.error('Erro ao registrar assinante:', error);
+      const errorMessage = error.response?.data?.message || 
+                         'Não foi possível completar o cadastro. Por favor, tente novamente mais tarde.';
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -740,6 +756,10 @@ export default function OnboardingForm() {
         );
         
       case 4:
+        // Obter todos os valores atuais do formulário
+        const formValues = form.getValues();
+        const selectedPlan = plans.find(p => p.id === formValues.plan_id);
+        
         return (
           <div className="space-y-6">
             <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-green-800">
@@ -747,19 +767,39 @@ export default function OnboardingForm() {
               <dl className="mt-2 space-y-1">
                 <div className="flex justify-between">
                   <dt>Nome:</dt>
-                  <dd>{form.getValues('name')}</dd>
+                  <dd>{formValues.name || '-'}</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt>Clínica:</dt>
-                  <dd>{form.getValues('clinic_name')}</dd>
+                  <dd>{formValues.clinic_name || '-'}</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt>E-mail:</dt>
-                  <dd>{form.getValues('email')}</dd>
+                  <dd>{formValues.email || '-'}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt>Telefone:</dt>
+                  <dd>{formValues.phone || '-'}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt>Documento:</dt>
+                  <dd>{formValues.document || '-'}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt>Endereço:</dt>
+                  <dd>{`${formValues.address || '-'}, ${formValues.number || '-'}`}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt>Cidade/UF:</dt>
+                  <dd>{`${formValues.city || '-'}/${formValues.state || '-'}`}</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt>Plano:</dt>
-                  <dd>{plans.find(p => p.id === form.getValues('plan_id'))?.name || 'Plano selecionado'}</dd>
+                  <dd>{selectedPlan?.name || 'Plano selecionado'}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt>Preço:</dt>
+                  <dd>R$ {selectedPlan?.base_price.toFixed(2).replace('.', ',') || '0,00'}</dd>
                 </div>
               </dl>
             </div>

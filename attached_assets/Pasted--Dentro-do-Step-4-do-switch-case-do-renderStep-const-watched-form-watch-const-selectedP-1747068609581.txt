@@ -1,0 +1,101 @@
+// Dentro do Step 4 do switch-case do renderStep()
+
+const watched = form.watch();
+const selectedPlan = plans.find(p => p.id === watched.plan_id);
+
+return (
+  <div className="space-y-6">
+    {/* DEBUG opcional */}
+    <pre className="bg-yellow-50 p-2 text-xs text-muted-foreground border rounded">
+      DEBUG: Dados capturados do formulário
+      {JSON.stringify(watched, null, 2)}
+    </pre>
+
+    <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-green-800">
+      <h3 className="font-semibold">Resumo da assinatura</h3>
+      <dl className="mt-2 space-y-1">
+        <div className="flex justify-between"><dt>Nome:</dt><dd>{watched.name || '-'}</dd></div>
+        <div className="flex justify-between"><dt>Clínica:</dt><dd>{watched.clinic_name || '-'}</dd></div>
+        <div className="flex justify-between"><dt>E-mail:</dt><dd>{watched.email || '-'}</dd></div>
+        <div className="flex justify-between"><dt>Telefone:</dt><dd>{watched.phone || '-'}</dd></div>
+        <div className="flex justify-between"><dt>Documento:</dt><dd>{watched.document || '-'}</dd></div>
+        <div className="flex justify-between"><dt>Endereço:</dt><dd>{watched.address || '-'}, {watched.number || '-'}</dd></div>
+        <div className="flex justify-between"><dt>Cidade/UF:</dt><dd>{watched.city || '-'}/{watched.state || '-'}</dd></div>
+        <div className="flex justify-between"><dt>Plano:</dt><dd>{selectedPlan?.name || 'Plano selecionado'}</dd></div>
+        <div className="flex justify-between"><dt>Preço:</dt><dd>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(selectedPlan?.base_price || 0)}</dd></div>
+      </dl>
+    </div>
+
+    <FormField
+      control={form.control}
+      name="admin_password"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>Senha de acesso</FormLabel>
+          <FormControl>
+            <Input type="password" {...field} />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+
+    <FormField
+      control={form.control}
+      name="password_confirmation"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>Confirme sua senha</FormLabel>
+          <FormControl>
+            <Input type="password" {...field} />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+
+    <FormField
+      control={form.control}
+      name="terms"
+      render={({ field }) => (
+        <FormItem className="flex items-start space-x-2">
+          <FormControl>
+            <input
+              type="checkbox"
+              checked={!!field.value}
+              onChange={(e) => field.onChange(e.target.checked)}
+              className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+            />
+          </FormControl>
+          <div className="leading-none space-y-1">
+            <FormLabel>
+              Li e aceito os termos de uso e política de privacidade
+            </FormLabel>
+            <FormMessage />
+          </div>
+        </FormItem>
+      )}
+    />
+
+    {/* Este botão não usa handleSubmit direto, faz validação isolada e envia */}
+    <Button
+      type="button"
+      onClick={async () => {
+        console.log('[DEBUG] Botão Criar conta clicado');
+
+        const isValid = await form.trigger(['admin_password', 'password_confirmation', 'terms']);
+        console.log('[DEBUG] Validação etapa 4:', isValid);
+        if (!isValid) {
+          toast.error('Por favor, preencha todos os campos obrigatórios corretamente');
+          return;
+        }
+
+        const data = form.getValues();
+        console.log('[DEBUG] Submetendo dados finais:', data);
+        await onSubmit(data); // chama sua função de envio real
+      }}
+    >
+      Criar conta
+    </Button>
+  </div>
+);

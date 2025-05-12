@@ -1,0 +1,76 @@
+⚠️ Problema Atual — Etapa 4 (Resumo + Botão "Criar conta")
+❗ Sintomas observados:
+Resumo da assinatura aparece vazio
+
+Mesmo com os dados digitados nas etapas anteriores, os campos como nome, clínica, e-mail etc. mostram -
+
+O form.getValues(...) no resumo não retorna os dados esperados
+
+Botão “Criar conta” não envia
+
+O botão dispara o log [DEBUG] Botão Criar conta clicado
+
+Mas Form válido: false mesmo com tudo aparentemente preenchido
+
+O console mostra erros de validação em campos de etapas anteriores (ex: name, email, document, etc.)
+
+terms aparece como true, então não é o problema
+
+🧠 Diagnóstico Técnico Completo
+🔄 1. Formulário único está tentando validar todos os campos de todas as etapas na submissão final
+O form.handleSubmit está sendo usado diretamente no botão final, mas o resolver do Zod está configurado com completeSchema, que inclui todos os campos de todos os passos.
+
+Se algum campo de etapas anteriores estiver fora do DOM (não renderizado), o React Hook Form não consegue validar corretamente, a menos que você tenha shouldUnregister: true, o que não está funcionando corretamente ainda.
+
+🧩 2. Resumo usa form.getValues() mas o useForm não está atualizando corretamente
+Você está acessando os valores no render:
+
+tsx
+Copiar
+Editar
+form.getValues('name')
+Mas se name foi desregistrado (por shouldUnregister) ou nunca foi atualizado corretamente (por bindings quebrados), o valor vem vazio ou undefined.
+
+✅ Soluções Recomendadas
+🔧 Etapa 1 — Garantir que o useForm esteja assim:
+ts
+Copiar
+Editar
+const form = useForm<FormValues>({
+  resolver: zodResolver(completeSchema),
+  shouldUnregister: true, // FUNDAMENTAL
+  defaultValues: {
+    name: '',
+    email: '',
+    document: '',
+    ...
+  }
+});
+🔧 Etapa 2 — Validar somente o que está na tela atual
+Ao invés de fazer form.handleSubmit(onSubmit) no botão final diretamente, crie uma função que:
+
+Valida apenas os campos da etapa 4:
+
+ts
+Copiar
+Editar
+await form.trigger(['admin_password', 'terms']);
+Se for válido, executa o onSubmit(form.getValues())
+
+🔧 Etapa 3 — Forçar o resumo a ser reativo
+Evite form.getValues() diretamente no JSX. Use form.watch():
+
+tsx
+Copiar
+Editar
+const watchedValues = form.watch(); // assiste todos
+
+<p>Nome: {watchedValues.name}</p>
+Isso garante que o resumo reaja a mudanças e sempre mostre os valores corretos.
+
+📌 Resumo Final
+Problema	Causa	Solução
+Resumo vazio	form.getValues() está pegando campos não atualizados ou desregistrados	Usar form.watch() ou estados internos
+Botão não envia	Form tenta validar todos os campos e alguns estão "fora do DOM"	Validar apenas os campos da etapa 4 antes de chamar onSubmit()
+terms OK, mas nada acontece	O resto do form falha silenciosamente	Corrigir esquema e validações parciais por etapa
+

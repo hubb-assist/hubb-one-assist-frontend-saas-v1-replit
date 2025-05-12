@@ -217,7 +217,8 @@ export default function OnboardingForm() {
   // Formulário completo
   const form = useForm<FormValues>({
     resolver: zodResolver(completeSchema),
-    shouldUnregister: true, // Importante: garantir que campos removidos do DOM sejam desregistrados
+    // Remover shouldUnregister para manter os valores entre etapas
+    // Isso é fundamental para o resumo final e submissão
     defaultValues: {
       name: '',
       document: '',
@@ -235,6 +236,8 @@ export default function OnboardingForm() {
       password_confirmation: '',
       terms: false,
     },
+    // Modo="all" vai mostrar os erros assim que o campo mudar
+    mode: "onChange"
   });
 
   // Carregar segmentos ao iniciar
@@ -430,23 +433,25 @@ export default function OnboardingForm() {
   const onSubmit = async (data: FormValues) => {
     console.log('[DEBUG] Submissão iniciada:', data);
     console.log('[DEBUG] Valor do terms:', data.terms);
-    console.log('[DEBUG] Formulário válido?', form.formState.isValid);
     console.log('[DEBUG] Dados completos do formulário:', data);
     
-    // Verificar se os termos foram aceitos
-    if (!data.terms) {
-      toast.error('Você precisa aceitar os termos para criar a conta.');
-      form.setError('terms', { 
-        type: 'manual',
-        message: 'Você precisa aceitar os termos'
-      });
-      return;
-    }
+    // Verificar dados essenciais
+    const requiredFields = [
+      { field: 'name', label: 'Nome' },
+      { field: 'email', label: 'E-mail' },
+      { field: 'document', label: 'Documento' },
+      { field: 'phone', label: 'Telefone' },
+      { field: 'segment_id', label: 'Segmento' },
+      { field: 'plan_id', label: 'Plano' },
+      { field: 'password', label: 'Senha' },
+      { field: 'terms', label: 'Termos de uso' }
+    ];
     
-    // Verificar se estamos na última etapa e se os campos obrigatórios estão preenchidos
-    const isLastStepValid = await validateCurrentStep();
-    if (!isLastStepValid) {
-      toast.error('Por favor, preencha todos os campos obrigatórios antes de enviar o formulário.');
+    // Verificar se algum campo obrigatório está vazio
+    const missingFields = requiredFields.filter(f => !data[f.field as keyof FormValues]);
+    if (missingFields.length > 0) {
+      const missingLabels = missingFields.map(f => f.label).join(', ');
+      toast.error(`Campos obrigatórios não preenchidos: ${missingLabels}`);
       return;
     }
     
@@ -775,12 +780,12 @@ export default function OnboardingForm() {
         );
         
       case 4:
-        // Obter todos os valores atuais do formulário de uma só vez
-        const allFormValues = form.getValues();
-        console.log('[DEBUG] Valores completos do formulário na etapa 4:', allFormValues);
+        // Usar form.watch() para valores reativos que vão atualizar automaticamente o UI
+        const watched = form.watch();
+        console.log('[DEBUG] Valores reativos do formulário na etapa 4:', watched);
         
         // Buscar o plano selecionado
-        const selectedPlan = plans.find(p => p.id === allFormValues.plan_id);
+        const selectedPlan = plans.find(p => p.id === watched.plan_id);
         console.log('[DEBUG] Plano selecionado:', selectedPlan);
         
         return (
@@ -788,7 +793,7 @@ export default function OnboardingForm() {
             {/* Debug - Valores do formulário */}
             <div className="bg-amber-50 p-2 mb-4 text-xs rounded border border-amber-200">
               <p className="font-mono">DEBUG: Dados capturados do formulário</p>
-              <pre className="mt-1 overflow-auto max-h-24">{JSON.stringify(allFormValues, null, 2)}</pre>
+              <pre className="mt-1 overflow-auto max-h-24">{JSON.stringify(watched, null, 2)}</pre>
             </div>
             
             <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-green-800">
@@ -796,31 +801,31 @@ export default function OnboardingForm() {
               <dl className="mt-2 space-y-1">
                 <div className="flex justify-between py-1 border-b border-green-100">
                   <dt className="font-medium">Nome:</dt>
-                  <dd className="font-semibold">{allFormValues.name || '-'}</dd>
+                  <dd className="font-semibold">{watched.name || '-'}</dd>
                 </div>
                 <div className="flex justify-between py-1 border-b border-green-100">
                   <dt className="font-medium">Clínica:</dt>
-                  <dd className="font-semibold">{allFormValues.clinic_name || '-'}</dd>
+                  <dd className="font-semibold">{watched.clinic_name || '-'}</dd>
                 </div>
                 <div className="flex justify-between py-1 border-b border-green-100">
                   <dt className="font-medium">E-mail:</dt>
-                  <dd className="font-semibold">{allFormValues.email || '-'}</dd>
+                  <dd className="font-semibold">{watched.email || '-'}</dd>
                 </div>
                 <div className="flex justify-between py-1 border-b border-green-100">
                   <dt className="font-medium">Telefone:</dt>
-                  <dd className="font-semibold">{allFormValues.phone || '-'}</dd>
+                  <dd className="font-semibold">{watched.phone || '-'}</dd>
                 </div>
                 <div className="flex justify-between py-1 border-b border-green-100">
                   <dt className="font-medium">Documento:</dt>
-                  <dd className="font-semibold">{allFormValues.document || '-'}</dd>
+                  <dd className="font-semibold">{watched.document || '-'}</dd>
                 </div>
                 <div className="flex justify-between py-1 border-b border-green-100">
                   <dt className="font-medium">Endereço:</dt>
-                  <dd className="font-semibold">{`${allFormValues.address || '-'}, ${allFormValues.number || '-'}`}</dd>
+                  <dd className="font-semibold">{`${watched.address || '-'}, ${watched.number || '-'}`}</dd>
                 </div>
                 <div className="flex justify-between py-1 border-b border-green-100">
                   <dt className="font-medium">Cidade/UF:</dt>
-                  <dd className="font-semibold">{`${allFormValues.city || '-'}/${allFormValues.state || '-'}`}</dd>
+                  <dd className="font-semibold">{`${watched.city || '-'}/${watched.state || '-'}`}</dd>
                 </div>
                 <div className="flex justify-between py-1 border-b border-green-100">
                   <dt className="font-medium">Plano:</dt>
@@ -828,7 +833,9 @@ export default function OnboardingForm() {
                 </div>
                 <div className="flex justify-between font-medium py-1">
                   <dt className="font-medium">Preço:</dt>
-                  <dd className="text-green-700 font-bold text-base">R$ {selectedPlan?.base_price?.toFixed(2) || '0,00'}</dd>
+                  <dd className="text-green-700 font-bold text-base">
+                    {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(selectedPlan?.base_price || 0)}
+                  </dd>
                 </div>
               </dl>
             </div>
@@ -1020,24 +1027,27 @@ export default function OnboardingForm() {
               </Button>
             ) : (
               <Button 
-                type="submit" 
+                type="button" 
                 disabled={isLoading}
-                onClick={(e) => {
+                onClick={async () => {
                   // Adicionar logs antes da submissão para depuração
                   console.log('[DEBUG] Botão Criar conta clicado');
-                  console.log('[DEBUG] Form válido:', form.formState.isValid);
-                  console.log('[DEBUG] Terms checked:', form.getValues('terms'));
-                  console.log('[DEBUG] Erros de validação:', form.formState.errors);
                   
-                  // Verificar se os terms estão marcados
-                  if (!form.getValues('terms')) {
-                    e.preventDefault(); // Impedir submissão se os termos não estiverem aceitos
-                    toast.error('Você precisa aceitar os termos para continuar');
-                    form.setError('terms', { 
-                      type: 'manual',
-                      message: 'Você precisa aceitar os termos'
-                    });
+                  // Validar APENAS os campos da etapa 4
+                  const isValid = await form.trigger(['password', 'password_confirmation', 'terms']);
+                  console.log('[DEBUG] Validação da etapa 4:', isValid);
+                  
+                  if (!isValid) {
+                    toast.error('Por favor, preencha todos os campos obrigatórios');
+                    return;
                   }
+                  
+                  // Se a validação da etapa 4 passar, pegar todos os dados e enviar
+                  const data = form.getValues();
+                  console.log('[DEBUG] Dados completos para envio:', data);
+                  
+                  // Chamar onSubmit diretamente com os dados
+                  await onSubmit(data);
                 }}
               >
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

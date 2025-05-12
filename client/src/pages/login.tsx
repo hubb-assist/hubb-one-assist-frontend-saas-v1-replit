@@ -105,7 +105,7 @@ export default function Login() {
           <img
             src="https://sq360.com.br/logo-hubb-novo/logo_hubb_assisit.png"
             alt="HUBB Assist Logo"
-            className="h-20" // Aumentado para maior visibilidade
+            className="h-24" // Aumentado para maior visibilidade e destacar no fundo escuro
           />
         </div>
         

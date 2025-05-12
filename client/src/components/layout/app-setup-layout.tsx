@@ -10,7 +10,7 @@ interface AppSetupLayoutProps {
  */
 export default function AppSetupLayout({ children }: AppSetupLayoutProps) {
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen bg-[#2D113F]">
       {/* Conteúdo principal sem cabeçalho */}
       <main className="flex-1 flex items-center justify-center">
         {children}
@@ -19,7 +19,7 @@ export default function AppSetupLayout({ children }: AppSetupLayoutProps) {
       {/* Footer simplificado */}
       <footer className="py-4 mt-auto">
         <div className="mx-auto px-4 max-w-7xl">
-          <p className="text-xs text-gray-500 text-center">© {new Date().getFullYear()} HUBB ONE Assist. Todos os direitos reservados.</p>
+          <p className="text-xs text-white/50 text-center">© {new Date().getFullYear()} HUBB ONE Assist. Todos os direitos reservados.</p>
         </div>
       </footer>
       

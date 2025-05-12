@@ -3,21 +3,21 @@ import OnboardingForm from '@/components/onboarding/onboarding-form';
 
 export default function Onboarding() {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-[#2D113F] flex flex-col">
       {/* Header simples */}
-      <header className="bg-white shadow-sm py-4 px-6">
+      <header className="bg-[#1B0B25] shadow-sm py-4 px-6">
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center">
             <img 
               src="https://sq360.com.br/logo-hubb-novo/logo_hubb_assisit.png" 
               alt="HUBB ONE Assist" 
-              className="h-8"
+              className="h-10"
             />
           </div>
           <div>
             <a 
               href="/login" 
-              className="text-sm font-medium text-primary hover:text-primary/90"
+              className="text-sm font-medium text-white hover:text-white/90"
             >
               Já possui conta? Faça login
             </a>
@@ -31,17 +31,17 @@ export default function Onboarding() {
       </main>
       
       {/* Footer simples */}
-      <footer className="bg-gray-100 py-8 px-6 border-t">
+      <footer className="bg-[#1B0B25] py-8 px-6 border-t border-white/10">
         <div className="container mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-white/60">
               &copy; {new Date().getFullYear()} HUBB ONE Assist. Todos os direitos reservados.
             </p>
             <div className="mt-4 md:mt-0">
-              <a href="#" className="text-sm text-gray-500 hover:text-gray-700 mr-4">
+              <a href="#" className="text-sm text-white/60 hover:text-white/90 mr-4">
                 Termos de Uso
               </a>
-              <a href="#" className="text-sm text-gray-500 hover:text-gray-700">
+              <a href="#" className="text-sm text-white/60 hover:text-white/90">
                 Política de Privacidade
               </a>
             </div>

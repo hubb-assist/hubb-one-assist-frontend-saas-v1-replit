@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/subscribers/data-table';
 import { columns } from '@/components/subscribers/columns';
 import SubscriberDetailView from '@/components/subscribers/subscriber-detail';
-import { SubscriberEditForm } from '@/components/subscribers/subscriber-edit-form';
+import { SubscriberEditForm } from '@/components/subscribers/subscriber-edit-form-new';
 import { subscribersService } from '@/lib/api-subscribers';
 import { Subscriber, SubscriberDetail } from '@/components/subscribers/types';
 import {

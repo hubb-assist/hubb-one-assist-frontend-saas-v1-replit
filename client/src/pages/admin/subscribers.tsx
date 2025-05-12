@@ -36,11 +36,27 @@ export default function Subscribers() {
   const [statusAction, setStatusAction] = useState<'activate' | 'deactivate'>('activate');
   const queryClient = useQueryClient();
 
+  // Verificar status do proxy
+  const { data: proxyStatus } = useQuery({
+    queryKey: ['/api/check-proxy'],
+    queryFn: async () => {
+      try {
+        const response = await fetch('/api/check-proxy');
+        return await response.json();
+      } catch (error) {
+        console.error('Erro ao verificar status do proxy:', error);
+        return { status: 'error', message: 'Proxy indisponível' };
+      }
+    },
+    staleTime: Infinity // Não precisa revalidar durante a sessão
+  });
+
   // Buscar lista de assinantes
-  const { data: subscribers = [], isLoading, error: subscribersError } = useQuery({
+  const { data: subscribers = [], isLoading, error: subscribersError, refetch } = useQuery({
     queryKey: ['/api/subscribers'],
     queryFn: async () => {
       try {
+        console.log('Fazendo requisição para API:', '/external-api/subscribers');
         const data = await subscribersService.getAll();
         return data;
       } catch (error) {
@@ -121,27 +137,89 @@ export default function Subscribers() {
   
   // Se houver um erro, exibir mensagem de erro com informações úteis
   if (subscribersError) {
+    // Verificar o tipo específico de erro para uma mensagem mais precisa
+    const errorCode = subscribersError instanceof Error && 'code' in subscribersError 
+      ? (subscribersError as any).code 
+      : 'UNKNOWN';
+    
+    const errorStatus = subscribersError instanceof Error && 
+      'response' in subscribersError && 
+      (subscribersError as any).response?.status;
+    
+    const errorMessage = subscribersError instanceof Error 
+      ? subscribersError.message 
+      : 'Erro desconhecido';
+    
+    let statusDesc = '';
+    if (errorStatus === 404) {
+      statusDesc = 'Endpoint não encontrado (404)';
+    } else if (errorStatus === 401) {
+      statusDesc = 'Não autorizado (401) - Verifique a autenticação';
+    } else if (errorStatus === 403) {
+      statusDesc = 'Acesso proibido (403) - Verifique permissões';
+    } else if (errorStatus >= 500) {
+      statusDesc = `Erro no servidor (${errorStatus})`;
+    } else if (errorCode === 'ERR_NETWORK') {
+      statusDesc = 'Erro de conexão de rede - Possível problema de CORS';
+    }
+    
     return (
       <AppShell>
         <div className="flex-1">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">Assinantes</h2>
+            <div className="flex space-x-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => refetch()}
+              >
+                Tentar novamente
+              </Button>
+            </div>
           </div>
           
           <div className="bg-amber-50 border border-amber-200 rounded-md p-6">
             <div className="text-center mb-6">
               <h3 className="text-lg font-semibold text-amber-600 mb-2">
-                Endpoint em implementação
+                {statusDesc || 'Endpoint em implementação'}
               </h3>
               <p className="text-gray-600 mb-4">
                 Não foi possível conectar ao endpoint <code>/subscribers</code>. 
-                De acordo com a documentação da API, esse endpoint existe, mas ainda pode estar em implementação no backend.
+                {errorCode === 'ERR_NETWORK' 
+                  ? ' Isso pode indicar um problema de CORS (Cross-Origin Resource Sharing) entre o frontend e a API.' 
+                  : ' Este endpoint pode estar em implementação ou com problemas temporários.'}
               </p>
+              
+              {/* Status do proxy */}
+              <div className="my-4 p-3 bg-gray-50 rounded-md">
+                <h4 className="font-medium text-gray-800 mb-1">Status do proxy</h4>
+                {proxyStatus ? (
+                  <div className="text-sm">
+                    <p>Status: <span className={proxyStatus.status === 'ok' ? 'text-green-600' : 'text-red-600'}>
+                      {proxyStatus.status === 'ok' ? 'Funcionando' : 'Com problemas'}
+                    </span></p>
+                    {proxyStatus.message && <p className="text-gray-600">{proxyStatus.message}</p>}
+                    {proxyStatus.proxyTarget && <p className="text-gray-600">Destino: {proxyStatus.proxyTarget}</p>}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-600">Verificando status do proxy...</p>
+                )}
+              </div>
+              
               <details className="text-sm text-gray-500 mt-4 text-left">
                 <summary>Detalhes técnicos (para desenvolvedores)</summary>
                 <p className="mt-2 p-2 bg-gray-100 rounded overflow-auto">
-                  Erro: {subscribersError instanceof Error ? subscribersError.message : 'Erro desconhecido'}
+                  Erro: {errorMessage}
                 </p>
+                <p className="mt-2">
+                  Código: {errorCode}
+                </p>
+                {errorStatus && (
+                  <p className="mt-2">
+                    Status HTTP: {errorStatus}
+                  </p>
+                )}
                 <p className="mt-2">
                   Estamos tentando acessar: <code>/external-api/subscribers</code>
                 </p>
@@ -150,10 +228,10 @@ export default function Subscribers() {
                   <br /><code>https://hubb-one-assist-back-hubb-one.replit.app/subscribers/</code>
                 </p>
               </details>
+              
               <div className="mt-4 flex justify-center space-x-4">
                 <Button
-                  variant="outline" 
-                  onClick={() => queryClient.invalidateQueries({ queryKey: ['/api/subscribers'] })}
+                  onClick={() => refetch()}
                 >
                   Tentar novamente
                 </Button>
@@ -161,12 +239,25 @@ export default function Subscribers() {
             </div>
 
             <div className="border-t border-amber-200 pt-4 mt-4">
-              <h4 className="font-medium text-amber-800 mb-2">Enquanto o endpoint não está disponível, você pode:</h4>
+              <h4 className="font-medium text-amber-800 mb-2">Sugestões de resolução:</h4>
               <ul className="list-disc list-inside text-gray-700 space-y-2">
-                <li>Verificar a implementação do endpoint no backend</li>
+                {errorCode === 'ERR_NETWORK' && (
+                  <>
+                    <li>Verificar configurações de CORS no backend para permitir requisições deste domínio</li>
+                    <li>Confirmar se o proxy do servidor está configurado corretamente</li>
+                  </>
+                )}
+                {errorStatus === 401 && (
+                  <li>Verificar se o token de autenticação está sendo enviado corretamente</li>
+                )}
+                {errorStatus === 403 && (
+                  <li>Confirmar se o usuário logado tem permissões para acessar este recurso</li>
+                )}
+                {errorStatus === 404 && (
+                  <li>Verificar se o caminho do endpoint está correto na implementação frontend e backend</li>
+                )}
                 <li>Confirmar com a equipe de backend se o endpoint está disponível e funcionando</li>
                 <li>Verificar logs no servidor para identificar possíveis erros</li>
-                <li>Confirmar se as credenciais de autenticação estão corretas</li>
               </ul>
               <p className="mt-4 text-sm text-gray-600">
                 A interface do assinante está pronta e funcionará automaticamente quando o endpoint estiver disponível.

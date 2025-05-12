@@ -103,22 +103,50 @@ export const subscribersService = {
   // Buscar todos os assinantes
   async getAll(params?: { skip?: number; limit?: number; name?: string; is_active?: boolean }): Promise<Subscriber[]> {
     try {
-      // Usar o proxy no servidor para evitar problemas de CORS
-      const response = await api.get<ApiResponse>('/external-api/subscribers', { params });
+      console.log('Fazendo requisição para API:', '/external-api/subscribers');
+      // Tentar com proxy primeiro
+      const response = await api.get<ApiResponse>('/external-api/subscribers', { 
+        params,
+        // Garantir que os cookies e credenciais sejam enviados
+        withCredentials: true,
+        // Aumentar timeout para lidar com possível latência do proxy
+        timeout: 15000
+      });
       return response.data.items;
     } catch (error) {
       console.error('Erro ao buscar assinantes:', error);
-      throw error;
+      
+      try {
+        // Tentar o endpoint de fallback caso o proxy falhe
+        const fallbackResponse = await api.get<ApiResponse>('/api/subscribers/fallback');
+        console.log('Usando dados de fallback');
+        return fallbackResponse.data.items;
+      } catch (fallbackError) {
+        // Se até o fallback falhar, lançar o erro original
+        throw error;
+      }
     }
   },
 
   // Buscar assinante por ID
   async getById(id: string): Promise<SubscriberDetail> {
     try {
-      const response = await api.get<SubscriberDetail>(`/external-api/subscribers/${id}`);
+      console.log(`Fazendo requisição para API: /external-api/subscribers/${id}`);
+      const response = await api.get<SubscriberDetail>(`/external-api/subscribers/${id}`, {
+        // Garantir que os cookies e credenciais sejam enviados
+        withCredentials: true,
+        // Aumentar timeout para lidar com possível latência do proxy
+        timeout: 15000
+      });
       return response.data;
     } catch (error) {
       console.error(`Erro ao buscar assinante com ID ${id}:`, error);
+      
+      // Log detalhado para debug
+      if (error instanceof Error) {
+        console.log('Detalhes do erro:', error.name, error.message, error.stack);
+      }
+      
       throw error;
     }
   },
@@ -131,10 +159,20 @@ export const subscribersService = {
         ? `/external-api/subscribers/${id}/activate` 
         : `/external-api/subscribers/${id}/deactivate`;
       
-      const response = await api.patch<Subscriber>(endpoint, {});
+      console.log(`Fazendo requisição PATCH para API: ${endpoint}`);
+      const response = await api.patch<Subscriber>(endpoint, {}, {
+        // Garantir que os cookies e credenciais sejam enviados
+        withCredentials: true,
+        // Aumentar timeout para lidar com possível latência do proxy
+        timeout: 15000,
+        // Headers específicos para esta operação
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
       return response.data;
     } catch (error) {
-      console.error(`Erro ao atualizar status do assinante com ID ${id}:`, error);
+      console.error(`Erro ao ${isActive ? 'ativar' : 'desativar'} assinante com ID ${id}:`, error);
       throw error;
     }
   }

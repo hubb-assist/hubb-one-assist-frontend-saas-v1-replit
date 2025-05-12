@@ -1,97 +1,46 @@
-import axios from 'axios';
-import { API_CONFIG } from './config';
+import api from './api';
+import { Subscriber, SubscriberDetail } from '@/components/subscribers/types';
 
-// Importando configuração centralizada
-const { BASE_URL } = API_CONFIG;
-
-// Interface para dados de assinante
-export interface SubscriberFormData {
-  name: string;
-  clinic_name: string;
-  email: string;
-  phone: string;
-  document: string;
-  zip_code: string;
-  address: string;
-  number: string;
-  city: string;
-  state: string;
-  segment_id: string;
-  plan_id: string;
-  password: string;
-  admin_password: string;
+interface ApiResponse {
+  total: number;
+  page: number;
+  size: number;
+  items: Subscriber[];
 }
 
-// Configuração específica para subscribers
-const subscribersApi = axios.create({
-  baseURL: BASE_URL,
-  withCredentials: false, // Importante: false para evitar problemas de CORS
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
-  },
-  timeout: 30000
-});
-
-// Adicionar interceptors para debug
-subscribersApi.interceptors.request.use(config => {
-  // Log da URL final
-  const baseURL = config.baseURL || '';
-  const url = config.url || '';
-  console.log('Requisição de assinantes para:', baseURL + url);
-  return config;
-});
-
-// API de Assinantes
 export const subscribersService = {
-  // Criar novo assinante
-  async create(data: SubscriberFormData) {
+  // Buscar todos os assinantes
+  async getAll(params?: { skip?: number; limit?: number; name?: string; is_active?: boolean }): Promise<Subscriber[]> {
     try {
-      console.log('Enviando dados de novo assinante:', data);
-      const response = await subscribersApi.post('/subscribers', data);
-      return response.data;
+      const response = await api.get<ApiResponse>('/subscribers', { params });
+      return response.data.items;
     } catch (error) {
-      console.error('Erro ao criar assinante:', error);
+      console.error('Erro ao buscar assinantes:', error);
       throw error;
     }
-  }
-};
+  },
 
-// Serviço de integração com ViaCEP
-interface ViaCEPResponse {
-  cep: string;
-  logradouro: string;
-  complemento: string;
-  bairro: string;
-  localidade: string;
-  uf: string;
-  ibge: string;
-  gia: string;
-  ddd: string;
-  siafi: string;
-  erro?: boolean;
-}
-
-export const viaCepService = {
-  async getAddressByCep(cep: string): Promise<ViaCEPResponse | null> {
+  // Buscar assinante por ID
+  async getById(id: string): Promise<SubscriberDetail> {
     try {
-      // Remover caracteres não numéricos
-      const cleanCep = cep.replace(/\D/g, '');
-      
-      if (cleanCep.length !== 8) {
-        throw new Error('CEP inválido');
-      }
-      
-      const response = await axios.get<ViaCEPResponse>(`https://viacep.com.br/ws/${cleanCep}/json/`);
-      
-      if (response.data.erro) {
-        throw new Error('CEP não encontrado');
-      }
-      
+      const response = await api.get<SubscriberDetail>(`/subscribers/${id}`);
       return response.data;
     } catch (error) {
-      console.error('Erro ao buscar CEP:', error);
-      return null;
+      console.error(`Erro ao buscar assinante com ID ${id}:`, error);
+      throw error;
+    }
+  },
+
+  // Atualizar status do assinante (ativar/desativar)
+  async updateStatus(id: string, isActive: boolean): Promise<Subscriber> {
+    try {
+      const response = await api.patch<Subscriber>(`/subscribers/${id}/status`, {
+        is_active: isActive
+      });
+      return response.data;
+    } catch (error) {
+      console.error(`Erro ao atualizar status do assinante com ID ${id}:`, error);
+      throw error;
     }
   }
 };

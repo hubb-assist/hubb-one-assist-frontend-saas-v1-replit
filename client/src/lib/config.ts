@@ -24,8 +24,11 @@ export const API_CONFIG = {
     // Planos
     PLANS: '/plans',
     
-    // Usuários do Sistema
+    // Usuários do Sistema (excluindo DONO_ASSINANTE)
     SYSTEM_USERS: '/users',
+    
+    // Assinantes (incluindo usuários DONO_ASSINANTE)
+    SUBSCRIBERS: '/subscribers',
   }
 };
 

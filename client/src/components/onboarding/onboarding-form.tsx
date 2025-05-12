@@ -934,7 +934,7 @@ export default function OnboardingForm() {
                       checked={field.value as unknown as boolean}
                       onChange={(e) => {
                         field.onChange(e);
-                        console.log('Terms checkbox alterado para:', e.target.checked);
+                        // Atualizar estado do checkbox de termos
                       }}
                       className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                     />
@@ -1043,12 +1043,10 @@ export default function OnboardingForm() {
                 type="button" 
                 disabled={isLoading}
                 onClick={async () => {
-                  // Adicionar logs antes da submissão para depuração
-                  console.log('[DEBUG] Botão Criar conta clicado');
+                  // Validar os campos finais antes da submissão
                   
                   // Validar APENAS os campos da etapa 4
                   const isValid = await form.trigger(['password', 'password_confirmation', 'terms']);
-                  console.log('[DEBUG] Validação da etapa 4:', isValid);
                   
                   if (!isValid) {
                     toast.error('Por favor, preencha todos os campos obrigatórios');
@@ -1057,7 +1055,6 @@ export default function OnboardingForm() {
                   
                   // Se a validação da etapa 4 passar, pegar todos os dados e enviar
                   const data = form.getValues();
-                  console.log('[DEBUG] Dados completos para envio:', data);
                   
                   // Chamar onSubmit diretamente com os dados
                   await onSubmit(data);

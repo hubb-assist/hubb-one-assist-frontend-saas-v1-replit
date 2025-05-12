@@ -10,7 +10,8 @@ import {
   Layers,
   AppWindow,
   LogOut,
-  LayoutTemplate
+  LayoutTemplate,
+  UserPlus
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -150,6 +151,14 @@ export default function SidebarMain({ expanded }: SidebarMainProps) {
             active={pathname === '/admin/system-users'}
           />
           
+          {/* Item de Assinantes */}
+          <NavItem
+            href="/admin/subscribers"
+            icon={<UserPlus className="h-5 w-5" />}
+            label="Assinantes"
+            expanded={expanded}
+            active={pathname === '/admin/subscribers'}
+          />
 
         </div>
       </div>

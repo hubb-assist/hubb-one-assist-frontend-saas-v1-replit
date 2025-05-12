@@ -47,13 +47,19 @@ interface ApiResponse {
 
 // API de Usuários do Sistema
 export const systemUsersService = {
-  // Listar todos os usuários do sistema
+  // Listar todos os usuários do sistema (excluindo DONO_ASSINANTE)
   async getAll(params?: { skip?: number; limit?: number; name?: string; email?: string; role?: string; is_active?: boolean }): Promise<SystemUser[]> {
     try {
-      const path = ENDPOINTS.SYSTEM_USERS;
-      console.log('Buscando usuários do sistema na API:', path, 'com params:', params);
+      // Garantir que estamos excluindo usuários DONO_ASSINANTE
+      const paramsWithExcludedRole = {
+        ...params,
+        exclude_role: 'DONO_ASSINANTE', // Parâmetro adicional para excluir usuários DONO_ASSINANTE
+      };
       
-      const response = await systemUsersApi.get(path, { params });
+      const path = ENDPOINTS.SYSTEM_USERS;
+      console.log('Buscando usuários do sistema na API:', path, 'com params:', paramsWithExcludedRole);
+      
+      const response = await systemUsersApi.get(path, { params: paramsWithExcludedRole });
       console.log('Resposta da API:', response.data);
       
       // A resposta da API tem um formato específico com a lista em 'items'
@@ -64,8 +70,10 @@ export const systemUsersService = {
         return [];
       }
       
-      // Retornar apenas o array de itens
-      return apiResponse.items;
+      // Filtrar localmente para garantir que não há usuários DONO_ASSINANTE
+      const filteredUsers = apiResponse.items.filter(user => user.role !== 'DONO_ASSINANTE');
+      
+      return filteredUsers;
     } catch (error) {
       console.error('Erro ao buscar usuários do sistema:', error);
       // Vamos retornar um array vazio em vez de lançar o erro, para evitar loops

@@ -277,6 +277,55 @@ export const subscribersService = {
     }
   },
 
+  // Excluir assinante
+  async delete(id: string): Promise<boolean> {
+    try {
+      // Verificação de segurança: ID não pode ser vazio ou inválido
+      if (!id || id.trim() === '') {
+        console.error('ID de assinante inválido para exclusão');
+        throw new Error('ID de assinante inválido');
+      }
+      
+      // URL direta para o endpoint de exclusão
+      const apiUrl = `https://hubb-one-assist-back-hubb-one.replit.app/subscribers/${id}`;
+      console.log(`Iniciando exclusão de assinante ID: ${id}`);
+      console.log(`Fazendo requisição DELETE para API: ${apiUrl}`);
+      
+      // Executar requisição DELETE
+      const response = await axios.delete(apiUrl, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
+      
+      // Log de sucesso com o código de status
+      console.log('Resposta de exclusão recebida:', response.status);
+      console.log('Assinante excluído com sucesso');
+      return true;
+    } catch (error) {
+      // Tratamento de erro detalhado
+      console.error(`Erro ao excluir assinante com ID ${id}:`, error);
+      
+      // Log detalhado do erro
+      const axiosError = error as any;
+      if (axiosError.response) {
+        console.log('Status do erro:', axiosError.response.status);
+        console.log('Dados da resposta de erro:', JSON.stringify(axiosError.response.data, null, 2));
+        
+        // Verificar se é um erro conhecido para uma mensagem mais amigável
+        if (axiosError.response.status === 404) {
+          throw new Error('Assinante não encontrado. Ele pode já ter sido excluído.');
+        } else if (axiosError.response.status === 403) {
+          throw new Error('Você não tem permissão para excluir este assinante.');
+        }
+      }
+      
+      throw error;
+    }
+  },
+
   // Atualizar status do assinante (ativar/desativar)
   async updateStatus(id: string, isActive: boolean): Promise<Subscriber> {
     try {

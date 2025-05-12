@@ -8,6 +8,7 @@ declare module '@tanstack/react-table' {
     onActivate?: (row: TData) => void;
     onDeactivate?: (row: TData) => void;
     onEdit?: (row: TData) => void;
+    onDelete?: (row: TData) => void;
   }
 }
 import { format } from 'date-fns';
@@ -22,7 +23,8 @@ import {
   MoreHorizontal,
   UserPlus,
   UserCheck,
-  UserX
+  UserX,
+  Trash2
 } from 'lucide-react';
 import { Subscriber } from './types';
 import {
@@ -177,6 +179,12 @@ export const columns: ColumnDef<Subscriber>[] = [
                   onClick={() => table.options.meta?.onView?.(subscriber)}
                 >
                   <Eye className="mr-2 h-4 w-4" /> Ver detalhes completos
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => table.options.meta?.onDelete?.(subscriber)}
+                  className="text-red-600 hover:text-red-700 focus:text-red-700"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" /> Excluir assinante
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

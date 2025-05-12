@@ -19,12 +19,16 @@ const api = axios.create({
 
 // Interceptor para URLs consistentes e adição de token
 api.interceptors.request.use(config => {
-  // Garantir que a URL não tem barras duplas
+  // Garantir que a URL está formatada corretamente
   if (config.url) {
-    // Se for para subscribers, manter a barra final pois o endpoint exige
-    if (config.url.includes('subscribers') && !config.url.endsWith('/')) {
-      config.url = `${config.url}/`;
-    }
+    // IMPORTANTE: Para endpoints de subscribers, garantir que termina com barra
+    // como indicado pela recomendação do backend
+    if (config.url.includes('subscribers')) {
+      // Se não termina com barra, adiciona
+      if (!config.url.endsWith('/')) {
+        config.url = `${config.url}/`;
+      }
+    } 
     // Para outras URLs, remover barra final (exceto para raiz)
     else if (config.url.endsWith('/') && config.url !== '/') {
       config.url = config.url.slice(0, -1);

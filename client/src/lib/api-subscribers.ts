@@ -103,21 +103,27 @@ export const subscribersService = {
   // Buscar todos os assinantes
   async getAll(params?: { skip?: number; limit?: number; name?: string; is_active?: boolean }): Promise<Subscriber[]> {
     try {
+      // IMPORTANTE: Usar consistentemente a URL correta recomendada pelo backend
       console.log('Fazendo requisição para API:', '/subscribers/');
-      // Usar o endpoint correto diretamente (não precisa de proxy)
       const response = await api.get<ApiResponse>('/subscribers/', { 
         params,
-        // Garantir que os cookies e credenciais sejam enviados
-        withCredentials: true,
-        // Timeout padrão suficiente para API na mesma infraestrutura
-        timeout: 10000
+        withCredentials: true
       });
+      
+      console.log('Resposta recebida:', response.status, response.statusText);
       return response.data.items;
     } catch (error) {
       console.error('Erro ao buscar assinantes:', error);
       
+      // Antes de tentar fallback, verificar se temos alguma resposta útil do servidor
+      const axiosError = error as any;
+      if (axiosError.response?.data?.message) {
+        console.log('Mensagem do servidor:', axiosError.response.data.message);
+      }
+      
       try {
         // Tentar o endpoint de fallback caso a API principal falhe
+        console.log('Tentando endpoint fallback');
         const fallbackResponse = await api.get<ApiResponse>('/api/subscribers/fallback');
         console.log('Usando dados de fallback');
         return fallbackResponse.data.items;
@@ -131,20 +137,22 @@ export const subscribersService = {
   // Buscar assinante por ID
   async getById(id: string): Promise<SubscriberDetail> {
     try {
-      console.log(`Fazendo requisição para API: /subscribers/${id}`);
-      const response = await api.get<SubscriberDetail>(`/subscribers/${id}`, {
-        // Garantir que os cookies e credenciais sejam enviados
-        withCredentials: true,
-        // Timeout padrão para API
-        timeout: 10000
+      // IMPORTANTE: Usar consistentemente a URL correta recomendada pelo backend
+      // Garantir que o endpoint termina com /
+      console.log(`Fazendo requisição para API: /subscribers/${id}/`);
+      const response = await api.get<SubscriberDetail>(`/subscribers/${id}/`, {
+        withCredentials: true
       });
+      
+      console.log('Resposta de detalhes recebida:', response.status);
       return response.data;
     } catch (error) {
       console.error(`Erro ao buscar assinante com ID ${id}:`, error);
       
-      // Log detalhado para debug
-      if (error instanceof Error) {
-        console.log('Detalhes do erro:', error.name, error.message, error.stack);
+      // Log detalhado para debug e capturar mensagens úteis do servidor
+      const axiosError = error as any;
+      if (axiosError.response?.data?.message) {
+        console.log('Mensagem do servidor:', axiosError.response.data.message);
       }
       
       throw error;
@@ -154,25 +162,31 @@ export const subscribersService = {
   // Atualizar status do assinante (ativar/desativar)
   async updateStatus(id: string, isActive: boolean): Promise<Subscriber> {
     try {
-      // Usar o endpoint correto baseado na ação
+      // IMPORTANTE: Usar consistentemente a URL correta recomendada pelo backend
+      // Garantir que o endpoint termina com /
       const endpoint = isActive 
-        ? `/subscribers/${id}/activate` 
-        : `/subscribers/${id}/deactivate`;
+        ? `/subscribers/${id}/activate/` 
+        : `/subscribers/${id}/deactivate/`;
       
       console.log(`Fazendo requisição PATCH para API: ${endpoint}`);
       const response = await api.patch<Subscriber>(endpoint, {}, {
-        // Garantir que os cookies e credenciais sejam enviados
         withCredentials: true,
-        // Timeout padrão para API
-        timeout: 10000,
-        // Headers específicos para esta operação
         headers: {
           'Content-Type': 'application/json'
         }
       });
+      
+      console.log('Resposta de atualização recebida:', response.status);
       return response.data;
     } catch (error) {
       console.error(`Erro ao ${isActive ? 'ativar' : 'desativar'} assinante com ID ${id}:`, error);
+      
+      // Log detalhado para debug e capturar mensagens úteis do servidor
+      const axiosError = error as any;
+      if (axiosError.response?.data?.message) {
+        console.log('Mensagem do servidor:', axiosError.response.data.message);
+      }
+      
       throw error;
     }
   }

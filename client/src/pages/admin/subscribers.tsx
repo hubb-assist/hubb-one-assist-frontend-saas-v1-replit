@@ -37,7 +37,7 @@ export default function Subscribers() {
   const queryClient = useQueryClient();
 
   // Buscar lista de assinantes
-  const { data: subscribers = [], isLoading } = useQuery({
+  const { data: subscribers = [], isLoading, error: subscribersError } = useQuery({
     queryKey: ['/api/subscribers'],
     queryFn: async () => {
       try {
@@ -45,10 +45,12 @@ export default function Subscribers() {
         return data;
       } catch (error) {
         console.error('Erro ao buscar assinantes:', error);
-        toast.error('Não foi possível carregar os assinantes');
-        return [];
+        // Não exibir toast aqui, vamos mostrar um estado de erro na interface
+        throw error;
       }
     },
+    retry: 1, // Limitar o número de tentativas
+    retryDelay: 1000, // Aguardar 1 segundo entre as tentativas
   });
 
   // Buscar detalhes de um assinante
@@ -112,6 +114,37 @@ export default function Subscribers() {
       <AppShell>
         <div className="flex-1 flex items-center justify-center">
           <p>Carregando assinantes...</p>
+        </div>
+      </AppShell>
+    );
+  }
+  
+  // Se houver um erro, exibir mensagem de erro com informações úteis
+  if (subscribersError) {
+    return (
+      <AppShell>
+        <div className="flex-1">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold">Assinantes</h2>
+          </div>
+          
+          <div className="bg-red-50 border border-red-200 rounded-md p-6 text-center">
+            <h3 className="text-lg font-semibold text-red-600 mb-2">
+              Não foi possível carregar os assinantes
+            </h3>
+            <p className="text-gray-600 mb-4">
+              Esta funcionalidade pode estar em implementação na API. O backend pode não estar disponível ou o endpoint <code>/subscribers</code> ainda não foi implementado.
+            </p>
+            <p className="text-sm text-gray-500 mt-4">
+              Detalhes técnicos: {subscribersError instanceof Error ? subscribersError.message : 'Erro desconhecido'}
+            </p>
+            <Button 
+              className="mt-4" 
+              onClick={() => queryClient.invalidateQueries({ queryKey: ['/api/subscribers'] })}
+            >
+              Tentar novamente
+            </Button>
+          </div>
         </div>
       </AppShell>
     );

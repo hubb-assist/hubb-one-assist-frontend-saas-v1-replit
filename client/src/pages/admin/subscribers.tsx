@@ -185,10 +185,12 @@ export default function Subscribers() {
                 {statusDesc || 'Endpoint em implementação'}
               </h3>
               <p className="text-gray-600 mb-4">
-                Não foi possível conectar ao endpoint <code>/subscribers</code>. 
-                {errorCode === 'ERR_NETWORK' 
-                  ? ' Isso pode indicar um problema de CORS (Cross-Origin Resource Sharing) entre o frontend e a API.' 
-                  : ' Este endpoint pode estar em implementação ou com problemas temporários.'}
+                Não foi possível conectar ao endpoint <code>/subscribers/</code>.
+                {errorStatus === 401 
+                  ? ' O usuário atual não possui permissão para acessar este recurso. Este endpoint é protegido e requer uma role específica (como SUPER_ADMIN ou DIRETOR).' 
+                  : errorCode === 'ERR_NETWORK' 
+                    ? ' Isso pode indicar um problema de CORS (Cross-Origin Resource Sharing) entre o frontend e a API.' 
+                    : ' Este endpoint pode estar em implementação ou com problemas temporários.'}
               </p>
               
               {/* Status do proxy */}

@@ -17,12 +17,16 @@ const api = axios.create({
   timeout: TIMEOUT, // Timeout configurável
 });
 
-// Interceptor para URLs consistentes
+// Interceptor para URLs consistentes e adição de token
 api.interceptors.request.use(config => {
   // Garantir que a URL não tem barras duplas
   if (config.url) {
-    // Remover barra final (exceto para raiz)
-    if (config.url.endsWith('/') && config.url !== '/') {
+    // Se for para subscribers, manter a barra final pois o endpoint exige
+    if (config.url.includes('subscribers') && !config.url.endsWith('/')) {
+      config.url = `${config.url}/`;
+    }
+    // Para outras URLs, remover barra final (exceto para raiz)
+    else if (config.url.endsWith('/') && config.url !== '/') {
       config.url = config.url.slice(0, -1);
     }
     
@@ -30,6 +34,12 @@ api.interceptors.request.use(config => {
     if (!config.url.startsWith('/')) {
       config.url = `/${config.url}`; 
     }
+  }
+
+  // Adicionar headers de token se disponível - usando o mesmo token que o sistema já tem
+  const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+  if (token && config.headers) {
+    config.headers['Authorization'] = `Bearer ${token}`;
   }
   
   // Log da URL final (com baseURL)

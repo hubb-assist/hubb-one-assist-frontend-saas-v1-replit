@@ -107,9 +107,11 @@ export const subscribersService = {
       // URL correta para a API: direto na raiz (sem /api/ ou /external-api/)
       console.log('Fazendo requisição para API:', '/subscribers', 'com parâmetros:', paginationParams);
       
-      // ✅ URL corrigida: /subscribers (sem prefixos)
-      // ✅ withCredentials: true para enviar cookies de autenticação
-      const response = await axios.get<ApiResponse>('/subscribers', { 
+      // Usando URL completa de produção do backend
+      const apiUrl = 'https://hubb-one-assist-back-hubb-one.replit.app/subscribers';
+      console.log(`Usando URL completa da API: ${apiUrl}`);
+      
+      const response = await axios.get<ApiResponse>(apiUrl, { 
         params: paginationParams,
         withCredentials: true,
         headers: {
@@ -162,10 +164,11 @@ export const subscribersService = {
   // Buscar assinante por ID 
   async getById(id: string): Promise<SubscriberDetail> {
     try {
-      // ✅ URL corrigida: direto na raiz (sem /api/ ou /external-api/)
-      console.log(`Fazendo requisição GET para API: /subscribers/${id}`);
+      // Usando URL completa de produção do backend
+      const apiUrl = `https://hubb-one-assist-back-hubb-one.replit.app/subscribers/${id}`;
+      console.log(`Fazendo requisição GET para API: ${apiUrl}`);
       
-      const response = await axios.get<SubscriberDetail>(`/subscribers/${id}`, {
+      const response = await axios.get<SubscriberDetail>(apiUrl, {
         withCredentials: true,
         headers: {
           'Content-Type': 'application/json',
@@ -192,11 +195,12 @@ export const subscribersService = {
   // Editar assinante
   async update(id: string, data: Partial<SubscriberFormData>): Promise<Subscriber> {
     try {
-      // ✅ URL corrigida: direto na raiz (sem /api/ ou /external-api/)
-      console.log(`Fazendo requisição PUT para API: /subscribers/${id}`);
+      // Usando URL completa de produção do backend
+      const apiUrl = `https://hubb-one-assist-back-hubb-one.replit.app/subscribers/${id}`;
+      console.log(`Fazendo requisição PUT para API: ${apiUrl}`);
       console.log('Dados enviados para atualização:', data);
       
-      const response = await axios.put<Subscriber>(`/subscribers/${id}`, data, {
+      const response = await axios.put<Subscriber>(apiUrl, data, {
         withCredentials: true,
         headers: {
           'Content-Type': 'application/json',
@@ -222,11 +226,12 @@ export const subscribersService = {
   // Atualizar status do assinante (ativar/desativar)
   async updateStatus(id: string, isActive: boolean): Promise<Subscriber> {
     try {
-      // ✅ URL corrigida: direto na raiz (sem /api/ ou /external-api/)
-      // ✅ IMPORTANTE: Usar URLs sem barras no final
+      // Usando URL completa de produção do backend
+      // IMPORTANTE: Usar URLs sem barras no final
+      const baseUrl = 'https://hubb-one-assist-back-hubb-one.replit.app';
       const endpoint = isActive 
-        ? `/subscribers/${id}/activate` 
-        : `/subscribers/${id}/deactivate`;
+        ? `${baseUrl}/subscribers/${id}/activate` 
+        : `${baseUrl}/subscribers/${id}/deactivate`;
       
       console.log(`Fazendo requisição PATCH para API: ${endpoint}`);
       const response = await axios.patch<Subscriber>(endpoint, {}, {

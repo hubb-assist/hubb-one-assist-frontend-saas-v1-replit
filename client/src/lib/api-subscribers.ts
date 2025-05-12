@@ -120,10 +120,20 @@ export const subscribersService = {
       
       console.log('Resposta recebida:', response.status, response.statusText);
       
+      // Log detalhado da resposta para debugging
+      console.log('Estrutura da resposta da API:', JSON.stringify(response.data));
+      
+      // Verificar o formato da resposta e adaptar conforme necessário
+      const items = Array.isArray(response.data.items) 
+        ? response.data.items 
+        : Array.isArray(response.data) 
+          ? response.data 
+          : [];
+          
       // Retornar objeto com dados e metadados de paginação
       return {
-        data: response.data.items,
-        total: response.data.total,
+        data: items,
+        total: response.data.total || items.length || 0,
         page: response.data.page || Math.floor(paginationParams.skip / paginationParams.limit) + 1,
         pageSize: response.data.size || paginationParams.limit
       };

@@ -42,10 +42,10 @@ interface DataTableProps {
 
 export function DataTable({
   columns,
-  data,
-  totalItems,
-  currentPage,
-  pageSize,
+  data = [], // Garantir que data sempre seja um array
+  totalItems = 0,
+  currentPage = 1,
+  pageSize = 10,
   onPageChange,
   onPageSizeChange,
   isLoading = false,

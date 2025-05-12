@@ -65,7 +65,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/external-api', logProxyRequests, addCorsHeaders, apiProxy);
   
   // Adicionar suporte à rota raiz também (/subscribers, etc)
-  app.use('/subscribers', logProxyRequests, addCorsHeaders, directApiProxy);
+  // Roteamento explícito para cada tipo de requisição para garantir que
+  // o proxy funcione corretamente com todos os verbos HTTP
+  app.get('/subscribers', logProxyRequests, addCorsHeaders, directApiProxy);
+  app.get('/subscribers/:id', logProxyRequests, addCorsHeaders, directApiProxy);
+  app.post('/subscribers', logProxyRequests, addCorsHeaders, directApiProxy);
+  app.put('/subscribers/:id', logProxyRequests, addCorsHeaders, directApiProxy);
+  app.patch('/subscribers/:id/activate', logProxyRequests, addCorsHeaders, directApiProxy);
+  app.patch('/subscribers/:id/deactivate', logProxyRequests, addCorsHeaders, directApiProxy);
   
   // API endpoint para verificar se o proxy está funcionando
   app.get('/api/check-proxy', (req: Request, res: Response) => {

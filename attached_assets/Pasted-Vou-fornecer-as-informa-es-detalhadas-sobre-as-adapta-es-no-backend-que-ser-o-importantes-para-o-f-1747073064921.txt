@@ -1,0 +1,71 @@
+Vou fornecer as informações detalhadas sobre as adaptações no backend que serão importantes para o frontend:
+
+1. Formato do JWT após login
+O token JWT agora inclui as seguintes informações no payload:
+
+{
+  "sub": "user_id",
+  "name": "nome_do_usuario",
+  "email": "email@usuario.com",
+  "role": "SUPER_ADMIN/DIRETOR/COLABORADOR_NIVEL_2/DONO_ASSINANTE",
+  "subscriber_id": "uuid_do_assinante_ou_null",
+  "permissions": ["permissao1", "permissao2"],
+  "exp": "timestamp_expiracao"
+}
+O campo subscriber_id será null para usuários SUPER_ADMIN e DIRETOR que não estão vinculados a um assinante
+Para usuários DONO_ASSINANTE, o campo subscriber_id terá o UUID do assinante vinculado
+O campo permissions é um array de strings com as permissões do usuário
+2. Compatibilidade das rotas da API
+Todas as rotas mantêm compatibilidade com a versão anterior. As principais adições foram:
+
+Novas rotas públicas que não exigem autenticação:
+
+GET /public/segments/ - Listar segmentos ativos
+GET /public/plans/ - Listar planos ativos
+GET /public/plans/{plan_id} - Obter detalhes de um plano
+POST /public/subscribers/ - Criar novo assinante (onboarding)
+POST /public/arduino/register - Registrar novo dispositivo Arduino
+POST /public/arduino/connect - Registrar conexão de dispositivo Arduino
+Novas rotas protegidas:
+
+GET /arduino-devices/ - Listar dispositivos Arduino (com paginação e filtros)
+GET /arduino-devices/{device_id} - Obter detalhes de um dispositivo
+POST /arduino-devices/ - Criar novo dispositivo Arduino
+PUT /arduino-devices/{device_id} - Atualizar um dispositivo
+DELETE /arduino-devices/{device_id} - Remover um dispositivo
+PATCH /arduino-devices/{device_id}/activate - Ativar um dispositivo
+PATCH /arduino-devices/{device_id}/deactivate - Desativar um dispositivo
+As rotas existentes mantêm a mesma assinatura, mas agora aplicam automaticamente filtros baseados no subscriber_id do usuário logado.
+
+3. Estrutura de permissões no token
+As permissões estão estruturadas como um array de strings simples. Exemplo:
+
+"permissions": ["manage_users", "view_analytics", "manage_devices"]
+Por enquanto, as permissões são derivadas do role do usuário, mas a estrutura permite implementação futura de permissões granulares.
+
+4. Módulo Arduino na interface do usuário
+Sim, o módulo Arduino vai exigir uma nova seção na interface para:
+
+Listagem de dispositivos: Tabela com paginação mostrando todos os dispositivos com status, última conexão, etc.
+Detalhes do dispositivo: Modal ou página para exibir informações detalhadas e histórico de conexões
+Formulário de criação/edição: Interface para administradores criarem ou editarem dispositivos
+Ações de gerenciamento: Botões para ativar/desativar dispositivos
+O endpoint /arduino-devices/ suporta os seguintes filtros via query params:
+
+device_id - Filtra por ID do dispositivo
+name - Filtra por nome (busca parcial)
+mac_address - Filtra por endereço MAC
+subscriber_id - Filtra por assinante (UUID)
+is_active - Filtra por status (true/false)
+5. Considerações adicionais para o frontend
+Para endpoints protegidos, o frontend deve continuar enviando requisições com credentials: "include" para incluir os cookies de autenticação.
+
+O middleware no backend aplica automaticamente filtros baseados no subscriber_id do usuário, então não é necessário enviar esse parâmetro manualmente nas requisições.
+
+Para usuários do tipo DONO_ASSINANTE, o frontend deve mostrar apenas dados relacionados ao seu próprio subscriber_id. O backend já garante isso, mas é bom adaptar a UI para não mostrar opções que não se aplicam.
+
+Para a página de onboarding de novos assinantes, o frontend deve usar as rotas públicas para buscar segmentos e planos disponíveis antes do registro.
+
+Para integração de dispositivos Arduino, será necessário criar QR codes ou tokens de associação para facilitar o registro através da rota pública.
+
+Estas informações devem ser suficientes para adaptar o frontend para trabalhar com as novas funcionalidades do backend.

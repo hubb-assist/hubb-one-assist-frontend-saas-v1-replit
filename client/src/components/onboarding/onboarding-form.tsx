@@ -230,8 +230,9 @@ export default function OnboardingForm() {
         }
       } catch (error) {
         console.error('Erro ao carregar segmentos:', error);
-        setApiError('Não foi possível carregar os segmentos. Por favor, verifique sua conexão ou tente novamente mais tarde.');
-        toast.error('Erro ao carregar dados dos segmentos');
+        const errorMessage = 'Não foi possível acessar a API de segmentos. Por favor, informe ao suporte técnico sobre o erro 404 na rota /public/segments.';
+        setApiError(errorMessage);
+        toast.error('API de segmentos indisponível');
       } finally {
         setIsLoading(false);
       }
@@ -265,8 +266,9 @@ export default function OnboardingForm() {
         }
       } catch (error) {
         console.error('Erro ao carregar planos:', error);
-        setApiError('Não foi possível carregar os planos. Por favor, verifique sua conexão ou tente novamente mais tarde.');
-        toast.error('Erro ao carregar dados dos planos');
+        const errorMessage = 'Não foi possível acessar a API de planos. Por favor, informe ao suporte técnico sobre o erro 404 na rota /public/plans.';
+        setApiError(errorMessage);
+        toast.error('API de planos indisponível');
       } finally {
         setIsLoading(false);
       }

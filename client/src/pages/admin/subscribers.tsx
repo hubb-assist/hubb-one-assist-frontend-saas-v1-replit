@@ -10,6 +10,7 @@ import SubscriberDetailView from '@/components/subscribers/subscriber-detail';
 import { SubscriberEditForm } from '@/components/subscribers/subscriber-edit-form';
 import { subscribersService } from '@/lib/api-subscribers';
 import { Subscriber, SubscriberDetail } from '@/components/subscribers/types';
+import { DeleteSubscriberDialog } from '@/components/subscribers/delete-subscriber-dialog';
 import {
   Dialog,
   DialogContent,
@@ -33,6 +34,7 @@ export default function Subscribers() {
   const [openDetailDialog, setOpenDetailDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openStatusDialog, setOpenStatusDialog] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedSubscriber, setSelectedSubscriber] = useState<Subscriber | undefined>(undefined);
   const [subscriberDetail, setSubscriberDetail] = useState<SubscriberDetail | undefined>(undefined);
   const [statusAction, setStatusAction] = useState<'activate' | 'deactivate'>('activate');

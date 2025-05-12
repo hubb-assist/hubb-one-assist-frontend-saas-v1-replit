@@ -27,7 +27,14 @@ export interface Address {
 
 export interface SubscriberDetail extends Subscriber {
   phone?: string;
-  address?: Address;
+  clinic_name?: string;
+  zip_code?: string;
+  address?: string | Address;
+  number?: string;
+  complement?: string;
+  city?: string;
+  state?: string;
+  district?: string;
   admin_user?: {
     id: string;
     name: string;

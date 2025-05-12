@@ -145,25 +145,38 @@ export function DataTable({
 
       <div className="flex items-center justify-end space-x-2">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredRowModel().rows.length} assinante(s) encontrado(s).
+          Mostrando {data.length} de {totalItems} assinante(s)
+          {globalFilter ? ` (filtrados por "${globalFilter}")` : ""}
         </div>
-        <div className="space-x-2">
+        <div className="flex items-center space-x-2">
+          {/* Informação da página atual */}
+          <span className="text-sm text-muted-foreground">
+            Página {currentPage} de {totalPages}
+          </span>
+
+          {/* Botões de paginação */}
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={currentPage <= 1 || isLoading}
           >
             Anterior
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={currentPage >= totalPages || isLoading}
           >
             Próxima
           </Button>
+          
+          {isLoading && (
+            <span className="ml-2 text-sm text-muted-foreground animate-pulse">
+              Carregando...
+            </span>
+          )}
         </div>
       </div>
     </div>

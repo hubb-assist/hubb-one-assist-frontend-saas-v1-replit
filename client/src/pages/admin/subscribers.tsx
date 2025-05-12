@@ -34,6 +34,9 @@ export default function Subscribers() {
   const [selectedSubscriber, setSelectedSubscriber] = useState<Subscriber | undefined>(undefined);
   const [subscriberDetail, setSubscriberDetail] = useState<SubscriberDetail | undefined>(undefined);
   const [statusAction, setStatusAction] = useState<'activate' | 'deactivate'>('activate');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [nameFilter, setNameFilter] = useState('');
   const queryClient = useQueryClient();
 
   // Verificar status do proxy
@@ -51,24 +54,39 @@ export default function Subscribers() {
     staleTime: Infinity // Não precisa revalidar durante a sessão
   });
 
-  // Buscar lista de assinantes
-  const { data: subscribers = [], isLoading, error: subscribersError, refetch } = useQuery({
-    queryKey: ['/subscribers'],
+  // Calcular os parâmetros de paginação para a API
+  const paginationParams = {
+    skip: (currentPage - 1) * pageSize,
+    limit: pageSize,
+    name: nameFilter || undefined
+  };
+
+  // Buscar lista de assinantes paginada
+  const { 
+    data: paginatedSubscribers = { data: [], total: 0, page: 1, pageSize: 10 }, 
+    isLoading, 
+    error: subscribersError, 
+    refetch 
+  } = useQuery({
+    queryKey: ['/subscribers', paginationParams],
     queryFn: async () => {
       try {
-        console.log('Fazendo requisição para API:', '/subscribers/');
-        const data = await subscribersService.getAll();
-        console.log('Dados recebidos:', data);
-        return data || [];
+        console.log('Fazendo requisição para API com paginação:', paginationParams);
+        const result = await subscribersService.getAll(paginationParams);
+        console.log('Dados paginados recebidos:', result);
+        return result;
       } catch (error) {
         console.error('Erro ao buscar assinantes:', error);
-        // Não exibir toast aqui, vamos mostrar um estado de erro na interface
+        toast.error('Erro ao carregar a lista de assinantes');
         throw error;
       }
     },
     retry: 1, // Limitar o número de tentativas
     retryDelay: 1000, // Aguardar 1 segundo entre as tentativas
   });
+  
+  // Extrair os dados dos assinantes da resposta paginada
+  const subscribers = paginatedSubscribers.data;
 
   // Buscar detalhes de um assinante
   const { isLoading: isLoadingDetail } = useQuery({
@@ -98,8 +116,10 @@ export default function Subscribers() {
       return subscribersService.updateStatus(data.id, data.isActive);
     },
     onSuccess: (data) => {
-      // Usar o mesmo queryKey que usamos para buscar os dados
-      queryClient.invalidateQueries({ queryKey: ['/subscribers'] });
+      // Invalidar a consulta com os parâmetros atuais de paginação
+      queryClient.invalidateQueries({ 
+        queryKey: ['/subscribers', paginationParams] 
+      });
       toast.success(`Assinante ${data.is_active ? 'ativado' : 'desativado'} com sucesso!`);
       setOpenStatusDialog(false);
     },
@@ -129,6 +149,17 @@ export default function Subscribers() {
         isActive: statusAction === 'activate',
       });
     }
+  };
+  
+  // Handler para mudança de página
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
+  
+  // Handler para filtro por nome
+  const handleNameFilterChange = (name: string) => {
+    setNameFilter(name);
+    setCurrentPage(1); // Voltar para a primeira página ao filtrar
   };
 
   // Se estiver carregando, mostrar indicador de carregamento
@@ -288,13 +319,18 @@ export default function Subscribers() {
             variant="outline"
           >
             <Users className="h-4 w-4 mr-2" />
-            {subscribers.length} Assinante(s)
+            {paginatedSubscribers.total} Assinante(s)
           </Button>
         </div>
 
         <DataTable
           columns={columns}
           data={subscribers}
+          totalItems={paginatedSubscribers.total}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          onPageChange={handlePageChange}
+          isLoading={isLoading}
           onView={handleViewDetail}
           onActivate={(subscriber) => handleStatusChange(subscriber, true)}
           onDeactivate={(subscriber) => handleStatusChange(subscriber, false)}

@@ -811,21 +811,21 @@ export default function OnboardingForm() {
                   <dt className="font-medium">Documento:</dt>
                   <dd className="font-semibold">{allFormValues.document || '-'}</dd>
                 </div>
-                <div className="flex justify-between">
-                  <dt>Endereço:</dt>
-                  <dd>{`${formValues.address || '-'}, ${formValues.number || '-'}`}</dd>
+                <div className="flex justify-between py-1 border-b border-green-100">
+                  <dt className="font-medium">Endereço:</dt>
+                  <dd className="font-semibold">{`${allFormValues.address || '-'}, ${allFormValues.number || '-'}`}</dd>
                 </div>
-                <div className="flex justify-between">
-                  <dt>Cidade/UF:</dt>
-                  <dd>{`${formValues.city || '-'}/${formValues.state || '-'}`}</dd>
+                <div className="flex justify-between py-1 border-b border-green-100">
+                  <dt className="font-medium">Cidade/UF:</dt>
+                  <dd className="font-semibold">{`${allFormValues.city || '-'}/${allFormValues.state || '-'}`}</dd>
                 </div>
-                <div className="flex justify-between">
-                  <dt>Plano:</dt>
-                  <dd>{selectedPlan?.name || 'Plano selecionado'}</dd>
+                <div className="flex justify-between py-1 border-b border-green-100">
+                  <dt className="font-medium">Plano:</dt>
+                  <dd className="font-semibold">{selectedPlan?.name || 'Plano selecionado'}</dd>
                 </div>
-                <div className="flex justify-between">
-                  <dt>Preço:</dt>
-                  <dd>R$ {selectedPlan?.base_price.toFixed(2).replace('.', ',') || '0,00'}</dd>
+                <div className="flex justify-between font-medium py-1">
+                  <dt className="font-medium">Preço:</dt>
+                  <dd className="text-green-700 font-bold text-base">R$ {selectedPlan?.base_price?.toFixed(2) || '0,00'}</dd>
                 </div>
               </dl>
             </div>
@@ -1017,9 +1017,13 @@ export default function OnboardingForm() {
               </Button>
             ) : (
               <Button 
-                type="button" 
+                type="submit" 
                 disabled={isLoading}
-                onClick={form.handleSubmit(onSubmit)}
+                onClick={() => {
+                  console.log('[DEBUG] Botão Criar conta clicado');
+                  console.log('[DEBUG] Form válido:', form.formState.isValid);
+                  console.log('[DEBUG] Terms checked:', form.getValues('terms'));
+                }}
               >
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Criar conta

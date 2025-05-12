@@ -48,9 +48,29 @@ export const publicService = {
   // Obter segmentos ativos (para seleção no onboarding)
   async getSegments(): Promise<PublicSegment[]> {
     try {
-      console.log('Buscando segmentos públicos');
-      const response = await apiPublic.get('/public/segments/');
-      return response.data;
+      console.log('Buscando segmentos públicos - usando fetch direto');
+      // Usar fetch diretamente para ter mais controle sobre a requisição
+      const fetchResponse = await fetch(`${API_CONFIG.BASE_URL}/public/segments/`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        // Importante: não enviar credenciais para endpoints públicos
+        credentials: 'omit'
+      });
+      
+      // Log detalhado da resposta
+      console.log(`Resposta da API: status ${fetchResponse.status}`);
+      if (!fetchResponse.ok) {
+        console.error(`Erro HTTP: ${fetchResponse.status}`);
+        throw new Error(`Falha na requisição: ${fetchResponse.status}`);
+      }
+      
+      // Converter para JSON
+      const data = await fetchResponse.json();
+      console.log('Dados recebidos da API:', data);
+      return data;
     } catch (error) {
       console.error('Erro ao buscar segmentos públicos:', error);
       throw error; // Propagar o erro para ser tratado pelo componente

@@ -54,9 +54,16 @@ export default function Login() {
     }
   });
 
+  // Estado para rastrear erros de login
+  const [loginError, setLoginError] = useState<string | null>(null);
+
   // Função para fazer login
   const onSubmit = async (data: LoginFormValues) => {
+    // Limpar erro anterior
+    setLoginError(null);
+    
     try {
+      console.log(`Tentando login com e-mail: ${data.email}`);
       const success = await login(data.email, data.password);
       
       if (success) {
@@ -69,10 +76,20 @@ export default function Login() {
         // Redirecionar para a página correta
         navigate(redirectUrl);
       } else {
-        toast.error('Credenciais inválidas');
+        const errorMsg = 'Credenciais inválidas ou servidor indisponível';
+        setLoginError(errorMsg);
+        toast.error(errorMsg);
       }
-    } catch (error) {
-      toast.error('Falha ao fazer login');
+    } catch (error: any) {
+      console.error('Erro detalhado de login:', error);
+      
+      // Obter mensagem de erro detalhada
+      const errorMsg = error?.response?.data?.message || 
+                      error?.message || 
+                      'Falha na comunicação com o servidor';
+      
+      setLoginError(errorMsg);
+      toast.error(`Falha ao fazer login: ${errorMsg}`);
     }
   };
 
@@ -149,6 +166,14 @@ export default function Login() {
                   <p className="text-red-500 text-sm">{errors.password.message}</p>
                 )}
               </div>
+              
+              {/* Exibir mensagem de erro, se houver */}
+              {loginError && (
+                <div className="p-3 rounded bg-red-50 border border-red-200 text-red-600 text-sm mb-2">
+                  <p className="font-semibold mb-1">Erro ao fazer login:</p>
+                  <p>{loginError}</p>
+                </div>
+              )}
               
               <Button
                 type="submit"

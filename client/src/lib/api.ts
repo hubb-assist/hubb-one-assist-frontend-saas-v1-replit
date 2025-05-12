@@ -168,8 +168,18 @@ export const authService = {
   // Fazer logout
   async logout() {
     try {
-      console.log(`Executando logout no endpoint: ${ENDPOINTS.LOGOUT}`);
-      await api.post(ENDPOINTS.LOGOUT);
+      // Usar URL completa do backend em vez do endpoint relativo
+      const logoutUrl = `${BASE_URL}/auth/logout`;
+      console.log(`Executando logout na URL direta: ${logoutUrl}`);
+      
+      await axios.post(logoutUrl, {}, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
+      
       console.log('Logout bem-sucedido');
       return true;
     } catch (error) {

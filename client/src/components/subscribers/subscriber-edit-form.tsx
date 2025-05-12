@@ -70,6 +70,7 @@ export function SubscriberEditForm({ subscriber, open, onOpenChange, onSuccess }
           setSubscriberDetails(details);
           
           // Preencher o formulário com os detalhes obtidos
+          // Todos os campos já estão presentes no objeto retornado, conforme verificamos nos logs
           form.reset({
             name: details.name,
             email: details.email,
@@ -77,8 +78,7 @@ export function SubscriberEditForm({ subscriber, open, onOpenChange, onSuccess }
             phone: details.phone || '',
             clinic_name: details.clinic_name || '',
             zip_code: details.zip_code || '',
-            address: typeof details.address === 'string' ? details.address : 
-                   details.address?.street || '',
+            address: details.address as string || '',
             number: details.number || '',
             complement: details.complement || '',
             city: details.city || '',

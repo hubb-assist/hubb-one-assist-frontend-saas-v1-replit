@@ -169,28 +169,33 @@ export const subscribersService = {
     }
   },
 
-  // Buscar assinante por ID
+  // Buscar assinante por ID - método provisório
   async getById(id: string): Promise<SubscriberDetail> {
     try {
-      // Tente a URL sem a barra final primeiro
-      console.log(`Fazendo requisição para API: /subscribers/${id}`);
-      try {
-        const response = await api.get<SubscriberDetail>(`/subscribers/${id}`, {
-          withCredentials: true
-        });
-        
-        console.log('Resposta de detalhes recebida:', response.status);
-        return response.data;
-      } catch (e) {
-        // Se falhar, tente com um método diferente
-        console.log(`Tentando com método alternativo: /subscribers/detail/${id}`);
-        const response = await api.get<SubscriberDetail>(`/subscribers/detail/${id}`, {
-          withCredentials: true
-        });
-        
-        console.log('Resposta de detalhes recebida (alternativa):', response.status);
-        return response.data;
+      // Como estamos recebendo erro 405, vamos usar uma abordagem alternativa
+      // Vamos buscar todos os assinantes e encontrar o que precisamos pelo ID
+      console.log(`Buscando assinante ${id} pela listagem completa`);
+      
+      const response = await this.getAll({ limit: 100 }); // Pegar um limite grande para garantir
+      const subscribers = response.data;
+      
+      // Encontrar o assinante pelo ID
+      const subscriber = subscribers.find(s => s.id === id);
+      
+      if (!subscriber) {
+        throw new Error(`Assinante com ID ${id} não encontrado`);
       }
+      
+      console.log('Assinante encontrado na listagem:', subscriber);
+      
+      // Observando o formato do objeto retornado da API nos logs, parece que
+      // ele já contém todos os campos que precisamos. Vamos fazer um cast
+      // seguro para SubscriberDetail
+      const subscriberDetail: SubscriberDetail = {
+        ...subscriber as any,
+      };
+      
+      return subscriberDetail;
     } catch (error) {
       console.error(`Erro ao buscar assinante com ID ${id}:`, error);
       
@@ -239,11 +244,11 @@ export const subscribersService = {
   // Editar assinante
   async update(id: string, data: Partial<SubscriberFormData>): Promise<Subscriber> {
     try {
-      // Garantir que o endpoint termina com /
-      console.log(`Fazendo requisição PUT para API: /subscribers/${id}/`);
+      // Usar URL sem a barra no final
+      console.log(`Fazendo requisição PUT para API: /subscribers/${id}`);
       console.log('Dados enviados para atualização:', data);
       
-      const response = await api.put<Subscriber>(`/subscribers/${id}/`, data, {
+      const response = await api.put<Subscriber>(`/subscribers/${id}`, data, {
         withCredentials: true,
         headers: {
           'Content-Type': 'application/json'

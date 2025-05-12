@@ -1,5 +1,6 @@
 import api from './api';
-import { Subscriber, SubscriberDetail } from '@/components/subscribers/types';
+import axios from 'axios';
+import { Subscriber, SubscriberDetail, Address } from '@/components/subscribers/types';
 
 interface ApiResponse {
   total: number;
@@ -7,6 +8,77 @@ interface ApiResponse {
   size: number;
   items: Subscriber[];
 }
+
+export interface SubscriberFormData {
+  name: string;
+  email: string;
+  document: string;
+  document_type: 'cpf' | 'cnpj';
+  phone: string;
+  address: {
+    postal_code: string;
+    street: string;
+    number: string;
+    complement?: string;
+    district: string;
+    city: string;
+    state: string;
+  };
+  segment_id: string;
+  plan_id: string;
+  password: string;
+  admin_user: {
+    name: string;
+    email: string;
+    password: string;
+  };
+}
+
+interface ViaCepResponse {
+  cep: string;
+  logradouro: string;
+  complemento: string;
+  bairro: string;
+  localidade: string;
+  uf: string;
+  ibge: string;
+  gia: string;
+  ddd: string;
+  siafi: string;
+  erro?: boolean;
+}
+
+// Serviço para busca de endereço pelo CEP
+export const viaCepService = {
+  async getAddressByCep(cep: string): Promise<Address | null> {
+    try {
+      // Remover qualquer caracter não numérico
+      const cleanCep = cep.replace(/\D/g, '');
+      
+      if (cleanCep.length !== 8) {
+        throw new Error('CEP inválido');
+      }
+      
+      const response = await axios.get<ViaCepResponse>(`https://viacep.com.br/ws/${cleanCep}/json/`);
+      
+      if (response.data.erro) {
+        throw new Error('CEP não encontrado');
+      }
+      
+      return {
+        postal_code: response.data.cep,
+        street: response.data.logradouro,
+        complement: response.data.complemento,
+        district: response.data.bairro,
+        city: response.data.localidade,
+        state: response.data.uf
+      };
+    } catch (error) {
+      console.error('Erro ao buscar endereço pelo CEP:', error);
+      return null;
+    }
+  }
+};
 
 export const subscribersService = {
   // Buscar todos os assinantes

@@ -17,6 +17,12 @@ export interface Address {
   district: string;
   city: string;
   state: string;
+  
+  // Aliases para compatibilidade com a API do ViaCEP
+  logradouro?: string;
+  localidade?: string;
+  uf?: string;
+  zip_code?: string;
 }
 
 export interface SubscriberDetail extends Subscriber {

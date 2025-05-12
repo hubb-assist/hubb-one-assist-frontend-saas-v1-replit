@@ -377,6 +377,7 @@ export default function Subscribers() {
           onEdit={handleEditSubscriber}
           onActivate={(subscriber) => handleStatusChange(subscriber, true)}
           onDeactivate={(subscriber) => handleStatusChange(subscriber, false)}
+          onDelete={handleDeleteSubscriber}
         />
       </div>
 

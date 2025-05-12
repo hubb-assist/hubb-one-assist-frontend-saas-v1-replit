@@ -38,6 +38,7 @@ interface DataTableProps {
   onEdit?: (subscriber: Subscriber) => void;
   onActivate?: (subscriber: Subscriber) => void;
   onDeactivate?: (subscriber: Subscriber) => void;
+  onDelete?: (subscriber: Subscriber) => void;
 }
 
 export function DataTable({
@@ -53,6 +54,7 @@ export function DataTable({
   onEdit,
   onActivate,
   onDeactivate,
+  onDelete,
 }: DataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -84,6 +86,7 @@ export function DataTable({
       onEdit,
       onActivate,
       onDeactivate,
+      onDelete,
     },
     manualPagination: true, // Indica que estamos usando paginação gerenciada manualmente
     pageCount: totalPages,

@@ -114,7 +114,7 @@ export function SubscriberEditForm({ subscriber, open, onOpenChange, onSuccess }
     if (cep.length >= 8) {
       setIsFetchingAddress(true);
       try {
-        const address = await viaCepService.getAddressByCep(cep);
+        const address = await viaCepService.fetchAddressByCep(cep);
         if (address) {
           form.setValue('address', address.street);
           form.setValue('city', address.city);

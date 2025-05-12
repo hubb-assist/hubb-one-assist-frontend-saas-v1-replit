@@ -50,52 +50,31 @@ export interface SubscriberFormData {
     state: string;
   };
   
-  // Campos para tipo clínica
+  // Campos específicos de negócio
   clinic_name?: string;
-  
-  // Campos de assinatura
-  segment_id: string;
-  plan_id: string;
-  password: string;
-  
-  // Informações de admin (pode ser separado ou incorporado)
-  admin_user?: {
-    name: string;
-    email: string;
-    password: string;
-  };
-  admin_password?: string;
+  segment_id?: string;
+  plan_id?: string;
+  is_active?: boolean;
 }
 
-interface ViaCepResponse {
-  cep: string;
-  logradouro: string;
-  complemento: string;
-  bairro: string;
-  localidade: string;
-  uf: string;
-  ibge: string;
-  gia: string;
-  ddd: string;
-  siafi: string;
-  erro?: boolean;
-}
-
-// Serviço para busca de endereço pelo CEP
+// Serviço para buscar dados de endereço por CEP
 export const viaCepService = {
-  async getAddressByCep(cep: string): Promise<Address | null> {
+  async fetchAddressByCep(cep: string): Promise<Address | null> {
     try {
-      // Remover qualquer caracter não numérico
       const cleanCep = cep.replace(/\D/g, '');
       
       if (cleanCep.length !== 8) {
-        throw new Error('CEP inválido');
+        console.log('CEP inválido:', cep);
+        return null;
       }
       
-      const response = await axios.get<ViaCepResponse>(`https://viacep.com.br/ws/${cleanCep}/json/`);
+      console.log(`Buscando endereço para CEP: ${cleanCep}`);
+      const response = await axios.get(`https://viacep.com.br/ws/${cleanCep}/json/`);
       
+      // Verifica se há erro no ViaCEP
       if (response.data.erro) {
-        throw new Error('CEP não encontrado');
+        console.log('CEP não encontrado na base do ViaCEP');
+        return null;
       }
       
       return {
@@ -125,10 +104,15 @@ export const subscribersService = {
         is_active: params?.is_active
       };
       
-      console.log('Fazendo requisição para API:', '/subscribers', 'com parâmetros:', paginationParams);
-      const response = await api.get<ApiResponse>('/subscribers', { 
+      console.log('Fazendo requisição para API:', '/external-api/subscribers', 'com parâmetros:', paginationParams);
+      // Usando o proxy local que foi configurado pelo backend
+      const response = await axios.get<ApiResponse>('/external-api/subscribers', { 
         params: paginationParams,
-        withCredentials: true
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
       });
       
       console.log('Resposta recebida:', response.status, response.statusText);
@@ -160,42 +144,64 @@ export const subscribersService = {
           data: fallbackResponse.data.items,
           total: fallbackResponse.data.total || fallbackResponse.data.items.length,
           page: 1,
-          pageSize: 10
+          pageSize: fallbackResponse.data.items.length
         };
       } catch (fallbackError) {
-        // Se até o fallback falhar, lançar o erro original
-        throw error;
+        console.error('Erro ao usar endpoint fallback:', fallbackError);
       }
+      
+      // Retornar objeto vazio para evitar erros na tela
+      return {
+        data: [],
+        total: 0,
+        page: 1,
+        pageSize: 10
+      };
     }
   },
 
-  // Buscar assinante por ID - método provisório
+  // Buscar assinante por ID 
   async getById(id: string): Promise<SubscriberDetail> {
     try {
-      // Como estamos recebendo erro 405, vamos usar uma abordagem alternativa
-      // Vamos buscar todos os assinantes e encontrar o que precisamos pelo ID
-      console.log(`Buscando assinante ${id} pela listagem completa`);
+      // Tentar usar o proxy local configurado pelo backend
+      console.log(`Fazendo requisição GET para API: /external-api/subscribers/${id}`);
       
-      const response = await this.getAll({ limit: 100 }); // Pegar um limite grande para garantir
-      const subscribers = response.data;
-      
-      // Encontrar o assinante pelo ID
-      const subscriber = subscribers.find(s => s.id === id);
-      
-      if (!subscriber) {
-        throw new Error(`Assinante com ID ${id} não encontrado`);
+      try {
+        const response = await axios.get<SubscriberDetail>(`/external-api/subscribers/${id}`, {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }
+        });
+        
+        console.log('Resposta de detalhes recebida:', response.status);
+        return response.data;
+      } catch (directError) {
+        console.error(`Erro ao buscar assinante diretamente. Tentando abordagem alternativa...`, directError);
+        
+        // Plano B: buscar via listagem completa
+        console.log(`Buscando assinante ${id} pela listagem completa`);
+        
+        const response = await this.getAll({ limit: 100 }); // Pegar um limite grande para garantir
+        const subscribers = response.data;
+        
+        // Encontrar o assinante pelo ID
+        const subscriber = subscribers.find(s => s.id === id);
+        
+        if (!subscriber) {
+          throw new Error(`Assinante com ID ${id} não encontrado`);
+        }
+        
+        console.log('Assinante encontrado na listagem:', subscriber);
+        
+        // Converter para o formato SubscriberDetail
+        const subscriberDetail: SubscriberDetail = {
+          ...subscriber as any,
+        };
+        
+        return subscriberDetail;
       }
-      
-      console.log('Assinante encontrado na listagem:', subscriber);
-      
-      // Observando o formato do objeto retornado da API nos logs, parece que
-      // ele já contém todos os campos que precisamos. Vamos fazer um cast
-      // seguro para SubscriberDetail
-      const subscriberDetail: SubscriberDetail = {
-        ...subscriber as any,
-      };
-      
-      return subscriberDetail;
     } catch (error) {
       console.error(`Erro ao buscar assinante com ID ${id}:`, error);
       
@@ -208,49 +214,19 @@ export const subscribersService = {
       throw error;
     }
   },
-
-  // Atualizar status do assinante (ativar/desativar)
-  async updateStatus(id: string, isActive: boolean): Promise<Subscriber> {
-    try {
-      // IMPORTANTE: Usar consistentemente a URL correta sem barra no final
-      const endpoint = isActive 
-        ? `/subscribers/${id}/activate` 
-        : `/subscribers/${id}/deactivate`;
-      
-      console.log(`Fazendo requisição PATCH para API: ${endpoint}`);
-      const response = await api.patch<Subscriber>(endpoint, {}, {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      
-      console.log('Resposta de atualização recebida:', response.status);
-      return response.data;
-    } catch (error) {
-      console.error(`Erro ao ${isActive ? 'ativar' : 'desativar'} assinante com ID ${id}:`, error);
-      
-      // Log detalhado para debug e capturar mensagens úteis do servidor
-      const axiosError = error as any;
-      if (axiosError.response?.data?.message) {
-        console.log('Mensagem do servidor:', axiosError.response.data.message);
-      }
-      
-      throw error;
-    }
-  },
-
+  
   // Editar assinante
   async update(id: string, data: Partial<SubscriberFormData>): Promise<Subscriber> {
     try {
-      // Usar o endpoint correto definido no backend
-      console.log(`Fazendo requisição PUT para API: /subscribers/${id}`);
+      // Usar o endpoint correto com o proxy local
+      console.log(`Fazendo requisição PUT para API: /external-api/subscribers/${id}`);
       console.log('Dados enviados para atualização:', data);
       
-      const response = await api.put<Subscriber>(`/subscribers/${id}`, data, {
+      const response = await axios.put<Subscriber>(`/external-api/subscribers/${id}`, data, {
         withCredentials: true,
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         }
       });
       
@@ -267,5 +243,37 @@ export const subscribersService = {
       
       throw error;
     }
-  }
+  },
+
+  // Atualizar status do assinante (ativar/desativar)
+  async updateStatus(id: string, isActive: boolean): Promise<Subscriber> {
+    try {
+      // IMPORTANTE: Usar URLs sem barras no final
+      const endpoint = isActive 
+        ? `/external-api/subscribers/${id}/activate` 
+        : `/external-api/subscribers/${id}/deactivate`;
+      
+      console.log(`Fazendo requisição PATCH para API: ${endpoint}`);
+      const response = await axios.patch<Subscriber>(endpoint, {}, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
+      
+      console.log('Resposta de atualização recebida:', response.status);
+      return response.data;
+    } catch (error) {
+      console.error(`Erro ao atualizar status do assinante com ID ${id}:`, error);
+      
+      // Log detalhado para debug e capturar mensagens úteis do servidor
+      const axiosError = error as any;
+      if (axiosError.response?.data?.message) {
+        console.log('Mensagem do servidor:', axiosError.response.data.message);
+      }
+      
+      throw error;
+    }
+  },
 };

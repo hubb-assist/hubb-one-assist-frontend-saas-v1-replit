@@ -81,11 +81,18 @@ export default api;
 
 // Funções de autenticação
 export const authService = {
-  // Login com email e senha
+  // Login com email e senha (usando o proxy local)
   async login(email: string, password: string) {
     try {
-      console.log(`Tentando login no endpoint: ${ENDPOINTS.LOGIN}`);
-      const response = await api.post(ENDPOINTS.LOGIN, { email, password });
+      console.log(`Tentando login no endpoint: /external-api/auth/login`);
+      // Aqui fazemos a requisição diretamente ao proxy local que foi configurado pelo backend
+      const response = await axios.post('/external-api/auth/login', { email, password }, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
       return response.data;
     } catch (error) {
       throw error;

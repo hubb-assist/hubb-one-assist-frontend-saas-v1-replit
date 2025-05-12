@@ -125,8 +125,8 @@ export const subscribersService = {
         is_active: params?.is_active
       };
       
-      console.log('Fazendo requisição para API:', '/subscribers/', 'com parâmetros:', paginationParams);
-      const response = await api.get<ApiResponse>('/subscribers/', { 
+      console.log('Fazendo requisição para API:', '/subscribers', 'com parâmetros:', paginationParams);
+      const response = await api.get<ApiResponse>('/subscribers', { 
         params: paginationParams,
         withCredentials: true
       });
@@ -212,11 +212,10 @@ export const subscribersService = {
   // Atualizar status do assinante (ativar/desativar)
   async updateStatus(id: string, isActive: boolean): Promise<Subscriber> {
     try {
-      // IMPORTANTE: Usar consistentemente a URL correta recomendada pelo backend
-      // Garantir que o endpoint termina com /
+      // IMPORTANTE: Usar consistentemente a URL correta sem barra no final
       const endpoint = isActive 
-        ? `/subscribers/${id}/activate/` 
-        : `/subscribers/${id}/deactivate/`;
+        ? `/subscribers/${id}/activate` 
+        : `/subscribers/${id}/deactivate`;
       
       console.log(`Fazendo requisição PATCH para API: ${endpoint}`);
       const response = await api.patch<Subscriber>(endpoint, {}, {

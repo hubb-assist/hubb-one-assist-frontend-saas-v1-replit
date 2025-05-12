@@ -62,7 +62,9 @@ export default function Subscribers() {
   const paginationParams = {
     skip: (currentPage - 1) * pageSize,
     limit: pageSize,
-    name: nameFilter || undefined
+    name: nameFilter || undefined,
+    // Filtrar assinantes ativos se necessário (deixe comentado para ver todos)
+    // is_active: true
   };
 
   // Buscar lista de assinantes paginada

@@ -1,0 +1,38 @@
+Warning: findDOMNode is deprecated and will be removed in the next major release. Instead, add a ref directly to the element you want to reference. Learn more about using refs safely here: https://reactjs.org/link/strict-mode-find-node
+    at InputElement2 (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/react-input-mask.js?v=ef3c9363:497:34)
+    at _c (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/components/ui/masked-input.tsx:23:5)
+    at _c7 (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/components/ui/masked-input.tsx:131:11)
+    at https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EVLBUYTV.js?v=ef3c9363:79:13
+    at https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EVLBUYTV.js?v=ef3c9363:56:13
+    at https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/components/ui/form.tsx:130:9
+    at div
+    at https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/components/ui/form.tsx:72:6
+    at Controller (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4BFJKWC4.js?v=ef3c9363:298:35)
+    at FormField (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/components/ui/form.tsx:33:6)
+    at div
+    at div
+    at _c9 (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/components/ui/card.tsx:20:11)
+    at form
+    at FormProvider (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4BFJKWC4.js?v=ef3c9363:102:11)
+    at OnboardingForm (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/components/onboarding/onboarding-form.tsx?t=1747059338009:132:27)
+    at main
+    at div
+    at Onboarding
+    at Route (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=ef3c9363:323:16)
+    at Switch (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=ef3c9363:379:17)
+    at Router (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/App.tsx?t=1747059338009&v=8XBxSv8M8TCbzA1d_KdIN:40:59)
+    at Provider (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-E7IAXTU4.js?v=ef3c9363:38:15)
+    at TooltipProvider (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=ef3c9363:61:5)
+    at QueryClientProvider (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=ef3c9363:2805:3)
+    at App
+Tentando carregar segmentos públicos
+Buscando segmentos públicos
+Verificando autenticação...
+Solicitando verificação de autenticação: /users/me
+Fazendo requisição para API: https://hubb-one-assist-back-hubb-one.replit.app/users/me
+API retornou lista vazia de segmentos
+Resposta indica que o usuário não está autenticado: 
+Object {authenticated: false, status: "not_authenticated", message: "Usuário não autenticado"}
+Usuário não autenticado (resposta vazia)

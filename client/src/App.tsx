@@ -35,7 +35,20 @@ function Router() {
     
   // Verificar a autenticação ao carregar a aplicação
   useEffect(() => {
-    // Executar verificação de autenticação
+    // Lista de rotas públicas que não exigem verificação de autenticação
+    const publicRoutes = ['/login', '/onboarding', '/'];
+    const currentPath = window.location.pathname;
+    const isPublicRoute = publicRoutes.some(route => 
+      currentPath === route || currentPath.startsWith(route + '/')
+    );
+    
+    // Não verificar autenticação para rotas públicas
+    if (isPublicRoute) {
+      setDidPerformInitialCheck(true);
+      return;
+    }
+    
+    // Executar verificação de autenticação apenas para rotas protegidas
     async function performAuthCheck() {
       try {
         await checkAuth();

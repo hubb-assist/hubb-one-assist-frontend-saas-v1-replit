@@ -1,0 +1,82 @@
+✅ Resumo técnico do seu relato
+Imagem 1 – Etapa 1: Responsável
+
+Tudo está preenchido corretamente.
+
+Campos estão limpos, inputs respeitados, máscara de CPF e telefone funcionando.
+
+Ao clicar em “Próximo”, vai para a etapa 2.
+
+Imagem 2 – Etapa 2: Endereço
+
+Aqui começa o erro: os campos já aparecem com dados errados herdados da etapa anterior:
+
+O campo “Endereço” mostra o CPF.
+
+O campo “Número” mostra o e-mail.
+
+O campo “CEP” está travado, e mesmo digitando não aparece nada.
+
+O erro não é de cache, mas sim de preenchimento indevido no defaultValue ou no useForm().
+
+Imagem 3 – Após forçar erro e validar
+
+O formulário volta a funcionar normalmente (valida os campos, exibe erros corretamente).
+
+O CEP agora aceita input, e o log mostra que está chamando a API corretamente (Buscando CEP: 81200500).
+
+Isso confirma que a máscara e integração de CEP estão certas — o erro está mesmo no carregamento inicial da etapa.
+
+🧠 Diagnóstico técnico preciso
+Esse comportamento indica que o formulário da etapa 2 está herdando o formContext da etapa 1, ou pior: está reusando os nomes de campos do formulário anterior, como:
+
+email, cpf, endereco, numero → estão colidindo porque o form não foi resetado, e os names são conflitantes.
+
+Provavelmente está acontecendo algo como:
+
+tsx
+Copiar
+Editar
+const form = useForm({ defaultValues: sharedFormData });
+Ou o FormProvider foi aplicado sem isolar os campos de cada etapa.
+
+🛠️ Soluções recomendadas (por prioridade):
+✅ 1. Isolar os campos de cada etapa
+Use um formulário separado por etapa, ou:
+
+Use useFormContext() com FormProvider + shouldUnregister: true:
+
+ts
+Copiar
+Editar
+const form = useForm({
+  shouldUnregister: true
+});
+✅ 2. Resetar os campos ao trocar de etapa
+Ao mudar para o step de endereço, execute um form.reset() com valores em branco:
+
+ts
+Copiar
+Editar
+useEffect(() => {
+  if (step === 2) {
+    form.reset({
+      cep: '',
+      endereco: '',
+      numero: '',
+      cidade: '',
+      estado: ''
+    });
+  }
+}, [step]);
+✅ 3. Confirme que os name dos inputs estão corretos
+Verifique se o name="endereco" do campo de endereço não está colidindo com campos como cpf, nome, email, etc.
+
+✅ Conclusão final
+Você explicou perfeitamente o problema e os prints confirmam que:
+
+O erro não está no input de CEP ou na máscara.
+
+O problema está no formulário estar reaproveitando campos indevidamente entre etapas.
+
+Ao forçar erro ou mexer no campo, o estado se corrige, o que prova que a estrutura e validação estão corretas — o problema é no carregamento inicial da etapa 2.

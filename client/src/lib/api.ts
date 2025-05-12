@@ -81,20 +81,32 @@ export default api;
 
 // Funções de autenticação
 export const authService = {
-  // Login com email e senha (usando o proxy local)
+  // Login com email e senha (usando URL direta)
   async login(email: string, password: string) {
     try {
-      console.log(`Tentando login no endpoint: /external-api/auth/login`);
-      // Aqui fazemos a requisição diretamente ao proxy local que foi configurado pelo backend
-      const response = await axios.post('/external-api/auth/login', { email, password }, {
+      // Usar URL completa do backend em vez do proxy
+      const loginUrl = `${BASE_URL}/auth/login`;
+      console.log(`Tentando login na URL direta: ${loginUrl}`);
+      
+      const response = await axios.post(loginUrl, { email, password }, {
         withCredentials: true,
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         }
       });
+      
+      console.log('Resposta do login:', response.status, response.statusText);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Erro ao fazer login:', error);
+      
+      // Log detalhado do erro
+      if (error.response) {
+        console.log('Status do erro:', error.response.status);
+        console.log('Dados retornados:', error.response.data);
+      }
+      
       throw error;
     }
   },
@@ -107,10 +119,19 @@ export const authService = {
       
       // Se estiver na página de login, log silencioso
       if (!isLoginPage) {
-        console.log(`Solicitando verificação de autenticação: ${ENDPOINTS.USER_ME}`);
+        console.log(`Solicitando verificação de autenticação: /users/me`);
       }
       
-      const response = await api.get(ENDPOINTS.USER_ME);
+      // Usar URL completa do backend em vez do endpoint relativo
+      const userMeUrl = `${BASE_URL}/users/me`;
+      
+      const response = await axios.get(userMeUrl, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
       
       // Se houver resposta bem-sucedida, verificar se o usuário está realmente autenticado
       // Verifica se a resposta contém o campo 'authenticated' e se é falso

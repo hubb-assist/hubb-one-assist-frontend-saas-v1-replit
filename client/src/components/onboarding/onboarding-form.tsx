@@ -20,7 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, ArrowRight, CheckCircle, Loader2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 import { DocumentInput, PhoneInput, CEPInput } from '@/components/ui/masked-input';
 
 import { viaCepService, type SubscriberFormData } from '@/lib/api-subscribers';
@@ -185,7 +185,21 @@ const step4Schema = z.object({
 });
 
 // Schema completo combinando todos os steps
-const completeSchema = step1Schema.merge(step2Schema).merge(step3Schema).merge(step4Schema);
+const completeSchema = step1Schema.merge(step2Schema).merge(step3Schema).merge(z.object({
+  password: z.string()
+    .min(1, 'Senha é obrigatória')
+    .min(6, 'Senha deve ter pelo menos 6 caracteres'),
+  
+  password_confirmation: z.string()
+    .min(1, 'Confirmação de senha é obrigatória'),
+    
+  terms: z.boolean().refine(val => val === true, {
+    message: 'Você precisa aceitar os termos',
+  }),
+})).refine((data) => data.password === data.password_confirmation, {
+  message: "As senhas não coincidem",
+  path: ["password_confirmation"],
+});
 type FormValues = z.infer<typeof completeSchema>;
 
 export default function OnboardingForm() {
@@ -195,6 +209,8 @@ export default function OnboardingForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [fetchingCep, setFetchingCep] = useState(false);
   const [selectedSegment, setSelectedSegment] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
   const [, navigate] = useLocation();
   const [apiError, setApiError] = useState<string | null>(null);
 
@@ -750,16 +766,68 @@ export default function OnboardingForm() {
             
             <FormField
               control={form.control}
-              name="admin_password"
+              name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Senha para administração</FormLabel>
+                  <FormLabel>Senha de acesso</FormLabel>
                   <FormControl>
-                    <Input 
-                      type="password" 
-                      placeholder="Digite a senha para usuário administrador" 
-                      {...field} 
-                    />
+                    <div className="relative">
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Digite sua senha"
+                        {...field}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        className="absolute right-1 top-1 h-7 w-7 p-0"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                        <span className="sr-only">
+                          {showPassword ? "Ocultar senha" : "Mostrar senha"}
+                        </span>
+                      </Button>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="password_confirmation"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirme sua senha</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        type={showPasswordConfirmation ? "text" : "password"}
+                        placeholder="Confirme sua senha"
+                        {...field}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        className="absolute right-1 top-1 h-7 w-7 p-0"
+                        onClick={() => setShowPasswordConfirmation(!showPasswordConfirmation)}
+                      >
+                        {showPasswordConfirmation ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                        <span className="sr-only">
+                          {showPasswordConfirmation ? "Ocultar senha" : "Mostrar senha"}
+                        </span>
+                      </Button>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

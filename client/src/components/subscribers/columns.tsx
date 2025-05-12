@@ -1,5 +1,14 @@
 import React from 'react';
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef, TableMeta } from '@tanstack/react-table';
+
+// Meta data de tabela com callbacks
+declare module '@tanstack/react-table' {
+  interface TableMeta<TData extends unknown> {
+    onView?: (row: TData) => void;
+    onActivate?: (row: TData) => void;
+    onDeactivate?: (row: TData) => void;
+  }
+}
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';

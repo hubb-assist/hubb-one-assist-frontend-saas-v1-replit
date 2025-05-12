@@ -13,9 +13,20 @@ export interface SubscriberFormData {
   name: string;
   email: string;
   document: string;
-  document_type: 'cpf' | 'cnpj';
+  document_type?: 'cpf' | 'cnpj';
   phone: string;
-  address: {
+  
+  // Campos tradicionais de endereço
+  address?: string;
+  number?: string;
+  complement?: string;
+  district?: string;
+  city?: string;
+  state?: string;
+  zip_code?: string;
+  
+  // Pode aceitar um objeto de endereço completo também
+  addressObject?: {
     postal_code: string;
     street: string;
     number: string;
@@ -24,14 +35,22 @@ export interface SubscriberFormData {
     city: string;
     state: string;
   };
+  
+  // Campos para tipo clínica
+  clinic_name?: string;
+  
+  // Campos de assinatura
   segment_id: string;
   plan_id: string;
   password: string;
-  admin_user: {
+  
+  // Informações de admin (pode ser separado ou incorporado)
+  admin_user?: {
     name: string;
     email: string;
     password: string;
   };
+  admin_password?: string;
 }
 
 interface ViaCepResponse {

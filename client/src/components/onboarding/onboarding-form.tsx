@@ -368,17 +368,9 @@ export default function OnboardingForm() {
       // Forçar atualização dos valores para exibição no resumo
       console.log('[DEBUG] Dados do formulário na etapa 4:', form.getValues());
       
-      // Verificar se os dados estão completos antes de mostrar o resumo
-      const formValues = form.getValues();
-      const hasMissingData = !formValues.name || !formValues.email || !formValues.plan_id;
-      
-      if (hasMissingData) {
-        console.log('[DEBUG] Dados incompletos, retornando para etapa 1');
-        setStep(1);
-        toast.error('Por favor, preencha todos os dados antes de finalizar o cadastro.');
-      } else {
-        form.trigger();
-      }
+      // Apenas realizar a validação, sem redirecionar automaticamente
+      // para evitar a experiência frustrante para o usuário
+      form.trigger();
     }
   }, [step, form]);
 
@@ -439,6 +431,17 @@ export default function OnboardingForm() {
     console.log('[DEBUG] Submissão iniciada:', data);
     console.log('[DEBUG] Valor do terms:', data.terms);
     console.log('[DEBUG] Formulário válido?', form.formState.isValid);
+    console.log('[DEBUG] Dados completos do formulário:', data);
+    
+    // Verificar se os termos foram aceitos
+    if (!data.terms) {
+      toast.error('Você precisa aceitar os termos para criar a conta.');
+      form.setError('terms', { 
+        type: 'manual',
+        message: 'Você precisa aceitar os termos'
+      });
+      return;
+    }
     
     // Verificar se estamos na última etapa e se os campos obrigatórios estão preenchidos
     const isLastStepValid = await validateCurrentStep();
@@ -1019,10 +1022,22 @@ export default function OnboardingForm() {
               <Button 
                 type="submit" 
                 disabled={isLoading}
-                onClick={() => {
+                onClick={(e) => {
+                  // Adicionar logs antes da submissão para depuração
                   console.log('[DEBUG] Botão Criar conta clicado');
                   console.log('[DEBUG] Form válido:', form.formState.isValid);
                   console.log('[DEBUG] Terms checked:', form.getValues('terms'));
+                  console.log('[DEBUG] Erros de validação:', form.formState.errors);
+                  
+                  // Verificar se os terms estão marcados
+                  if (!form.getValues('terms')) {
+                    e.preventDefault(); // Impedir submissão se os termos não estiverem aceitos
+                    toast.error('Você precisa aceitar os termos para continuar');
+                    form.setError('terms', { 
+                      type: 'manual',
+                      message: 'Você precisa aceitar os termos'
+                    });
+                  }
                 }}
               >
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

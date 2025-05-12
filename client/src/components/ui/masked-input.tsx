@@ -14,22 +14,25 @@ interface MaskedState {
 }
 
 // Componente para input com máscara que mantém compatibilidade com react-hook-form
+// Tipo específico para as props do InputMask para evitar erros de type
+interface InputMaskProps {
+  mask: string;
+  maskPlaceholder?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  value?: string;
+  name?: string;
+  className?: string;
+  placeholder?: string;
+  type?: string;
+  alwaysShowMask?: boolean;
+  beforeMaskedStateChange?: (state: any) => any;
+}
+
+// Nosso componente MaskedInput com tipagem melhorada
 export const MaskedInput = forwardRef<
   HTMLInputElement,
-  {
-    mask: string;
-    maskPlaceholder?: string;
-    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
-    value?: string;
-    name?: string;
-    className?: string;
-    placeholder?: string;
-    type?: string;
-    alwaysShowMask?: boolean;
-    beforeMaskedStateChange?: (state: any) => any;
-    [key: string]: any;
-  }
+  InputMaskProps & { [key: string]: any }
 >(
   (
     {
@@ -44,10 +47,11 @@ export const MaskedInput = forwardRef<
       type = 'text',
       alwaysShowMask = false,
       beforeMaskedStateChange,
-      ...props
+      // removemos o ...props aqui para controlar com precisão o que passamos adiante
     },
     ref
   ) => {
+    // Agora usamos um forwardRef diretamente no InputMask para passar corretamente a ref
     return (
       <InputMask
         mask={mask}
@@ -58,10 +62,17 @@ export const MaskedInput = forwardRef<
         alwaysShowMask={alwaysShowMask}
         beforeMaskedStateChange={beforeMaskedStateChange}
       >
+        {/* Função que recebe as props processadas do InputMask */}
         {(inputProps: any) => {
-          // Filtramos props específicas do InputMask para que elas não sejam passadas para o <input>
-          const { maskPlaceholder, beforeMaskedStateChange, alwaysShowMask, ...safeInputProps } = inputProps;
+          // Removemos as props específicas do InputMask que causam problemas no DOM
+          const {
+            maskPlaceholder: _maskPlaceholder,
+            beforeMaskedStateChange: _beforeMaskedStateChange,
+            alwaysShowMask: _alwaysShowMask,
+            ...safeInputProps
+          } = inputProps;
           
+          // Retornamos o componente Input apenas com props seguras
           return (
             <Input
               {...safeInputProps}
@@ -85,11 +96,34 @@ export const CPFInput = forwardRef<
   HTMLInputElement,
   Omit<React.ComponentProps<typeof MaskedInput>, 'mask'>
 >((props, ref) => {
+  // Extraímos apenas as props necessárias e seguras para evitar propagação de props inválidas
+  const {
+    value,
+    onChange,
+    onBlur,
+    name,
+    className,
+    placeholder = "000.000.000-00",
+    type = "text",
+    disabled,
+    required,
+    id,
+    ...otherProps
+  } = props;
+  
   return (
     <MaskedInput
       mask="999.999.999-99"
-      placeholder="000.000.000-00"
-      {...props}
+      value={value}
+      onChange={onChange}
+      onBlur={onBlur}
+      name={name}
+      className={className}
+      placeholder={placeholder}
+      type={type}
+      disabled={disabled}
+      required={required}
+      id={id}
       ref={ref}
     />
   );
@@ -102,11 +136,34 @@ export const CNPJInput = forwardRef<
   HTMLInputElement,
   Omit<React.ComponentProps<typeof MaskedInput>, 'mask'>
 >((props, ref) => {
+  // Extraímos apenas as props necessárias e seguras para evitar propagação de props inválidas
+  const {
+    value,
+    onChange,
+    onBlur,
+    name,
+    className,
+    placeholder = "00.000.000/0001-00",
+    type = "text",
+    disabled,
+    required,
+    id,
+    ...otherProps
+  } = props;
+  
   return (
     <MaskedInput
       mask="99.999.999/9999-99"
-      placeholder="00.000.000/0001-00"
-      {...props}
+      value={value}
+      onChange={onChange}
+      onBlur={onBlur}
+      name={name}
+      className={className}
+      placeholder={placeholder}
+      type={type}
+      disabled={disabled}
+      required={required}
+      id={id}
       ref={ref}
     />
   );
@@ -122,7 +179,20 @@ export const DocumentInput = forwardRef<
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   }
 >((props, ref) => {
-  const { value = '', onChange, ...rest } = props;
+  // Extraindo apenas as props necessárias para evitar warnings de props inválidas
+  const {
+    value = '',
+    onChange,
+    onBlur,
+    name,
+    className,
+    placeholder: propPlaceholder,
+    type = "text",
+    disabled,
+    required,
+    id,
+    ...otherProps
+  } = props;
   
   // Remove todos os caracteres não numéricos para analisar
   const rawValue = value.replace(/\D/g, '');
@@ -132,17 +202,19 @@ export const DocumentInput = forwardRef<
   const mask = rawValue.length > 11 ? '99.999.999/9999-99' : '999.999.999-99';
   const placeholder = rawValue.length > 11 ? '00.000.000/0001-00' : '000.000.000-00';
   
-  // Filtrar props para remover propriedades que podem causar warnings
-  const { className, placeholder: propPlaceholder, ...filteredRest } = rest;
-  
   return (
     <MaskedInput
       mask={mask}
       placeholder={placeholder}
       value={value}
       onChange={onChange}
+      onBlur={onBlur}
+      name={name}
       className={className}
-      {...filteredRest}
+      type={type}
+      disabled={disabled}
+      required={required}
+      id={id}
       ref={ref}
       beforeMaskedStateChange={(state: MaskedState) => {
         // Se o valor estiver vazio, não aplicar máscara
@@ -184,11 +256,34 @@ export const PhoneInput = forwardRef<
   HTMLInputElement,
   Omit<React.ComponentProps<typeof MaskedInput>, 'mask'>
 >((props, ref) => {
+  // Extraímos apenas as props necessárias e seguras para evitar propagação de props inválidas
+  const {
+    value,
+    onChange,
+    onBlur,
+    name,
+    className,
+    placeholder = "(00) 00000-0000",
+    type = "text",
+    disabled,
+    required,
+    id,
+    ...otherProps
+  } = props;
+  
   return (
     <MaskedInput
       mask="(99) 99999-9999"
-      placeholder="(00) 00000-0000"
-      {...props}
+      value={value}
+      onChange={onChange}
+      onBlur={onBlur}
+      name={name}
+      className={className}
+      placeholder={placeholder}
+      type={type}
+      disabled={disabled}
+      required={required}
+      id={id}
       ref={ref}
     />
   );
@@ -201,11 +296,34 @@ export const CEPInput = forwardRef<
   HTMLInputElement,
   Omit<React.ComponentProps<typeof MaskedInput>, 'mask'>
 >((props, ref) => {
+  // Extraímos apenas as props necessárias e seguras para evitar propagação de props inválidas
+  const {
+    value,
+    onChange,
+    onBlur,
+    name,
+    className,
+    placeholder = "00000-000",
+    type = "text",
+    disabled,
+    required,
+    id,
+    ...otherProps
+  } = props;
+  
   return (
     <MaskedInput
       mask="99999-999"
-      placeholder="00000-000"
-      {...props}
+      value={value}
+      onChange={onChange}
+      onBlur={onBlur}
+      name={name}
+      className={className}
+      placeholder={placeholder}
+      type={type}
+      disabled={disabled}
+      required={required}
+      id={id}
       ref={ref}
     />
   );

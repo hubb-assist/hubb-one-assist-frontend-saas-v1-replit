@@ -47,7 +47,7 @@ export const MaskedInput = forwardRef<
       type = 'text',
       alwaysShowMask = false,
       beforeMaskedStateChange,
-      // removemos o ...props aqui para controlar com precisão o que passamos adiante
+      ...otherProps
     },
     ref
   ) => {
@@ -61,6 +61,7 @@ export const MaskedInput = forwardRef<
         onBlur={onBlur}
         alwaysShowMask={alwaysShowMask}
         beforeMaskedStateChange={beforeMaskedStateChange}
+        {...otherProps}
       >
         {/* Função que recebe as props processadas do InputMask */}
         {(inputProps: any) => {

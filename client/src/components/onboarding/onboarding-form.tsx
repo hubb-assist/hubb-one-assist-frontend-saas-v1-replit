@@ -369,7 +369,7 @@ export default function OnboardingForm() {
     // Garantir que os dados do resumo na etapa 4 estejam atualizados
     if (step === 4) {
       // Forçar atualização dos valores para exibição no resumo
-      console.log('[DEBUG] Dados do formulário na etapa 4:', form.getValues());
+      // Validar etapa 4 do formulário
       
       // Apenas realizar a validação, sem redirecionar automaticamente
       // para evitar a experiência frustrante para o usuário
@@ -431,9 +431,7 @@ export default function OnboardingForm() {
 
   // Enviar formulário completo
   const onSubmit = async (data: FormValues) => {
-    console.log('[DEBUG] Submissão iniciada:', data);
-    console.log('[DEBUG] Valor do terms:', data.terms);
-    console.log('[DEBUG] Dados completos do formulário:', data);
+    // Iniciar processo de submissão do formulário
     
     // Verificar dados essenciais
     const requiredFields = [
@@ -805,19 +803,11 @@ export default function OnboardingForm() {
       case 4:
         // Usar form.watch() para valores reativos que vão atualizar automaticamente o UI
         const watched = form.watch();
-        console.log('[DEBUG] Valores reativos do formulário na etapa 4:', watched);
-        
         // Buscar o plano selecionado
         const selectedPlan = plans.find(p => p.id === watched.plan_id);
-        console.log('[DEBUG] Plano selecionado:', selectedPlan);
         
         return (
           <div className="space-y-6">
-            {/* Debug - Valores do formulário */}
-            <div className="bg-amber-50 p-2 mb-4 text-xs rounded border border-amber-200">
-              <p className="font-mono">DEBUG: Dados capturados do formulário</p>
-              <pre className="mt-1 overflow-auto max-h-24">{JSON.stringify(watched, null, 2)}</pre>
-            </div>
             
             <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-green-800">
               <h3 className="font-semibold">Resumo da assinatura</h3>

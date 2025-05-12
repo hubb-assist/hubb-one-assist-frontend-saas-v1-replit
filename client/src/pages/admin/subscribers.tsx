@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/subscribers/data-table';
 import { columns } from '@/components/subscribers/columns';
 import SubscriberDetailView from '@/components/subscribers/subscriber-detail';
+import { SubscriberEditForm } from '@/components/subscribers/subscriber-edit-form';
 import { subscribersService } from '@/lib/api-subscribers';
 import { Subscriber, SubscriberDetail } from '@/components/subscribers/types';
 import {
@@ -30,6 +31,7 @@ import { Users } from 'lucide-react';
 
 export default function Subscribers() {
   const [openDetailDialog, setOpenDetailDialog] = useState(false);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openStatusDialog, setOpenStatusDialog] = useState(false);
   const [selectedSubscriber, setSelectedSubscriber] = useState<Subscriber | undefined>(undefined);
   const [subscriberDetail, setSubscriberDetail] = useState<SubscriberDetail | undefined>(undefined);
@@ -130,6 +132,33 @@ export default function Subscribers() {
     },
   });
 
+  // Mutação para editar assinante
+  const editMutation = useMutation({
+    mutationFn: (data: { id: string; formData: any }) => {
+      console.log(`Editando assinante: /subscribers/${data.id}/`);
+      return subscribersService.update(data.id, data.formData);
+    },
+    onSuccess: (data) => {
+      // Invalidar a consulta com os parâmetros atuais de paginação
+      queryClient.invalidateQueries({ 
+        queryKey: ['/subscribers', paginationParams] 
+      });
+      // Invalidar também os detalhes do assinante se estiver aberto
+      if (selectedSubscriber) {
+        queryClient.invalidateQueries({ 
+          queryKey: ['/subscribers', selectedSubscriber.id] 
+        });
+      }
+      toast.success(`Assinante ${data.name} atualizado com sucesso!`);
+      setOpenEditDialog(false);
+    },
+    onError: (error) => {
+      console.error('Erro ao editar assinante:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      toast.error(`Erro ao editar assinante: ${errorMessage}`);
+    },
+  });
+
   // Handlers
   const handleViewDetail = (subscriber: Subscriber) => {
     setSelectedSubscriber(subscriber);
@@ -138,9 +167,7 @@ export default function Subscribers() {
 
   const handleEditSubscriber = (subscriber: Subscriber) => {
     setSelectedSubscriber(subscriber);
-    // Por enquanto, só exibimos um toast informativo
-    // Em uma implementação futura, abriríamos um modal de edição
-    toast.info(`Edição do assinante ${subscriber.name} será implementada em breve.`);
+    setOpenEditDialog(true);
   };
 
   const handleStatusChange = (subscriber: Subscriber, newStatus: boolean) => {
@@ -394,6 +421,21 @@ export default function Subscribers() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Modal de Edição de Assinante */}
+      {selectedSubscriber && (
+        <SubscriberEditForm
+          subscriber={selectedSubscriber}
+          open={openEditDialog}
+          onOpenChange={setOpenEditDialog}
+          onSuccess={() => {
+            // Recarregar os dados após edição bem-sucedida
+            queryClient.invalidateQueries({ 
+              queryKey: ['/subscribers', paginationParams] 
+            });
+          }}
+        />
+      )}
     </AppShell>
   );
 }

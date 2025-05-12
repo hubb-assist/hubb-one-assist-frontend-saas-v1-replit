@@ -224,5 +224,34 @@ export const subscribersService = {
       
       throw error;
     }
+  },
+
+  // Editar assinante
+  async update(id: string, data: Partial<SubscriberFormData>): Promise<Subscriber> {
+    try {
+      // Garantir que o endpoint termina com /
+      console.log(`Fazendo requisição PUT para API: /subscribers/${id}/`);
+      console.log('Dados enviados para atualização:', data);
+      
+      const response = await api.put<Subscriber>(`/subscribers/${id}/`, data, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      console.log('Resposta de edição recebida:', response.status);
+      return response.data;
+    } catch (error) {
+      console.error(`Erro ao editar assinante com ID ${id}:`, error);
+      
+      // Log detalhado para debug e capturar mensagens úteis do servidor
+      const axiosError = error as any;
+      if (axiosError.response?.data?.message) {
+        console.log('Mensagem do servidor:', axiosError.response.data.message);
+      }
+      
+      throw error;
+    }
   }
 };

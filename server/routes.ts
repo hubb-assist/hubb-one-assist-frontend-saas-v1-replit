@@ -1,4 +1,4 @@
-import type { Express, Request, Response } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { createProxyMiddleware } from 'http-proxy-middleware';
@@ -8,20 +8,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Definir a URL da API externa (URL final de produção)
   const API_TARGET = 'https://hubb-one-assist-back-hubb-one.replit.app';
   
-  // Configurar proxy mais simples para evitar problemas de tipagem
-  // @ts-ignore - Ignorando problemas de tipagem para simplificar
+  // Middleware personalizado para logging de requisições proxy
+  const logProxyRequests = (req: Request, _res: Response, next: NextFunction) => {
+    log(`Proxy request: ${req.method} ${req.path}`);
+    next();
+  };
+  
+  // Middleware personalizado para CORS
+  const addCorsHeaders = (_req: Request, res: Response, next: NextFunction) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    next();
+  };
+  
+  // Configurar proxy simples
+  // @ts-ignore - Ignorando erro de propriedade 'logLevel'
   const apiProxy = createProxyMiddleware({
     target: API_TARGET,
     changeOrigin: true,
     secure: false,
     pathRewrite: {
       '^/external-api': ''
-    },
-    logLevel: 'debug'
+    }
   });
 
-  // Rota de proxy para todas as requisições à API externa
-  app.use('/external-api', apiProxy);
+  // Rota para lidar explicitamente com OPTIONS para preflight CORS
+  app.options('/external-api/*', (req: Request, res: Response) => {
+    res.header('Access-Control-Allow-Origin', req.headers.origin as string || '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.status(200).send();
+  });
+
+  // Aplicar middlewares na ordem correta
+  app.use('/external-api', logProxyRequests, addCorsHeaders, apiProxy);
+  
+  // API endpoint para verificar se o proxy está funcionando
+  app.get('/api/check-proxy', (req: Request, res: Response) => {
+    res.json({ 
+      status: 'ok', 
+      message: 'Proxy server is running',
+      proxyTarget: API_TARGET,
+      timestamp: new Date().toISOString()
+    });
+  });
+  
+  // Endpoint para substituir caso de falha no proxy durante o desenvolvimento
+  app.get('/api/subscribers/fallback', (_req: Request, res: Response) => {
+    log('Enviando dados de fallback para subscribers - APENAS PARA DESENVOLVIMENTO');
+    
+    res.json({
+      items: [],
+      total: 0,
+      page: 1,
+      size: 10,
+      message: "Este é um endpoint de fallback para desenvolvimento. Dados reais virão da API externa."
+    });
+  });
 
   // Outras rotas da aplicação
   // prefix all routes with /api

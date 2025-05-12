@@ -1,0 +1,71 @@
+Estou vendo que o frontend está enfrentando um problema de CORS (Cross-Origin Resource Sharing) ao tentar acessar a API de subscribers. O erro principal é:
+
+Access to XMLHttpRequest at 'https://hubb-one-assist-back-hubb-one.replit.app/subscribers/' from origin 'https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+Este erro indica que a URL do frontend (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev) não está incluída na lista de origens permitidas no backend.
+
+Vamos verificar as configurações CORS no backend:
+
+
+Opened app/main.py
+Verifiquei as configurações de CORS no backend e encontrei que a URL mencionada (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev) já está incluída na lista de origens permitidas (linha 83).
+
+Entretanto, pode estar ocorrendo um dos seguintes problemas:
+
+O servidor está retornando erro 500 antes mesmo de processar as configurações CORS
+As credenciais não estão sendo enviadas corretamente no frontend
+Pode haver um problema na rota /subscribers/ que está causando falha antes da aplicação dos headers CORS
+Vamos verificar o código do frontend que está fazendo a requisição:
+
+
+Agent ran into an error
+Para testar o endpoint:
+
+
+Agent ran into an error
+Baseado nos logs de erro e na configuração do backend, identifiquei três problemas principais que precisam ser corrigidos:
+
+1. Problema de CORS em requisições pré-voo (preflight)
+Embora o domínio do frontend esteja nas origens permitidas, os navegadores modernos enviam uma requisição OPTIONS antes das requisições reais (chamada de "preflight") para verificar se a requisição é permitida.
+
+2. Problema com credenciais
+As mensagens de erro indicam que o navegador está tentando fazer requisições, mas está recebendo um erro de CORS porque o servidor não está retornando os cabeçalhos de CORS apropriados nas respostas.
+
+3. Erro 500 no servidor
+Um dos erros mostra "500 (Internal Server Error)" ao acessar a rota de subscribers, o que sugere que pode haver um problema no backend ao processar essas requisições.
+
+Solução recomendada:
+Para resolver estes problemas, sugiro estas correções:
+
+1. Garanta que a autenticação está correta no frontend
+No código do frontend, verifique se todas as requisições para a API estão incluindo credentials: 'include' para enviar os cookies de autenticação:
+
+// Exemplo em axios
+axios.get('https://hubb-one-assist-back-hubb-one.replit.app/subscribers/', {
+  withCredentials: true
+})
+// Exemplo em fetch
+fetch('https://hubb-one-assist-back-hubb-one.replit.app/subscribers/', {
+  credentials: 'include'
+})
+2. Verifique se você está logado corretamente
+O erro 500 pode estar ocorrendo porque o endpoint /subscribers/ requer autenticação, e o token JWT pode estar ausente ou inválido. Certifique-se de fazer login antes de acessar esse endpoint.
+
+3. Configure o frontend para lidar com erros de rede
+Adicione tratamento de erros adequado para lidar com falhas de rede ou CORS:
+
+try {
+  const response = await api.get('/subscribers/');
+  // processar a resposta
+} catch (error) {
+  if (error.message === 'Network Error') {
+    console.error('Erro de rede - verifique CORS ou conexão');
+  } else if (error.response) {
+    console.error('Erro do servidor:', error.response.status, error.response.data);
+  } else {
+    console.error('Erro desconhecido:', error);
+  }
+}
+4. Verifique seu código de autenticação
+Se você estiver vendo erros de CORS mesmo após login, verifique se seu token JWT está sendo enviado corretamente nos cookies em todas as requisições.
+
+O problema parece ser principalmente relacionado à autenticação - o backend está configurado corretamente para CORS, mas como a rota requer autenticação, ele provavelmente está falhando antes de adicionar os cabeçalhos CORS na resposta.

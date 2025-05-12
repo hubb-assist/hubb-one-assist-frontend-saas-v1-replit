@@ -77,7 +77,8 @@ export function SubscriberEditForm({ subscriber, open, onOpenChange, onSuccess }
             phone: details.phone || '',
             clinic_name: details.clinic_name || '',
             zip_code: details.zip_code || '',
-            address: details.address?.street || details.address || '',
+            address: typeof details.address === 'string' ? details.address : 
+                   details.address?.street || '',
             number: details.number || '',
             complement: details.complement || '',
             city: details.city || '',

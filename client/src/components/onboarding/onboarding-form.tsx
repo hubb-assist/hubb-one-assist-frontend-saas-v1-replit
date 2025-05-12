@@ -117,10 +117,6 @@ const step1Schema = z.object({
     .min(1, 'E-mail é obrigatório')
     .email('E-mail inválido'),
     
-  password: z.string()
-    .min(1, 'Senha é obrigatória')
-    .min(6, 'Senha deve ter pelo menos 6 caracteres'),
-    
   phone: z.string()
     .min(1, 'Telefone é obrigatório')
     .refine(
@@ -168,10 +164,24 @@ const step3Schema = z.object({
 
 // Schema de validação para a Etapa 4 - Simulação de Pagamento
 const step4Schema = z.object({
-  admin_password: z.string().min(1, 'Senha de administrador é obrigatória'),
+  password: z.string()
+    .min(1, 'Senha é obrigatória')
+    .min(6, 'Senha deve ter pelo menos 6 caracteres'),
+  
+  password_confirmation: z.string()
+    .min(1, 'Confirmação de senha é obrigatória'),
+    
   terms: z.boolean().refine(val => val === true, {
     message: 'Você precisa aceitar os termos',
   }),
+}).superRefine((data, ctx) => {
+  if (data.password !== data.password_confirmation) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "As senhas não coincidem",
+      path: ["password_confirmation"],
+    });
+  }
 });
 
 // Schema completo combinando todos os steps
@@ -196,7 +206,6 @@ export default function OnboardingForm() {
       name: '',
       document: '',
       email: '',
-      password: '',
       phone: '',
       clinic_name: '',
       segment_id: '',
@@ -206,7 +215,8 @@ export default function OnboardingForm() {
       city: '',
       state: '',
       plan_id: '',
-      admin_password: '',
+      password: '',
+      password_confirmation: '',
       terms: false,
     },
   });

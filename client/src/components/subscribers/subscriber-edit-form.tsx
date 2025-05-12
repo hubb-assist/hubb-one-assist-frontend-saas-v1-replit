@@ -170,26 +170,58 @@ export function SubscriberEditForm({ subscriber, open, onOpenChange, onSuccess }
     }
   };
   
+  // Estado para armazenar mensagens de erro detalhadas
+  const [errorDetails, setErrorDetails] = useState<string | null>(null);
+
   // Handler para envio do formulário
   const onSubmit = async (values: SubscriberFormValues) => {
     if (!subscriber) return;
     
+    // Limpar mensagens de erro anteriores
+    setErrorDetails(null);
     setIsSubmitting(true);
+    
     try {
-      await subscribersService.update(subscriber.id, values);
+      // Sanitização adicional para evitar problemas comuns que causam erro 422
+      const sanitizedValues = { ...values };
+      // Remover propriedade id se estiver presente no objeto de valores
+      if ('id' in sanitizedValues) delete (sanitizedValues as any).id;
+      
+      console.log('Valores do formulário antes de enviar:', sanitizedValues);
+      
+      // Enviar dados para API
+      await subscribersService.update(subscriber.id, sanitizedValues);
       toast.success('Assinante atualizado com sucesso!');
       onSuccess();
       onOpenChange(false);
     } catch (error: any) {
-      let errorMessage = 'Erro ao atualizar assinante';
+      console.error('Erro completo ao atualizar assinante:', error);
       
-      if (error.response?.data?.message) {
-        errorMessage = `Erro: ${error.response.data.message}`;
+      let errorMessage = 'Erro ao atualizar assinante';
+      let details = '';
+      
+      // Extrair mensagens do erro
+      if (error.response?.data) {
+        // Tentar extrair mensagem principal
+        if (error.response.data.message) {
+          errorMessage = `Erro: ${error.response.data.message}`;
+        }
+        
+        // Coletar detalhes adicionais para exibir no UI
+        details = JSON.stringify(error.response.data, null, 2);
+        setErrorDetails(details);
+        
+        // Status específico
+        if (error.response.status === 422) {
+          errorMessage = 'Erro de validação: Os dados fornecidos são inválidos. Verifique os detalhes abaixo.';
+        }
       } else if (error.message) {
         errorMessage = error.message;
       }
       
-      toast.error(errorMessage);
+      toast.error(errorMessage, {
+        duration: 5000 // Aumentar duração para dar tempo de ler
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -427,7 +459,38 @@ export function SubscriberEditForm({ subscriber, open, onOpenChange, onSuccess }
                 />
               </div>
               
-              <DialogFooter>
+              {/* Exibir detalhes do erro se houver */}
+              {errorDetails && (
+                <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="text-red-700 font-semibold">Detalhes do erro de validação:</h4>
+                    <Button 
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setErrorDetails(null)}
+                      className="h-6 w-6 p-0"
+                    >
+                      <span className="sr-only">Fechar</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </Button>
+                  </div>
+                  <div className="text-sm text-red-600 font-mono whitespace-pre-wrap overflow-auto max-h-[200px]">
+                    {errorDetails}
+                  </div>
+                  <div className="mt-3 text-sm">
+                    <p className="font-medium text-gray-700">Possíveis soluções:</p>
+                    <ul className="list-disc pl-5 mt-1 text-gray-600">
+                      <li>Verifique se os campos obrigatórios estão preenchidos</li>
+                      <li>Confirme se o ID do segmento e plano são válidos</li>
+                      <li>Remova quaisquer campos que o backend não aceite</li>
+                      <li>Certifique-se de que os formatos dos campos (CPF, telefone, etc.) estão corretos</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+              
+              <DialogFooter className="mt-4">
                 <Button 
                   type="button" 
                   variant="outline" 

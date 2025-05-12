@@ -197,29 +197,52 @@ export const subscribersService = {
     try {
       // Preparar dados para backend: verificar campos obrigatórios e formatos
       // Garantir que os campos essenciais estejam presentes e válidos
-      const cleanData = {
-        name: data.name,                       // Obrigatório
-        email: data.email,                     // Obrigatório
-        document: data.document?.replace(/\D/g, ''), // Limpar formatação
-        phone: data.phone?.replace(/\D/g, ''), // Limpar formatação
-        clinic_name: data.clinic_name,
-        segment_id: data.segment_id,
-        plan_id: data.plan_id,
-        
-        // Dados de endereço
-        address: data.address,
-        number: data.number,
-        complement: data.complement,
-        city: data.city,
-        state: data.state,
-        zip_code: data.zip_code?.replace(/\D/g, '')
-      };
+      
+      // Construir objeto limpo apenas com campos presentes para evitar enviar campos undefined ou vazios
+      const cleanData: Record<string, any> = {};
+      
+      // Adicionar campos obrigatórios se estiverem presentes
+      if (data.name) cleanData.name = data.name;
+      if (data.email) cleanData.email = data.email;
+      
+      // Tratar números e documentos para remover formatação
+      if (data.document) cleanData.document = data.document.replace(/\D/g, '');
+      if (data.phone) cleanData.phone = data.phone.replace(/\D/g, '');
+      if (data.zip_code) cleanData.zip_code = data.zip_code.replace(/\D/g, '');
+      
+      // Adicionar campos opcionais mas apenas se não estiverem vazios
+      if (data.clinic_name) cleanData.clinic_name = data.clinic_name;
+      
+      // Campos que podem causar problemas se enviados inválidos
+      if (data.segment_id && data.segment_id.trim() !== '') cleanData.segment_id = data.segment_id;
+      if (data.plan_id && data.plan_id.trim() !== '') cleanData.plan_id = data.plan_id;
+      
+      // Dados de endereço (apenas se não estiverem vazios)
+      if (data.address) cleanData.address = data.address;
+      if (data.number) cleanData.number = data.number;
+      if (data.complement) cleanData.complement = data.complement;
+      if (data.city) cleanData.city = data.city;
+      if (data.state) cleanData.state = data.state;
       
       // Usando URL completa de produção do backend
       const apiUrl = `https://hubb-one-assist-back-hubb-one.replit.app/subscribers/${id}`;
       console.log(`Fazendo requisição PUT para API: ${apiUrl}`);
-      console.log('Dados originais:', data);
-      console.log('Dados limpos enviados para atualização:', cleanData);
+      console.log('Dados originais:', JSON.stringify(data, null, 2));
+      console.log('Dados limpos enviados para atualização:', JSON.stringify(cleanData, null, 2));
+
+      // Verificação de segurança para garantir que não estamos enviando ID no corpo (causa de muitos erros 422)
+      if ('id' in cleanData) {
+        console.warn('ALERTA: ID encontrado no payload de dados. Removendo para evitar erro 422.');
+        delete cleanData.id;
+      }
+      
+      // Verificação para outros campos problemáticos que possam causar erro 422
+      if ('created_at' in cleanData) delete cleanData.created_at;
+      if ('updated_at' in cleanData) delete cleanData.updated_at;
+      if ('password' in cleanData && !cleanData.password) delete cleanData.password;
+      
+      // Log após limpeza final
+      console.log('Dados finais após limpeza completa:', JSON.stringify(cleanData, null, 2));
       
       const response = await axios.put<Subscriber>(apiUrl, cleanData, {
         withCredentials: true,
@@ -239,7 +262,7 @@ export const subscribersService = {
       if (axiosError.response) {
         console.log('Status do erro:', axiosError.response.status);
         console.log('Headers:', axiosError.response.headers);
-        console.log('Dados da resposta de erro:', axiosError.response.data);
+        console.log('Dados da resposta de erro:', JSON.stringify(axiosError.response.data, null, 2));
         
         if (axiosError.response.data?.detail) {
           console.log('Detalhes do erro:', axiosError.response.data.detail);

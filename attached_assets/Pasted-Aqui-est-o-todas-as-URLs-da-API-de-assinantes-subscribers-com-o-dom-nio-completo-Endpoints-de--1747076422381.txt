@@ -1,0 +1,101 @@
+Aqui estão todas as URLs da API de assinantes (subscribers) com o domínio completo:
+
+Endpoints de Subscribers
+Listar assinantes (com paginação e filtros)
+GET https://hubb-one-assist-back-hubb-one.replit.app/subscribers/
+Parâmetros de query:
+
+skip: Quantos registros pular (padrão: 0)
+limit: Máximo de registros a retornar (padrão: 10, máx: 100)
+name: Filtrar por nome
+clinic_name: Filtrar por nome da clínica
+email: Filtrar por email
+document: Filtrar por documento (CPF/CNPJ)
+segment_id: Filtrar por segmento (UUID)
+is_active: Filtrar por status (true/false)
+Obter assinante específico
+GET https://hubb-one-assist-back-hubb-one.replit.app/subscribers/{subscriber_id}
+Criar novo assinante
+POST https://hubb-one-assist-back-hubb-one.replit.app/subscribers/
+Body (exemplo):
+
+{
+  "name": "Nome do Responsável",
+  "clinic_name": "Nome da Clínica",
+  "email": "email@clinica.com",
+  "phone": "11999998888",
+  "document": "12345678900",
+  "segment_id": "uuid-do-segmento",
+  "plan_id": "uuid-do-plano",
+  "user_data": {
+    "name": "Nome do Usuário",
+    "email": "usuario@clinica.com",
+    "password": "senha123"
+  },
+  "address": {
+    "street": "Rua Exemplo",
+    "number": "123",
+    "complement": "Sala 1",
+    "neighborhood": "Centro",
+    "city": "São Paulo",
+    "state": "SP",
+    "zipcode": "01234567"
+  }
+}
+Atualizar assinante existente
+PUT https://hubb-one-assist-back-hubb-one.replit.app/subscribers/{subscriber_id}
+Body (exemplo):
+
+{
+  "name": "Nome do Responsável Atualizado",
+  "clinic_name": "Nome da Clínica Atualizado",
+  "email": "novoemail@clinica.com",
+  "phone": "11999997777",
+  "document": "12345678900",
+  "segment_id": "uuid-do-segmento",
+  "plan_id": "uuid-do-plano",
+  "address": {
+    "street": "Nova Rua",
+    "number": "456",
+    "complement": "Sala 2",
+    "neighborhood": "Jardins",
+    "city": "São Paulo",
+    "state": "SP",
+    "zipcode": "04567890"
+  }
+}
+Desativar assinante (equivalente a DELETE)
+DELETE https://hubb-one-assist-back-hubb-one.replit.app/subscribers/{subscriber_id}
+Ativar assinante
+PATCH https://hubb-one-assist-back-hubb-one.replit.app/subscribers/{subscriber_id}/activate
+Desativar assinante
+PATCH https://hubb-one-assist-back-hubb-one.replit.app/subscribers/{subscriber_id}/deactivate
+Endpoint Público (sem autenticação)
+Criar assinante (onboarding)
+POST https://hubb-one-assist-back-hubb-one.replit.app/public/subscribers/
+Body (exemplo - mesmo formato do POST privado):
+
+{
+  "name": "Nome do Responsável",
+  "clinic_name": "Nome da Clínica",
+  "email": "email@clinica.com",
+  "phone": "11999998888",
+  "document": "12345678900",
+  "segment_id": "uuid-do-segmento",
+  "plan_id": "uuid-do-plano",
+  "user_data": {
+    "name": "Nome do Usuário",
+    "email": "usuario@clinica.com",
+    "password": "senha123"
+  },
+  "address": {
+    "street": "Rua Exemplo",
+    "number": "123",
+    "complement": "Sala 1",
+    "neighborhood": "Centro",
+    "city": "São Paulo",
+    "state": "SP",
+    "zipcode": "01234567"
+  }
+}
+Lembre-se que, exceto para o endpoint público, todas as outras rotas requerem autenticação com token JWT. As chamadas devem incluir o cabeçalho credentials: "include" para que os cookies de autenticação sejam enviados corretamente.

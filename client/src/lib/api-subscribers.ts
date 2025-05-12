@@ -103,7 +103,8 @@ export const subscribersService = {
   // Buscar todos os assinantes
   async getAll(params?: { skip?: number; limit?: number; name?: string; is_active?: boolean }): Promise<Subscriber[]> {
     try {
-      const response = await api.get<ApiResponse>('/subscribers', { params });
+      // Usar o proxy no servidor para evitar problemas de CORS
+      const response = await api.get<ApiResponse>('/external-api/subscribers', { params });
       return response.data.items;
     } catch (error) {
       console.error('Erro ao buscar assinantes:', error);
@@ -114,7 +115,7 @@ export const subscribersService = {
   // Buscar assinante por ID
   async getById(id: string): Promise<SubscriberDetail> {
     try {
-      const response = await api.get<SubscriberDetail>(`/subscribers/${id}`);
+      const response = await api.get<SubscriberDetail>(`/external-api/subscribers/${id}`);
       return response.data;
     } catch (error) {
       console.error(`Erro ao buscar assinante com ID ${id}:`, error);
@@ -125,9 +126,12 @@ export const subscribersService = {
   // Atualizar status do assinante (ativar/desativar)
   async updateStatus(id: string, isActive: boolean): Promise<Subscriber> {
     try {
-      const response = await api.patch<Subscriber>(`/subscribers/${id}/status`, {
-        is_active: isActive
-      });
+      // Usar o endpoint correto baseado na ação
+      const endpoint = isActive 
+        ? `/external-api/subscribers/${id}/activate` 
+        : `/external-api/subscribers/${id}/deactivate`;
+      
+      const response = await api.patch<Subscriber>(endpoint, {});
       return response.data;
     } catch (error) {
       console.error(`Erro ao atualizar status do assinante com ID ${id}:`, error);

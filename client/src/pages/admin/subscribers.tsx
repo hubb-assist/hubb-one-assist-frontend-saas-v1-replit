@@ -128,22 +128,50 @@ export default function Subscribers() {
             <h2 className="text-2xl font-bold">Assinantes</h2>
           </div>
           
-          <div className="bg-red-50 border border-red-200 rounded-md p-6 text-center">
-            <h3 className="text-lg font-semibold text-red-600 mb-2">
-              Não foi possível carregar os assinantes
-            </h3>
-            <p className="text-gray-600 mb-4">
-              Esta funcionalidade pode estar em implementação na API. O backend pode não estar disponível ou o endpoint <code>/subscribers</code> ainda não foi implementado.
-            </p>
-            <p className="text-sm text-gray-500 mt-4">
-              Detalhes técnicos: {subscribersError instanceof Error ? subscribersError.message : 'Erro desconhecido'}
-            </p>
-            <Button 
-              className="mt-4" 
-              onClick={() => queryClient.invalidateQueries({ queryKey: ['/api/subscribers'] })}
-            >
-              Tentar novamente
-            </Button>
+          <div className="bg-amber-50 border border-amber-200 rounded-md p-6">
+            <div className="text-center mb-6">
+              <h3 className="text-lg font-semibold text-amber-600 mb-2">
+                Endpoint em implementação
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Não foi possível conectar ao endpoint <code>/subscribers</code>. 
+                De acordo com a documentação da API, esse endpoint existe, mas ainda pode estar em implementação no backend.
+              </p>
+              <details className="text-sm text-gray-500 mt-4 text-left">
+                <summary>Detalhes técnicos (para desenvolvedores)</summary>
+                <p className="mt-2 p-2 bg-gray-100 rounded overflow-auto">
+                  Erro: {subscribersError instanceof Error ? subscribersError.message : 'Erro desconhecido'}
+                </p>
+                <p className="mt-2">
+                  Estamos tentando acessar: <code>/external-api/subscribers</code>
+                </p>
+                <p className="mt-2">
+                  De acordo com a documentação, este endpoint deve estar disponível em:
+                  <br /><code>https://hubb-one-assist-back-hubb-one.replit.app/subscribers/</code>
+                </p>
+              </details>
+              <div className="mt-4 flex justify-center space-x-4">
+                <Button
+                  variant="outline" 
+                  onClick={() => queryClient.invalidateQueries({ queryKey: ['/api/subscribers'] })}
+                >
+                  Tentar novamente
+                </Button>
+              </div>
+            </div>
+
+            <div className="border-t border-amber-200 pt-4 mt-4">
+              <h4 className="font-medium text-amber-800 mb-2">Enquanto o endpoint não está disponível, você pode:</h4>
+              <ul className="list-disc list-inside text-gray-700 space-y-2">
+                <li>Verificar a implementação do endpoint no backend</li>
+                <li>Confirmar com a equipe de backend se o endpoint está disponível e funcionando</li>
+                <li>Verificar logs no servidor para identificar possíveis erros</li>
+                <li>Confirmar se as credenciais de autenticação estão corretas</li>
+              </ul>
+              <p className="mt-4 text-sm text-gray-600">
+                A interface do assinante está pronta e funcionará automaticamente quando o endpoint estiver disponível.
+              </p>
+            </div>
           </div>
         </div>
       </AppShell>

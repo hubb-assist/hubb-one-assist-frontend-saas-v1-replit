@@ -58,17 +58,21 @@ export const MaskedInput = forwardRef<
         alwaysShowMask={alwaysShowMask}
         beforeMaskedStateChange={beforeMaskedStateChange}
       >
-        {(inputProps: any) => (
-          <Input
-            {...inputProps}
-            {...props}
-            type={type}
-            name={name}
-            placeholder={placeholder}
-            className={cn(className)}
-            ref={ref}
-          />
-        )}
+        {(inputProps: any) => {
+          // Filtramos props específicas do InputMask para que elas não sejam passadas para o <input>
+          const { maskPlaceholder, beforeMaskedStateChange, alwaysShowMask, ...safeInputProps } = inputProps;
+          
+          return (
+            <Input
+              {...safeInputProps}
+              type={type}
+              name={name}
+              placeholder={placeholder}
+              className={cn(className)}
+              ref={ref}
+            />
+          );
+        }}
       </InputMask>
     );
   }
@@ -128,13 +132,17 @@ export const DocumentInput = forwardRef<
   const mask = rawValue.length > 11 ? '99.999.999/9999-99' : '999.999.999-99';
   const placeholder = rawValue.length > 11 ? '00.000.000/0001-00' : '000.000.000-00';
   
+  // Filtrar props para remover propriedades que podem causar warnings
+  const { className, placeholder: propPlaceholder, ...filteredRest } = rest;
+  
   return (
     <MaskedInput
       mask={mask}
       placeholder={placeholder}
       value={value}
       onChange={onChange}
-      {...rest}
+      className={className}
+      {...filteredRest}
       ref={ref}
       beforeMaskedStateChange={(state: MaskedState) => {
         // Se o valor estiver vazio, não aplicar máscara

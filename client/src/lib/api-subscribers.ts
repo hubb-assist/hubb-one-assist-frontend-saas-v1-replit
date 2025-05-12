@@ -9,6 +9,20 @@ interface ApiResponse {
   items: Subscriber[];
 }
 
+export interface PaginationParams {
+  skip?: number;
+  limit?: number;
+  name?: string;
+  is_active?: boolean;
+}
+
+export interface PaginatedSubscribers {
+  data: Subscriber[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
 export interface SubscriberFormData {
   name: string;
   email: string;
@@ -100,22 +114,36 @@ export const viaCepService = {
 };
 
 export const subscribersService = {
-  // Buscar todos os assinantes
-  async getAll(params?: { skip?: number; limit?: number; name?: string; is_active?: boolean }): Promise<Subscriber[]> {
+  // Buscar todos os assinantes com paginação
+  async getAll(params?: PaginationParams): Promise<PaginatedSubscribers> {
     try {
-      // IMPORTANTE: Usar consistentemente a URL correta recomendada pelo backend
-      console.log('Fazendo requisição para API:', '/subscribers/');
+      // Configurar parâmetros padrão para paginação
+      const paginationParams = {
+        limit: params?.limit || 10,
+        skip: params?.skip || 0,
+        name: params?.name,
+        is_active: params?.is_active
+      };
+      
+      console.log('Fazendo requisição para API:', '/subscribers/', 'com parâmetros:', paginationParams);
       const response = await api.get<ApiResponse>('/subscribers/', { 
-        params,
+        params: paginationParams,
         withCredentials: true
       });
       
       console.log('Resposta recebida:', response.status, response.statusText);
-      return response.data.items;
+      
+      // Retornar objeto com dados e metadados de paginação
+      return {
+        data: response.data.items,
+        total: response.data.total,
+        page: response.data.page || Math.floor(paginationParams.skip / paginationParams.limit) + 1,
+        pageSize: response.data.size || paginationParams.limit
+      };
     } catch (error) {
       console.error('Erro ao buscar assinantes:', error);
       
-      // Antes de tentar fallback, verificar se temos alguma resposta útil do servidor
+      // Log detalhado para debugging
       const axiosError = error as any;
       if (axiosError.response?.data?.message) {
         console.log('Mensagem do servidor:', axiosError.response.data.message);
@@ -126,7 +154,14 @@ export const subscribersService = {
         console.log('Tentando endpoint fallback');
         const fallbackResponse = await api.get<ApiResponse>('/api/subscribers/fallback');
         console.log('Usando dados de fallback');
-        return fallbackResponse.data.items;
+        
+        // Retornar também a estrutura de paginação para o fallback
+        return {
+          data: fallbackResponse.data.items,
+          total: fallbackResponse.data.total || fallbackResponse.data.items.length,
+          page: 1,
+          pageSize: 10
+        };
       } catch (fallbackError) {
         // Se até o fallback falhar, lançar o erro original
         throw error;

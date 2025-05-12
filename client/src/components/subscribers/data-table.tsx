@@ -28,6 +28,12 @@ import { Subscriber } from './types';
 interface DataTableProps {
   columns: ColumnDef<Subscriber>[];
   data: Subscriber[];
+  totalItems: number;
+  currentPage: number;
+  pageSize: number;
+  onPageChange: (page: number) => void;
+  onPageSizeChange?: (pageSize: number) => void;
+  isLoading?: boolean;
   onView?: (subscriber: Subscriber) => void;
   onActivate?: (subscriber: Subscriber) => void;
   onDeactivate?: (subscriber: Subscriber) => void;
@@ -36,6 +42,12 @@ interface DataTableProps {
 export function DataTable({
   columns,
   data,
+  totalItems,
+  currentPage,
+  pageSize,
+  onPageChange,
+  onPageSizeChange,
+  isLoading = false,
   onView,
   onActivate,
   onDeactivate,
@@ -45,6 +57,9 @@ export function DataTable({
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [globalFilter, setGlobalFilter] = React.useState('');
 
+  // Calcular o total de páginas
+  const totalPages = Math.ceil(totalItems / pageSize);
+
   const table = useReactTable({
     data,
     columns,
@@ -53,7 +68,7 @@ export function DataTable({
     onGlobalFilterChange: setGlobalFilter,
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    // Não usamos o getPaginationRowModel pois a paginação é controlada pelo backend
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     state: {
@@ -67,6 +82,8 @@ export function DataTable({
       onActivate,
       onDeactivate,
     },
+    manualPagination: true, // Indica que estamos usando paginação gerenciada manualmente
+    pageCount: totalPages,
   });
 
   return (

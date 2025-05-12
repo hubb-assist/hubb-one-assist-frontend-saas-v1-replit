@@ -244,11 +244,11 @@ export const subscribersService = {
   // Editar assinante
   async update(id: string, data: Partial<SubscriberFormData>): Promise<Subscriber> {
     try {
-      // Usar URL sem a barra no final
-      console.log(`Fazendo requisição PUT para API: /subscribers/${id}`);
+      // Usar o endpoint correto de atualização
+      console.log(`Fazendo requisição PUT para API: /subscribers/update/${id}`);
       console.log('Dados enviados para atualização:', data);
       
-      const response = await api.put<Subscriber>(`/subscribers/${id}`, data, {
+      const response = await api.put<Subscriber>(`/subscribers/update/${id}`, data, {
         withCredentials: true,
         headers: {
           'Content-Type': 'application/json'

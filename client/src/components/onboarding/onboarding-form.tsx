@@ -483,14 +483,37 @@ export default function OnboardingForm() {
       const response = await publicService.registerSubscriber(formData);
       console.log('Resposta da API:', response);
       
-      toast.success('Assinatura criada com sucesso!');
-      // Redirecionamento para a página de login após o registro
-      navigate('/login');
+      // Mostrar mensagem de sucesso mais detalhada
+      toast.success('Assinatura criada com sucesso! Você será redirecionado para a página de login em alguns segundos.', {
+        duration: 5000, // Duração maior para que o usuário possa ler
+      });
+      
+      // Pequeno atraso antes do redirecionamento para que o usuário veja a mensagem
+      setTimeout(() => {
+        // Redirecionamento para a página de login após o registro
+        navigate('/login');
+      }, 3000);
     } catch (error: any) {
       console.error('Erro ao registrar assinante:', error);
-      const errorMessage = error.response?.data?.message || 
-                         'Não foi possível completar o cadastro. Por favor, tente novamente mais tarde.';
-      toast.error(errorMessage);
+      
+      // Extrair mensagem de erro mais detalhada
+      let errorMessage = 'Não foi possível completar o cadastro. Por favor, tente novamente mais tarde.';
+      
+      if (error.message?.includes('404')) {
+        errorMessage = 'O serviço de registro está temporariamente indisponível. Por favor, tente novamente mais tarde.';
+      } else if (error.message?.includes('422')) {
+        errorMessage = 'Dados inválidos no formulário. Por favor, verifique se todos os campos estão preenchidos corretamente.';
+      } else if (error.message?.includes('409')) {
+        errorMessage = 'E-mail ou documento já cadastrado. Por favor, utilize outro e-mail ou entre em contato com o suporte.';
+      } else if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
+      
+      toast.error(errorMessage, {
+        duration: 7000, // Duração maior para mensagens de erro
+      });
     } finally {
       setIsLoading(false);
     }

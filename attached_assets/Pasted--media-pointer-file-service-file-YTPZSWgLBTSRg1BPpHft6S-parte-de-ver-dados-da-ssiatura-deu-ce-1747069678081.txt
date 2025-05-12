@@ -1,0 +1,119 @@
+\[media pointer="file-service://file-YTPZSWgLBTSRg1BPpHft6S"]
+parte de ver dados da ssiatura deu cerrtoparte de castrar o assiate noa deu certo, sera que o e porque o subscreber nao create nao é uma api publica? {name: 'Plano Básico - Odonto - Vision', description: '', segment\_id: 'eb91599c-5102-4051-89e2-d57b40112ad1', base\_price: 120, is\_active: true, …}
+api-public.ts:179
+
+```
+       POST https://hubb-one-assist-back-hubb-one.replit.app/public/subscribers/ 404 (Not Found)
+```
+
+registerSubscriber @ api-public.ts:179
+onSubmit @ onboarding-form.tsx:483
+onClick @ onboarding-form.tsx:1050
+await in onClick
+callCallback2 @ chunk-RPCDYKBN.js?v=ef3c9363:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=ef3c9363:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=ef3c9363:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=ef3c9363:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=ef3c9363:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=ef3c9363:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=ef3c9363:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=ef3c9363:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=ef3c9363:7174
+batchedUpdates\$1 @ chunk-RPCDYKBN.js?v=ef3c9363:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=ef3c9363:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=ef3c9363:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=ef3c9363:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=ef3c9363:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=ef3c9363:5449Understand this error
+api-public.ts:191 Resposta da API cadastro de assinante: status 404
+api-public.ts:193 Erro HTTP: 404
+registerSubscriber @ api-public.ts:193
+await in registerSubscriber
+onSubmit @ onboarding-form.tsx:483
+onClick @ onboarding-form.tsx:1050
+await in onClick
+callCallback2 @ chunk-RPCDYKBN.js?v=ef3c9363:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=ef3c9363:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=ef3c9363:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=ef3c9363:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=ef3c9363:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=ef3c9363:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=ef3c9363:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=ef3c9363:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=ef3c9363:7174
+batchedUpdates\$1 @ chunk-RPCDYKBN.js?v=ef3c9363:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=ef3c9363:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=ef3c9363:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=ef3c9363:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=ef3c9363:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=ef3c9363:5449Understand this error
+api-public.ts:197 Detalhes do erro: {detail: 'Not Found'}
+registerSubscriber @ api-public.ts:197
+await in registerSubscriber
+onSubmit @ onboarding-form.tsx:483
+onClick @ onboarding-form.tsx:1050
+await in onClick
+callCallback2 @ chunk-RPCDYKBN.js?v=ef3c9363:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=ef3c9363:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=ef3c9363:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=ef3c9363:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=ef3c9363:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=ef3c9363:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=ef3c9363:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=ef3c9363:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=ef3c9363:7174
+batchedUpdates\$1 @ chunk-RPCDYKBN.js?v=ef3c9363:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=ef3c9363:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=ef3c9363:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=ef3c9363:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=ef3c9363:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=ef3c9363:5449Understand this error
+api-public.ts:210 Erro ao registrar assinante: Error: Falha na requisição: 404
+at Object.registerSubscriber (api-public.ts:201:15)
+at async onSubmit (onboarding-form.tsx:483:24)
+at async onClick (onboarding-form.tsx:1050:19)
+registerSubscriber @ api-public.ts:210
+await in registerSubscriber
+onSubmit @ onboarding-form.tsx:483
+onClick @ onboarding-form.tsx:1050
+await in onClick
+callCallback2 @ chunk-RPCDYKBN.js?v=ef3c9363:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=ef3c9363:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=ef3c9363:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=ef3c9363:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=ef3c9363:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=ef3c9363:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=ef3c9363:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=ef3c9363:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=ef3c9363:7174
+batchedUpdates\$1 @ chunk-RPCDYKBN.js?v=ef3c9363:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=ef3c9363:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=ef3c9363:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=ef3c9363:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=ef3c9363:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=ef3c9363:5449Understand this error
+onboarding-form.tsx:490 Erro ao registrar assinante: Error: Falha na requisição: 404
+at Object.registerSubscriber (api-public.ts:201:15)
+at async onSubmit (onboarding-form.tsx:483:24)
+at async onClick (onboarding-form.tsx:1050:19)
+onSubmit @ onboarding-form.tsx:490
+await in onSubmit
+onClick @ onboarding-form.tsx:1050
+await in onClick
+callCallback2 @ chunk-RPCDYKBN.js?v=ef3c9363:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=ef3c9363:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=ef3c9363:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=ef3c9363:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=ef3c9363:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=ef3c9363:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=ef3c9363:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=ef3c9363:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=ef3c9363:7174
+batchedUpdates\$1 @ chunk-RPCDYKBN.js?v=ef3c9363:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=ef3c9363:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=ef3c9363:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=ef3c9363:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=ef3c9363:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=ef3c9363:5449Understand this error
+onboarding-form.tsx:785 \[DEBUG] Valores reativos do formulário na etapa 4: {name: 'Luis Carlos Vilasboas Paim', document: '003.416.820-63', email: '[luiscpaim@gmail.com](mailto:luiscpaim@gmail.com)', phone: '(41) 99613-1500', clinic\_name: 'Paim Vilas', …}address: "Rua Sílvio Piotto"city: "Curitiba"clinic\_name: "Paim Vilas"document: "003.416.820-63"email: "[luiscpaim@gmail.com](mailto:luiscpaim@gmail.com)"name: "Luis Carlos Vilasboas Paim"number: "500"password: "Hubb\@2025@"password\_confirmation: "Hubb\@2025@"phone: "(41) 99613-1500"plan\_id: "7c947bc3-8e24-4fb7-af87-604bf1e15a5a"segment\_id: "eb91599c-5102-4051-89e2-d57b40112ad1"state: "PR"terms: truezip\_code: "81200-500"\[\[Prototype]]: Object
+onboarding-form.tsx:789 \[DEBUG] Plano selecionado: {name: 'Plano Básico - Odonto - Vision', description: '', segment\_id: 'eb91599c-5102-4051-89e2-d57b40112ad1', base\_price: 120, is\_active: true, …}base\_price: 120created\_at: "2025-05-11T14:15:08.928919"description: ""id: "7c947bc3-8e24-4fb7-af87-604bf1e15a5a"is\_active: truemodules: \[{…}]name: "Plano Básico - Odonto - Vision"segment\_id: "eb91599c-5102-4051-89e2-d57b40112ad1"updated\_at: "2025-05-11T14:15:08.928922"\[\[Prototype]]: Object

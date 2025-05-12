@@ -366,7 +366,19 @@ export default function OnboardingForm() {
     // Garantir que os dados do resumo na etapa 4 estejam atualizados
     if (step === 4) {
       // Forçar atualização dos valores para exibição no resumo
-      form.trigger();
+      console.log('[DEBUG] Dados do formulário na etapa 4:', form.getValues());
+      
+      // Verificar se os dados estão completos antes de mostrar o resumo
+      const formValues = form.getValues();
+      const hasMissingData = !formValues.name || !formValues.email || !formValues.plan_id;
+      
+      if (hasMissingData) {
+        console.log('[DEBUG] Dados incompletos, retornando para etapa 1');
+        setStep(1);
+        toast.error('Por favor, preencha todos os dados antes de finalizar o cadastro.');
+      } else {
+        form.trigger();
+      }
     }
   }, [step, form]);
 
@@ -424,6 +436,10 @@ export default function OnboardingForm() {
 
   // Enviar formulário completo
   const onSubmit = async (data: FormValues) => {
+    console.log('[DEBUG] Submissão iniciada:', data);
+    console.log('[DEBUG] Valor do terms:', data.terms);
+    console.log('[DEBUG] Formulário válido?', form.formState.isValid);
+    
     // Verificar se estamos na última etapa e se os campos obrigatórios estão preenchidos
     const isLastStepValid = await validateCurrentStep();
     if (!isLastStepValid) {
@@ -883,7 +899,10 @@ export default function OnboardingForm() {
                     <input
                       type="checkbox"
                       checked={field.value as unknown as boolean}
-                      onChange={field.onChange}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        console.log('Terms checkbox alterado para:', e.target.checked);
+                      }}
                       className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                     />
                   </FormControl>
@@ -896,6 +915,11 @@ export default function OnboardingForm() {
                 </FormItem>
               )}
             />
+            
+            {/* Debug checkbox terms */}
+            <div className="mt-2 text-xs text-muted-foreground">
+              TERMS CHECKED? {form.watch('terms') ? '✔️' : '❌'}
+            </div>
           </div>
         );
         

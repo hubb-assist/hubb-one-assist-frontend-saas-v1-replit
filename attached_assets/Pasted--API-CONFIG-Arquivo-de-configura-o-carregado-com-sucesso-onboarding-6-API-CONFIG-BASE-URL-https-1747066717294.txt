@@ -1,0 +1,91 @@
+[API CONFIG] Arquivo de configuração carregado com sucesso
+onboarding:6 [API CONFIG] BASE_URL: https://hubb-one-assist-back-hubb-one.replit.app
+chunk-RPCDYKBN.js?v=ef3c9363:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+api.ts:9 Configurando API - usando URL implantada: https://hubb-one-assist-back-hubb-one.replit.app
+chunk-RPCDYKBN.js?v=ef3c9363:521 Warning: findDOMNode is deprecated and will be removed in the next major release. Instead, add a ref directly to the element you want to reference. Learn more about using refs safely here: https://reactjs.org/link/strict-mode-find-node
+    at InputElement2 (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/react-input-mask.js?v=ef3c9363:497:34)
+    at https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/components/ui/masked-input.tsx:25:7
+    at _c7 (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/components/ui/masked-input.tsx:198:5)
+    at https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EVLBUYTV.js?v=ef3c9363:79:13
+    at https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EVLBUYTV.js?v=ef3c9363:56:13
+    at https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/components/ui/form.tsx:130:9
+    at div
+    at https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/components/ui/form.tsx:72:6
+    at Controller (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4BFJKWC4.js?v=ef3c9363:298:35)
+    at FormField (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/components/ui/form.tsx:33:6)
+    at div
+    at div
+    at _c9 (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/components/ui/card.tsx:20:11)
+    at form
+    at FormProvider (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4BFJKWC4.js?v=ef3c9363:102:11)
+    at OnboardingForm (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/components/onboarding/onboarding-form.tsx:149:27)
+    at main
+    at div
+    at Onboarding
+    at Route (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=ef3c9363:323:16)
+    at Switch (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=ef3c9363:379:17)
+    at Router (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/App.tsx?v=_CP-3iwR5oJ5K43_ImCae:40:59)
+    at Provider (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-E7IAXTU4.js?v=ef3c9363:38:15)
+    at TooltipProvider (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=ef3c9363:61:5)
+    at QueryClientProvider (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=ef3c9363:2805:3)
+    at App
+printWarning @ chunk-RPCDYKBN.js?v=ef3c9363:521
+error @ chunk-RPCDYKBN.js?v=ef3c9363:505
+findDOMNode @ chunk-RPCDYKBN.js?v=ef3c9363:21379
+InputElement2._this.getInputDOMNode @ react-input-mask.js?v=ef3c9363:523
+componentDidMount @ react-input-mask.js?v=ef3c9363:821
+commitLayoutEffectOnFiber @ chunk-RPCDYKBN.js?v=ef3c9363:17030
+commitLayoutMountEffects_complete @ chunk-RPCDYKBN.js?v=ef3c9363:17980
+commitLayoutEffects_begin @ chunk-RPCDYKBN.js?v=ef3c9363:17969
+commitLayoutEffects @ chunk-RPCDYKBN.js?v=ef3c9363:17920
+commitRootImpl @ chunk-RPCDYKBN.js?v=ef3c9363:19353
+commitRoot @ chunk-RPCDYKBN.js?v=ef3c9363:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=ef3c9363:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=ef3c9363:18718
+workLoop @ chunk-RPCDYKBN.js?v=ef3c9363:197
+flushWork @ chunk-RPCDYKBN.js?v=ef3c9363:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=ef3c9363:384Understand this error
+onboarding-form.tsx:247 Tentando carregar segmentos públicos
+api-public.ts:51 Buscando segmentos públicos - usando fetch direto
+api-public.ts:64 Resposta da API: status 200
+api-public.ts:72 Dados recebidos da API: {total: 2, page: 1, size: 10, items: Array(2)}
+api-public.ts:76 Extraindo itens da resposta paginada: (2) [{…}, {…}]
+onboarding-form.tsx:251 Segmentos públicos carregados com sucesso: (2) [{…}, {…}]
+onboarding-form.tsx:296 Tentando carregar planos para o segmento eb91599c-5102-4051-89e2-d57b40112ad1
+api-public.ts:94 Buscando planos públicos para o segmento eb91599c-5102-4051-89e2-d57b40112ad1 - usando fetch direto
+api-public.ts:107 Resposta da API planos: status 200
+api-public.ts:115 Dados de planos recebidos da API: {total: 3, page: 1, size: 10, items: Array(3)}
+api-public.ts:133 Planos filtrados para o segmento eb91599c-5102-4051-89e2-d57b40112ad1: (3) [{…}, {…}, {…}]
+onboarding-form.tsx:302 Planos carregados com sucesso: (3) [{…}, {…}, {…}]
+onboarding-form.tsx:274 Resetando campos da etapa 2...
+onboarding-form.tsx:342 Buscando CEP: 81200500
+chunk-RPCDYKBN.js?v=ef3c9363:521 Warning: A component is changing an uncontrolled input to be controlled. This is likely caused by the value changing from undefined to a defined value, which should not happen. Decide between using a controlled or uncontrolled input element for the lifetime of the component. More info: https://reactjs.org/link/controlled-components
+    at input
+    at _c (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/components/ui/input.tsx:20:11)
+    at div
+    at https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EVLBUYTV.js?v=ef3c9363:79:13
+    at https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EVLBUYTV.js?v=ef3c9363:56:13
+    at https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/components/ui/form.tsx:130:9
+    at div
+    at https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/components/ui/form.tsx:72:6
+    at Controller (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4BFJKWC4.js?v=ef3c9363:298:35)
+    at FormField (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/components/ui/form.tsx:33:6)
+    at div
+    at div
+    at _c9 (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/components/ui/card.tsx:20:11)
+    at form
+    at FormProvider (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4BFJKWC4.js?v=ef3c9363:102:11)
+    at OnboardingForm (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/components/onboarding/onboarding-form.tsx:149:27)
+    at main
+    at div
+    at Onboarding
+    at Route (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=ef3c9363:323:16)
+    at Switch (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=ef3c9363:379:17)
+    at Router (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/src/App.tsx?v=_CP-3iwR5oJ5K43_ImCae:40:59)
+    at Provider (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-E7IAXTU4.js?v=ef3c9363:38:15)
+    at TooltipProvider (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=ef3c9363:61:5)
+    at QueryClientProvider (https://977761fe-66ad-4e57-b1d5-f3356eb27515-00-1yp0n9cqd8r5p.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=ef3c9363:2805:3)

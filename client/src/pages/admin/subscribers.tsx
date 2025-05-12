@@ -197,6 +197,12 @@ export default function Subscribers() {
     setNameFilter(name);
     setCurrentPage(1); // Voltar para a primeira página ao filtrar
   };
+  
+  // Handler para exclusão de assinante
+  const handleDeleteSubscriber = (subscriber: Subscriber) => {
+    setSelectedSubscriber(subscriber);
+    setOpenDeleteDialog(true);
+  };
 
   // Se estiver carregando, mostrar indicador de carregamento
   if (isLoading) {
@@ -435,6 +441,23 @@ export default function Subscribers() {
             queryClient.invalidateQueries({ 
               queryKey: ['/subscribers', paginationParams] 
             });
+          }}
+        />
+      )}
+
+      {/* Modal de Exclusão de Assinante */}
+      {selectedSubscriber && (
+        <DeleteSubscriberDialog
+          subscriberId={selectedSubscriber.id}
+          subscriberName={selectedSubscriber.name}
+          isOpen={openDeleteDialog}
+          onOpenChange={setOpenDeleteDialog}
+          onSuccess={() => {
+            // Recarregar os dados após exclusão bem-sucedida
+            queryClient.invalidateQueries({ 
+              queryKey: ['/subscribers', paginationParams] 
+            });
+            setSelectedSubscriber(undefined);
           }}
         />
       )}

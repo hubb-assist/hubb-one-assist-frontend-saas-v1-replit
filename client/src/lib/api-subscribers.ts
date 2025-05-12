@@ -195,12 +195,33 @@ export const subscribersService = {
   // Editar assinante
   async update(id: string, data: Partial<SubscriberFormData>): Promise<Subscriber> {
     try {
+      // Preparar dados para backend: verificar campos obrigatórios e formatos
+      // Garantir que os campos essenciais estejam presentes e válidos
+      const cleanData = {
+        name: data.name,                       // Obrigatório
+        email: data.email,                     // Obrigatório
+        document: data.document?.replace(/\D/g, ''), // Limpar formatação
+        phone: data.phone?.replace(/\D/g, ''), // Limpar formatação
+        clinic_name: data.clinic_name,
+        segment_id: data.segment_id,
+        plan_id: data.plan_id,
+        
+        // Dados de endereço
+        address: data.address,
+        number: data.number,
+        complement: data.complement,
+        city: data.city,
+        state: data.state,
+        zip_code: data.zip_code?.replace(/\D/g, '')
+      };
+      
       // Usando URL completa de produção do backend
       const apiUrl = `https://hubb-one-assist-back-hubb-one.replit.app/subscribers/${id}`;
       console.log(`Fazendo requisição PUT para API: ${apiUrl}`);
-      console.log('Dados enviados para atualização:', data);
+      console.log('Dados originais:', data);
+      console.log('Dados limpos enviados para atualização:', cleanData);
       
-      const response = await axios.put<Subscriber>(apiUrl, data, {
+      const response = await axios.put<Subscriber>(apiUrl, cleanData, {
         withCredentials: true,
         headers: {
           'Content-Type': 'application/json',
@@ -215,8 +236,18 @@ export const subscribersService = {
       
       // Log detalhado para debug e capturar mensagens úteis do servidor
       const axiosError = error as any;
-      if (axiosError.response?.data?.message) {
-        console.log('Mensagem do servidor:', axiosError.response.data.message);
+      if (axiosError.response) {
+        console.log('Status do erro:', axiosError.response.status);
+        console.log('Headers:', axiosError.response.headers);
+        console.log('Dados da resposta de erro:', axiosError.response.data);
+        
+        if (axiosError.response.data?.detail) {
+          console.log('Detalhes do erro:', axiosError.response.data.detail);
+        }
+        
+        if (axiosError.response.data?.message) {
+          console.log('Mensagem do servidor:', axiosError.response.data.message);
+        }
       }
       
       throw error;

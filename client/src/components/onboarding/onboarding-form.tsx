@@ -349,11 +349,10 @@ export default function OnboardingForm() {
   const validateCurrentStep = async () => {
     try {
       if (step === 1) {
-        await form.trigger(['name', 'document', 'email', 'password', 'phone', 'clinic_name', 'segment_id']);
+        await form.trigger(['name', 'document', 'email', 'phone', 'clinic_name', 'segment_id']);
         const valid = !form.formState.errors.name && 
                      !form.formState.errors.document &&
                      !form.formState.errors.email &&
-                     !form.formState.errors.password &&
                      !form.formState.errors.phone &&
                      !form.formState.errors.clinic_name &&
                      !form.formState.errors.segment_id;
@@ -370,8 +369,10 @@ export default function OnboardingForm() {
         await form.trigger(['plan_id']);
         return !form.formState.errors.plan_id;
       } else if (step === 4) {
-        await form.trigger(['admin_password', 'terms']);
-        return !form.formState.errors.admin_password && !form.formState.errors.terms;
+        await form.trigger(['password', 'password_confirmation', 'terms']);
+        return !form.formState.errors.password && 
+               !form.formState.errors.password_confirmation && 
+               !form.formState.errors.terms;
       }
       return false;
     } catch (error) {
@@ -418,7 +419,7 @@ export default function OnboardingForm() {
         segment_id: data.segment_id,
         plan_id: data.plan_id,
         password: data.password,
-        admin_password: data.admin_password,
+        admin_password: data.password, // Usar a mesma senha para admin
       };
       
       try {
@@ -490,19 +491,7 @@ export default function OnboardingForm() {
               )}
             />
             
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Senha</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Digite sua senha" type="password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* Campo de senha removido do passo 1 e movido para o passo 4 */}
             
             <FormField
               control={form.control}

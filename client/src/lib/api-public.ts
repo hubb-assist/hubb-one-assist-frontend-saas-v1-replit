@@ -6,7 +6,11 @@ import { API_CONFIG } from './config';
 const apiPublic = axios.create({
   baseURL: API_CONFIG.BASE_URL,
   timeout: 15000,
-  withCredentials: false // Importante: não enviar credenciais
+  withCredentials: false, // Importante: não enviar credenciais
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }
 });
 
 // Tipos comuns
@@ -45,7 +49,7 @@ export const publicService = {
   async getSegments(): Promise<PublicSegment[]> {
     try {
       console.log('Buscando segmentos públicos');
-      const response = await apiPublic.get('/public/segments');
+      const response = await apiPublic.get('/public/segments/');
       return response.data;
     } catch (error) {
       console.error('Erro ao buscar segmentos públicos:', error);
@@ -57,7 +61,7 @@ export const publicService = {
   async getPlans(segmentId: string): Promise<PublicPlan[]> {
     try {
       console.log(`Buscando planos públicos para o segmento ${segmentId}`);
-      const response = await apiPublic.get('/public/plans');
+      const response = await apiPublic.get('/public/plans/');
       
       // Filtrar apenas os planos do segmento solicitado
       return response.data.filter((plan: PublicPlan) => plan.segment_id === segmentId);
@@ -71,7 +75,7 @@ export const publicService = {
   async getPlanDetails(planId: string): Promise<PublicPlan> {
     try {
       console.log(`Buscando detalhes do plano ${planId}`);
-      const response = await apiPublic.get(`/public/plans/${planId}`);
+      const response = await apiPublic.get(`/public/plans/${planId}/`);
       return response.data;
     } catch (error) {
       console.error(`Erro ao buscar detalhes do plano ${planId}:`, error);
@@ -83,7 +87,7 @@ export const publicService = {
   async registerSubscriber(data: any) {
     try {
       console.log('Registrando novo assinante');
-      const response = await apiPublic.post('/public/subscribers', data);
+      const response = await apiPublic.post('/public/subscribers/', data);
       return response.data;
     } catch (error) {
       console.error('Erro ao registrar assinante:', error);

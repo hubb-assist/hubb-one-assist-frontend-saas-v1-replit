@@ -172,15 +172,25 @@ export const subscribersService = {
   // Buscar assinante por ID
   async getById(id: string): Promise<SubscriberDetail> {
     try {
-      // IMPORTANTE: Usar consistentemente a URL correta recomendada pelo backend
-      // Garantir que o endpoint termina com /
-      console.log(`Fazendo requisição para API: /subscribers/${id}/`);
-      const response = await api.get<SubscriberDetail>(`/subscribers/${id}/`, {
-        withCredentials: true
-      });
-      
-      console.log('Resposta de detalhes recebida:', response.status);
-      return response.data;
+      // Tente a URL sem a barra final primeiro
+      console.log(`Fazendo requisição para API: /subscribers/${id}`);
+      try {
+        const response = await api.get<SubscriberDetail>(`/subscribers/${id}`, {
+          withCredentials: true
+        });
+        
+        console.log('Resposta de detalhes recebida:', response.status);
+        return response.data;
+      } catch (e) {
+        // Se falhar, tente com um método diferente
+        console.log(`Tentando com método alternativo: /subscribers/detail/${id}`);
+        const response = await api.get<SubscriberDetail>(`/subscribers/detail/${id}`, {
+          withCredentials: true
+        });
+        
+        console.log('Resposta de detalhes recebida (alternativa):', response.status);
+        return response.data;
+      }
     } catch (error) {
       console.error(`Erro ao buscar assinante com ID ${id}:`, error);
       

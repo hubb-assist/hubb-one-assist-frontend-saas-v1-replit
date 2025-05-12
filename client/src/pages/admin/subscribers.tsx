@@ -136,6 +136,13 @@ export default function Subscribers() {
     setOpenDetailDialog(true);
   };
 
+  const handleEditSubscriber = (subscriber: Subscriber) => {
+    setSelectedSubscriber(subscriber);
+    // Por enquanto, só exibimos um toast informativo
+    // Em uma implementação futura, abriríamos um modal de edição
+    toast.info(`Edição do assinante ${subscriber.name} será implementada em breve.`);
+  };
+
   const handleStatusChange = (subscriber: Subscriber, newStatus: boolean) => {
     setSelectedSubscriber(subscriber);
     setStatusAction(newStatus ? 'activate' : 'deactivate');
@@ -332,6 +339,7 @@ export default function Subscribers() {
           onPageChange={handlePageChange}
           isLoading={isLoading}
           onView={handleViewDetail}
+          onEdit={handleEditSubscriber}
           onActivate={(subscriber) => handleStatusChange(subscriber, true)}
           onDeactivate={(subscriber) => handleStatusChange(subscriber, false)}
         />

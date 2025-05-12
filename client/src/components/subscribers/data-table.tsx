@@ -35,6 +35,7 @@ interface DataTableProps {
   onPageSizeChange?: (pageSize: number) => void;
   isLoading?: boolean;
   onView?: (subscriber: Subscriber) => void;
+  onEdit?: (subscriber: Subscriber) => void;
   onActivate?: (subscriber: Subscriber) => void;
   onDeactivate?: (subscriber: Subscriber) => void;
 }
@@ -49,6 +50,7 @@ export function DataTable({
   onPageSizeChange,
   isLoading = false,
   onView,
+  onEdit,
   onActivate,
   onDeactivate,
 }: DataTableProps) {
@@ -79,6 +81,7 @@ export function DataTable({
     },
     meta: {
       onView,
+      onEdit,
       onActivate,
       onDeactivate,
     },

@@ -7,13 +7,23 @@ declare module '@tanstack/react-table' {
     onView?: (row: TData) => void;
     onActivate?: (row: TData) => void;
     onDeactivate?: (row: TData) => void;
+    onEdit?: (row: TData) => void;
   }
 }
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Eye, CheckCircle2, XCircle } from 'lucide-react';
+import { 
+  Eye, 
+  CheckCircle2, 
+  XCircle, 
+  Edit, 
+  MoreHorizontal,
+  UserPlus,
+  UserCheck,
+  UserX
+} from 'lucide-react';
 import { Subscriber } from './types';
 import {
   DropdownMenu,
@@ -23,7 +33,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 // Formatação de documento (CPF/CNPJ)
 const formatDocument = (doc: string) => {
@@ -101,42 +111,92 @@ export const columns: ColumnDef<Subscriber>[] = [
   },
   {
     id: "actions",
+    header: "Ações",
     cell: ({ row, table }) => {
       const subscriber = row.original;
       
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Abrir menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Ações</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem 
-              onClick={() => table.options.meta?.onView?.(subscriber)}
-            >
-              <Eye className="mr-2 h-4 w-4" /> Ver detalhes
-            </DropdownMenuItem>
+        <TooltipProvider>
+          <div className="flex items-center justify-center space-x-1">
+            {/* Botão Visualizar */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => table.options.meta?.onView?.(subscriber)}
+                >
+                  <Eye className="h-4 w-4 text-blue-600" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Visualizar detalhes</p>
+              </TooltipContent>
+            </Tooltip>
             
-            {subscriber.is_active ? (
-              <DropdownMenuItem 
-                onClick={() => table.options.meta?.onDeactivate?.(subscriber)}
-                className="text-destructive focus:text-destructive"
-              >
-                <XCircle className="mr-2 h-4 w-4" /> Desativar
-              </DropdownMenuItem>
-            ) : (
-              <DropdownMenuItem 
-                onClick={() => table.options.meta?.onActivate?.(subscriber)}
-              >
-                <CheckCircle2 className="mr-2 h-4 w-4" /> Ativar
-              </DropdownMenuItem>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
+            {/* Botão Editar */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => table.options.meta?.onEdit?.(subscriber)}
+                >
+                  <Edit className="h-4 w-4 text-amber-600" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Editar assinante</p>
+              </TooltipContent>
+            </Tooltip>
+            
+            {/* Botão Ativar/Desativar */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => 
+                    subscriber.is_active 
+                      ? table.options.meta?.onDeactivate?.(subscriber)
+                      : table.options.meta?.onActivate?.(subscriber)
+                  }
+                >
+                  {subscriber.is_active ? (
+                    <UserX className="h-4 w-4 text-red-600" />
+                  ) : (
+                    <UserCheck className="h-4 w-4 text-green-600" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{subscriber.is_active ? 'Desativar assinante' : 'Ativar assinante'}</p>
+              </TooltipContent>
+            </Tooltip>
+            
+            {/* Menu de mais opções - pode ser expandido no futuro */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Mais opções</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Mais opções</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onClick={() => table.options.meta?.onView?.(subscriber)}
+                >
+                  <Eye className="mr-2 h-4 w-4" /> Ver detalhes completos
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </TooltipProvider>
       );
     },
   },

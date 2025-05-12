@@ -772,34 +772,44 @@ export default function OnboardingForm() {
         );
         
       case 4:
-        // Obter todos os valores atuais do formulário
-        const formValues = form.getValues();
-        const selectedPlan = plans.find(p => p.id === formValues.plan_id);
+        // Obter todos os valores atuais do formulário de uma só vez
+        const allFormValues = form.getValues();
+        console.log('[DEBUG] Valores completos do formulário na etapa 4:', allFormValues);
+        
+        // Buscar o plano selecionado
+        const selectedPlan = plans.find(p => p.id === allFormValues.plan_id);
+        console.log('[DEBUG] Plano selecionado:', selectedPlan);
         
         return (
           <div className="space-y-6">
+            {/* Debug - Valores do formulário */}
+            <div className="bg-amber-50 p-2 mb-4 text-xs rounded border border-amber-200">
+              <p className="font-mono">DEBUG: Dados capturados do formulário</p>
+              <pre className="mt-1 overflow-auto max-h-24">{JSON.stringify(allFormValues, null, 2)}</pre>
+            </div>
+            
             <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-green-800">
               <h3 className="font-semibold">Resumo da assinatura</h3>
               <dl className="mt-2 space-y-1">
-                <div className="flex justify-between">
-                  <dt>Nome:</dt>
-                  <dd>{formValues.name || '-'}</dd>
+                <div className="flex justify-between py-1 border-b border-green-100">
+                  <dt className="font-medium">Nome:</dt>
+                  <dd className="font-semibold">{allFormValues.name || '-'}</dd>
                 </div>
-                <div className="flex justify-between">
-                  <dt>Clínica:</dt>
-                  <dd>{formValues.clinic_name || '-'}</dd>
+                <div className="flex justify-between py-1 border-b border-green-100">
+                  <dt className="font-medium">Clínica:</dt>
+                  <dd className="font-semibold">{allFormValues.clinic_name || '-'}</dd>
                 </div>
-                <div className="flex justify-between">
-                  <dt>E-mail:</dt>
-                  <dd>{formValues.email || '-'}</dd>
+                <div className="flex justify-between py-1 border-b border-green-100">
+                  <dt className="font-medium">E-mail:</dt>
+                  <dd className="font-semibold">{allFormValues.email || '-'}</dd>
                 </div>
-                <div className="flex justify-between">
-                  <dt>Telefone:</dt>
-                  <dd>{formValues.phone || '-'}</dd>
+                <div className="flex justify-between py-1 border-b border-green-100">
+                  <dt className="font-medium">Telefone:</dt>
+                  <dd className="font-semibold">{allFormValues.phone || '-'}</dd>
                 </div>
-                <div className="flex justify-between">
-                  <dt>Documento:</dt>
-                  <dd>{formValues.document || '-'}</dd>
+                <div className="flex justify-between py-1 border-b border-green-100">
+                  <dt className="font-medium">Documento:</dt>
+                  <dd className="font-semibold">{allFormValues.document || '-'}</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt>Endereço:</dt>

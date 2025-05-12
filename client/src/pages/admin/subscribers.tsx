@@ -53,12 +53,13 @@ export default function Subscribers() {
 
   // Buscar lista de assinantes
   const { data: subscribers = [], isLoading, error: subscribersError, refetch } = useQuery({
-    queryKey: ['/api/subscribers'],
+    queryKey: ['/subscribers'],
     queryFn: async () => {
       try {
-        console.log('Fazendo requisição para API:', '/external-api/subscribers');
+        console.log('Fazendo requisição para API:', '/subscribers/');
         const data = await subscribersService.getAll();
-        return data;
+        console.log('Dados recebidos:', data);
+        return data || [];
       } catch (error) {
         console.error('Erro ao buscar assinantes:', error);
         // Não exibir toast aqui, vamos mostrar um estado de erro na interface
@@ -71,11 +72,13 @@ export default function Subscribers() {
 
   // Buscar detalhes de um assinante
   const { isLoading: isLoadingDetail } = useQuery({
-    queryKey: ['/api/subscribers', selectedSubscriber?.id],
+    queryKey: ['/subscribers', selectedSubscriber?.id],
     queryFn: async () => {
       if (!selectedSubscriber?.id) return null;
       try {
+        console.log(`Buscando detalhes do assinante: /subscribers/${selectedSubscriber.id}/`);
         const data = await subscribersService.getById(selectedSubscriber.id);
+        console.log('Detalhes recebidos:', data);
         setSubscriberDetail(data);
         return data;
       } catch (error) {
@@ -90,16 +93,20 @@ export default function Subscribers() {
   // Mutação para atualizar status (ativar/desativar)
   const statusMutation = useMutation({
     mutationFn: (data: { id: string; isActive: boolean }) => {
+      const action = data.isActive ? 'activate' : 'deactivate';
+      console.log(`Atualizando status do assinante: /subscribers/${data.id}/${action}/`);
       return subscribersService.updateStatus(data.id, data.isActive);
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['/api/subscribers'] });
+      // Usar o mesmo queryKey que usamos para buscar os dados
+      queryClient.invalidateQueries({ queryKey: ['/subscribers'] });
       toast.success(`Assinante ${data.is_active ? 'ativado' : 'desativado'} com sucesso!`);
       setOpenStatusDialog(false);
     },
     onError: (error) => {
       console.error('Erro ao atualizar status do assinante:', error);
-      toast.error('Erro ao atualizar status do assinante. Tente novamente.');
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      toast.error(`Erro ao atualizar status do assinante: ${errorMessage}`);
     },
   });
 
@@ -223,7 +230,7 @@ export default function Subscribers() {
                   </p>
                 )}
                 <p className="mt-2">
-                  Estamos tentando acessar: <code>/external-api/subscribers</code>
+                  Estamos tentando acessar: <code>/subscribers/</code>
                 </p>
                 <p className="mt-2">
                   De acordo com a documentação, este endpoint deve estar disponível em:

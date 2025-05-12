@@ -66,22 +66,7 @@ export const columns: ColumnDef<Subscriber>[] = [
       return <span>{formatDocument(document)}</span>;
     },
   },
-  {
-    accessorKey: "segment_name",
-    header: "Segmento",
-    cell: ({ row }) => {
-      const segmentName = row.getValue("segment_name") as string;
-      return segmentName || "N/A";
-    }
-  },
-  {
-    accessorKey: "plan_name",
-    header: "Plano",
-    cell: ({ row }) => {
-      const planName = row.getValue("plan_name") as string;
-      return planName || "N/A";
-    }
-  },
+  // Colunas segment_name e plan_name removidas para melhorar a visualização
   {
     accessorKey: "is_active",
     header: "Status",

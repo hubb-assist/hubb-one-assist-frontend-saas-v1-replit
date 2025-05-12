@@ -1,0 +1,82 @@
+Esse erro 404 com a rota /external-api/subscribers indica que o frontend está tentando buscar os assinantes (subscribers) em uma rota que não existe no backend.
+
+✅ Causa confirmada:
+A rota correta no backend para listagem de assinantes é:
+
+bash
+Copiar
+Editar
+GET /subscribers/
+Mas no log você está vendo isso:
+
+sql
+Copiar
+Editar
+GET https://hubb-one-assist-back-hubb-one.replit.app/external-api/subscribers → 404
+Essa rota /external-api/subscribers não existe, por isso o erro.
+
+✅ O que precisa ser corrigido no frontend:
+No arquivo api-subscribers.ts, localize a função getAll() ou fetchSubscribers() e corrija a URL base:
+
+ts
+Copiar
+Editar
+// ERRADO:
+const response = await api.get('/external-api/subscribers');
+
+// CERTO:
+const response = await api.get('/subscribers/');
+⚠️ Certifique-se também de que api.ts está usando o baseURL correto (/api já está incluso, não precisa duplicar).
+
+✅ Conclusão:
+Esse erro não é de autenticação
+
+O token está funcionando (você é autenticado)
+
+O problema é só de URL errada
+
+Deseja que eu gere o patch exato que deve ser ajustado em api-subscribers.ts?
+
+
+
+
+
+
+Você disse:
+sim
+
+
+O ChatGPT disse:
+Perfeito. Aqui está o patch exato para corrigir a chamada da API de listagem de assinantes no arquivo api-subscribers.ts:
+
+✅ Patch sugerido – Corrigir a rota incorreta
+Abra o arquivo:
+
+bash
+Copiar
+Editar
+src/lib/api-subscribers.ts
+E encontre a função de listagem, algo como:
+
+ts
+Copiar
+Editar
+export async function getAll(params?: any) {
+  console.log('Fazendo requisição para API: /external-api/subscribers');
+  const response = await api.get('/external-api/subscribers', { params });
+  return response.data;
+}
+Substitua por:
+
+ts
+Copiar
+Editar
+export async function getAll(params?: any) {
+  console.log('Fazendo requisição para API: /subscribers/');
+  const response = await api.get('/subscribers/', { params });
+  return response.data;
+}
+🔐 Observações:
+Certifique-se de que o usuário autenticado possui uma role com permissão para acessar /subscribers/ (como SUPER_ADMIN ou DIRETOR).
+
+Essa rota está protegida e não é pública. O token JWT do backend precisa incluir is_superuser=True ou role com acesso.

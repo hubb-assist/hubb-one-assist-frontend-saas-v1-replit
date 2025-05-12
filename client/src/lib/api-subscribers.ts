@@ -103,21 +103,21 @@ export const subscribersService = {
   // Buscar todos os assinantes
   async getAll(params?: { skip?: number; limit?: number; name?: string; is_active?: boolean }): Promise<Subscriber[]> {
     try {
-      console.log('Fazendo requisição para API:', '/external-api/subscribers');
-      // Tentar com proxy primeiro
-      const response = await api.get<ApiResponse>('/external-api/subscribers', { 
+      console.log('Fazendo requisição para API:', '/subscribers/');
+      // Usar o endpoint correto diretamente (não precisa de proxy)
+      const response = await api.get<ApiResponse>('/subscribers/', { 
         params,
         // Garantir que os cookies e credenciais sejam enviados
         withCredentials: true,
-        // Aumentar timeout para lidar com possível latência do proxy
-        timeout: 15000
+        // Timeout padrão suficiente para API na mesma infraestrutura
+        timeout: 10000
       });
       return response.data.items;
     } catch (error) {
       console.error('Erro ao buscar assinantes:', error);
       
       try {
-        // Tentar o endpoint de fallback caso o proxy falhe
+        // Tentar o endpoint de fallback caso a API principal falhe
         const fallbackResponse = await api.get<ApiResponse>('/api/subscribers/fallback');
         console.log('Usando dados de fallback');
         return fallbackResponse.data.items;
@@ -131,12 +131,12 @@ export const subscribersService = {
   // Buscar assinante por ID
   async getById(id: string): Promise<SubscriberDetail> {
     try {
-      console.log(`Fazendo requisição para API: /external-api/subscribers/${id}`);
-      const response = await api.get<SubscriberDetail>(`/external-api/subscribers/${id}`, {
+      console.log(`Fazendo requisição para API: /subscribers/${id}`);
+      const response = await api.get<SubscriberDetail>(`/subscribers/${id}`, {
         // Garantir que os cookies e credenciais sejam enviados
         withCredentials: true,
-        // Aumentar timeout para lidar com possível latência do proxy
-        timeout: 15000
+        // Timeout padrão para API
+        timeout: 10000
       });
       return response.data;
     } catch (error) {
@@ -156,15 +156,15 @@ export const subscribersService = {
     try {
       // Usar o endpoint correto baseado na ação
       const endpoint = isActive 
-        ? `/external-api/subscribers/${id}/activate` 
-        : `/external-api/subscribers/${id}/deactivate`;
+        ? `/subscribers/${id}/activate` 
+        : `/subscribers/${id}/deactivate`;
       
       console.log(`Fazendo requisição PATCH para API: ${endpoint}`);
       const response = await api.patch<Subscriber>(endpoint, {}, {
         // Garantir que os cookies e credenciais sejam enviados
         withCredentials: true,
-        // Aumentar timeout para lidar com possível latência do proxy
-        timeout: 15000,
+        // Timeout padrão para API
+        timeout: 10000,
         // Headers específicos para esta operação
         headers: {
           'Content-Type': 'application/json'

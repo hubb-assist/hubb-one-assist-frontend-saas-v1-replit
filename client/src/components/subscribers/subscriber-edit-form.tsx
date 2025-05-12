@@ -13,7 +13,7 @@ import { Loader2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface SubscriberEditFormProps {
-  subscriber: Subscriber | null;
+  subscriber: Subscriber | null | undefined;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;

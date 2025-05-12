@@ -101,7 +101,9 @@ export const subscribersService = {
         limit: params?.limit || 10,
         skip: params?.skip || 0,
         name: params?.name,
-        is_active: params?.is_active
+        is_active: params?.is_active,
+        // Adicionar um timestamp para evitar cache
+        _t: Date.now()
       };
       
       // URL correta para a API: direto na raiz (sem /api/ ou /external-api/)
@@ -116,7 +118,9 @@ export const subscribersService = {
         withCredentials: true,
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache'
         }
       });
       
@@ -286,24 +290,38 @@ export const subscribersService = {
         throw new Error('ID de assinante inválido');
       }
       
-      // URL direta para o endpoint de exclusão
+      // URL direta para o endpoint de exclusão do assinante e sua conta de usuário
       const apiUrl = `https://hubb-one-assist-back-hubb-one.replit.app/subscribers/${id}`;
       console.log(`Iniciando exclusão de assinante ID: ${id}`);
       console.log(`Fazendo requisição DELETE para API: ${apiUrl}`);
       
-      // Executar requisição DELETE
+      // Executar requisição DELETE com timeout maior para permitir que o backend
+      // processe a exclusão completa (subscriber + user)
       const response = await axios.delete(apiUrl, {
         withCredentials: true,
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
+          'Accept': 'application/json',
+          // Header adicional para sinalizar que queremos excluir tudo relacionado
+          'X-Delete-Mode': 'cascade',
+        },
+        timeout: 10000 // Aumentar timeout para 10 segundos
       });
       
-      // Log de sucesso com o código de status
-      console.log('Resposta de exclusão recebida:', response.status);
-      console.log('Assinante excluído com sucesso');
-      return true;
+      // Verificar se a resposta indica sucesso
+      if (response.status >= 200 && response.status < 300) {
+        // Log de sucesso com o código de status
+        console.log('Resposta de exclusão recebida:', response.status);
+        console.log('Assinante excluído com sucesso');
+        
+        // Aguardar um momento para o backend processar completamente
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        return true;
+      } else {
+        console.warn('Exclusão com status inesperado:', response.status);
+        throw new Error(`Exclusão retornou status inesperado: ${response.status}`);
+      }
     } catch (error) {
       // Tratamento de erro detalhado
       console.error(`Erro ao excluir assinante com ID ${id}:`, error);
@@ -319,6 +337,8 @@ export const subscribersService = {
           throw new Error('Assinante não encontrado. Ele pode já ter sido excluído.');
         } else if (axiosError.response.status === 403) {
           throw new Error('Você não tem permissão para excluir este assinante.');
+        } else if (axiosError.response.status === 409) {
+          throw new Error('Não é possível excluir este assinante pois ele tem dependências no sistema.');
         }
       }
       

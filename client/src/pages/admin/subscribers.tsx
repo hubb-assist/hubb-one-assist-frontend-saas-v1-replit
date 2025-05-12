@@ -454,11 +454,29 @@ export default function Subscribers() {
           isOpen={openDeleteDialog}
           onOpenChange={setOpenDeleteDialog}
           onSuccess={() => {
-            // Recarregar os dados após exclusão bem-sucedida
+            // Recarregar os dados após exclusão bem-sucedida com abordagem mais agressiva
+            console.log('Forçando recarga dos dados após exclusão');
+            
+            // Invalidar todas as queries relacionadas a subscribers
+            queryClient.invalidateQueries({ 
+              queryKey: ['/subscribers'] 
+            });
+            
+            // Também invalidar especificamente esta página
             queryClient.invalidateQueries({ 
               queryKey: ['/subscribers', paginationParams] 
             });
+            
+            // Forçar refetch (operação adicional)
+            refetch();
+            
+            // Limpar referência ao assinante selecionado
             setSelectedSubscriber(undefined);
+            
+            // Mostrar mensagem de atualização
+            toast.info('Atualizando lista de assinantes...', {
+              duration: 2000
+            });
           }}
         />
       )}

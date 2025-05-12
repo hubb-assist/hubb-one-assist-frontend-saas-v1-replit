@@ -51,9 +51,15 @@ export function DeleteSubscriberDialog({
       // Exibir mensagem de sucesso
       toast.success('Assinante excluído com sucesso');
       
-      // Fechar modal e atualizar lista
+      // Fechar modal
       onOpenChange(false);
-      onSuccess();
+      
+      // Força uma pausa antes de atualizar a lista para dar tempo ao backend
+      setTimeout(() => {
+        // Atualizar lista de assinantes
+        console.log('Atualizando lista após exclusão');
+        onSuccess();
+      }, 800);
     } catch (error: any) {
       // Tratamento específico de erros conhecidos
       const errorMessage = error.message || 'Erro ao excluir assinante';
@@ -61,6 +67,14 @@ export function DeleteSubscriberDialog({
       
       // Mostrar toast de erro
       toast.error(errorMessage);
+      
+      // Mesmo com erro, forçar atualização da lista para verificar estado atual
+      if (error.message.includes('não encontrado')) {
+        setTimeout(() => {
+          onOpenChange(false);
+          onSuccess();
+        }, 1500);
+      }
     } finally {
       setIsDeleting(false);
     }

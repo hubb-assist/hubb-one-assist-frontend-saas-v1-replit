@@ -96,16 +96,37 @@ function Router() {
       <Route path="/login" component={Login}/>
       <Route path="/onboarding" component={Onboarding}/>
       
-      {/* Rotas protegidas */}
+      {/* Rotas protegidas - Dashboards por Role */}
       <Route path="/dashboard">
         <PrivateRoute>
           <Dashboard />
         </PrivateRoute>
       </Route>
       
+      {/* Rotas para Admin */}
+      <Route path="/admin">
+        <PrivateRoute>
+          <AdminHome />
+        </PrivateRoute>
+      </Route>
+      
       <Route path="/admin/dashboard">
         <PrivateRoute>
           <AdminDashboard />
+        </PrivateRoute>
+      </Route>
+      
+      {/* Rotas para Clínica */}
+      <Route path="/clinica">
+        <PrivateRoute>
+          <ClinicaDashboard />
+        </PrivateRoute>
+      </Route>
+      
+      {/* Rotas para Usuário comum */}
+      <Route path="/app">
+        <PrivateRoute>
+          <UserDashboard />
         </PrivateRoute>
       </Route>
       

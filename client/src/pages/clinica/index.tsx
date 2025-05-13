@@ -2,7 +2,7 @@ import React from 'react';
 import DynamicAppShell from '@/components/layout/dynamic-app-shell';
 import { useAuth } from '@/lib/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar, User, Tooth, Activity } from 'lucide-react';
+import { Calendar, User, Scroll, Activity } from 'lucide-react';
 
 export default function ClinicaDashboard() {
   const { user } = useAuth();
@@ -47,7 +47,7 @@ export default function ClinicaDashboard() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Procedimentos</CardTitle>
-              <Tooth className="h-4 w-4 text-muted-foreground" />
+              <Scroll className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">145</div>

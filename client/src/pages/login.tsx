@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/lib/auth';
 import AppSetupLayout from '@/components/layout/app-setup-layout';
+import { getDashboardPathByRole } from '@/components/layout/dynamic-app-shell';
 
 // Schema de validação com zod
 const loginSchema = z.object({
@@ -70,8 +71,15 @@ export default function Login() {
         toast.success('Login realizado com sucesso!');
         
         // Verificar se há uma URL para redirecionar após o login
-        const redirectUrl = sessionStorage.getItem('redirectTo') || '/admin/dashboard';
+        let redirectUrl = sessionStorage.getItem('redirectTo');
         sessionStorage.removeItem('redirectTo');
+        
+        // Se não houver URL armazenada, determinar com base na role do usuário
+        if (!redirectUrl) {
+          // Obter o usuário autenticado para verificar a role
+          const { user } = useAuth.getState();
+          redirectUrl = getDashboardPathByRole(user?.role);
+        }
         
         // Redirecionar para a página correta
         navigate(redirectUrl);
@@ -93,9 +101,10 @@ export default function Login() {
     }
   };
 
-  // Se o usuário já estiver autenticado, redirecionar para o dashboard
-  if (isAuthenticated) {
-    return <Redirect to="/admin/dashboard" />;
+  // Se o usuário já estiver autenticado, redirecionar para o dashboard baseado na role
+  if (isAuthenticated && user) {
+    const dashboardPath = getDashboardPathByRole(user.role);
+    return <Redirect to={dashboardPath} />;
   }
 
   return (

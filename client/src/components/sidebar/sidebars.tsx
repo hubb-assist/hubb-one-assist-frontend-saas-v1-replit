@@ -13,11 +13,11 @@ import {
   Building2,
   BriefcaseMedical,
   Stethoscope,
-  Tooth,
+  FileText,
   ClipboardList,
   Calendar,
-  FileText,
-  User
+  User,
+  Scroll
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -234,7 +234,7 @@ export function SidebarClinic({ expanded }: SidebarProps) {
           
           <NavItem
             href="/clinica/procedimentos"
-            icon={<Tooth className="h-5 w-5" />}
+            icon={<Scroll className="h-5 w-5" />}
             label="Procedimentos"
             expanded={expanded}
             active={pathname === '/clinica/procedimentos'}

@@ -1,0 +1,73 @@
+1. ESTRUTURA ÚNICA COM COMPORTAMENTO CONDICIONAL
+🟪 AppShell (não muda — permanece central)
+Continua sendo o container principal.
+
+Mas agora recebe o role como prop.
+
+Internamente, ele decide qual Sidebar e qual Header usar.
+
+tsx
+Copiar
+Editar
+<AppShell role={user.role} user={user}>
+  <PageContent />
+</AppShell>
+🧱 2. LAYOUT CONDICIONAL POR ROLE
+📌 SidebarMain
+Refatorar SidebarMain para suportar múltiplas roles via prop role.
+
+Comportamento visual, menu e permissões são derivados do papel do usuário.
+
+tsx
+Copiar
+Editar
+<SidebarMain role={role} expanded={expanded} onToggle={...} />
+Internamente:
+
+tsx
+Copiar
+Editar
+if (role === 'SUPER_ADMIN') return <SidebarAdmin />
+if (role === 'DENTISTA') return <SidebarOdonto />
+if (role === 'VETERINARIO') return <SidebarVet />
+📌 Header
+O componente Header também deve se adaptar ao role e mostrar avatar + role + nome.
+
+tsx
+Copiar
+Editar
+<Header title="Dashboard" user={user} role={role} />
+🧩 3. ORGANIZAÇÃO DOS COMPONENTES
+css
+Copiar
+Editar
+components/
+├── layout/
+│   ├── app-shell.tsx ✅ (único)
+│   ├── header.tsx ✅ (único, mas adaptável)
+│   ├── sidebar/
+│   │   ├── sidebar-main.tsx ✅
+│   │   ├── sidebar-admin.tsx 🌟
+│   │   ├── sidebar-clinica-odontologia.tsx 🌟
+│   │   └── sidebar-clinica-veterinaria.tsx 🌟
+📂 4. ROTAS E REDIRECIONAMENTO BASEADO EM ROLE
+Após o login, o sistema faz:
+
+tsx
+Copiar
+Editar
+if (user.role === 'SUPER_ADMIN') router.push('/admin')
+if (user.role === 'CLINICA_ODONTO') router.push('/odontologia')
+if (user.role === 'CLINICA_VET') router.push('/veterinaria')
+E cada rota tem layout específico, mas todos compartilham o mesmo AppShell.
+
+✅ VANTAGENS DESSA ABORDAGEM
+Não duplica layout base (Header + Sidebar são reusáveis).
+
+Você só precisa manter uma única estrutura de layout e apenas mudar o conteúdo por role.
+
+Ajuda no versionamento futuro e reduz bugs de UI divergente.
+
+Permite facilmente aplicar políticas de acesso por Role sem duplicar páginas.
+
+Se desejar, posso gerar os arquivos base agora: SidebarAdmin, SidebarClinicaOdonto e SidebarClinicaVet, todos montados com menus fictícios para facilitar iteração.

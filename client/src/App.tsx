@@ -20,6 +20,8 @@ import Modules from "@/pages/admin/modules";
 import Plans from "@/pages/admin/plans";
 import SystemUsers from "@/pages/admin/system-users";
 import Subscribers from "@/pages/admin/subscribers";
+import PatientsList from "@/pages/clinica/patients";
+import PatientCreate from "@/pages/clinica/patients/create";
 import Onboarding from "@/pages/public/onboarding";
 import PrivateRoute from "@/components/auth/private-route";
 import { useAuth } from "@/lib/auth";
@@ -125,6 +127,18 @@ function Router() {
       <Route path="/clinica">
         <PrivateRoute>
           <ClinicaDashboard />
+        </PrivateRoute>
+      </Route>
+      
+      <Route path="/clinica/patients">
+        <PrivateRoute>
+          <PatientsList />
+        </PrivateRoute>
+      </Route>
+      
+      <Route path="/clinica/patients/create">
+        <PrivateRoute>
+          <PatientCreate />
         </PrivateRoute>
       </Route>
       

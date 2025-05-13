@@ -24,7 +24,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function Login() {
   const [, navigate] = useLocation();
-  const { login, isAuthenticated, isLoading } = useAuth();
+  const { login, isAuthenticated, isLoading, user } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   
   // Efeito para evitar verificação desnecessária de autenticação na página de login
@@ -78,7 +78,9 @@ export default function Login() {
         if (!redirectUrl) {
           // Obter o usuário autenticado para verificar a role
           const { user } = useAuth.getState();
-          redirectUrl = getDashboardPathByRole(user?.role);
+          // Convertemos para o tipo esperado pela função
+          const userRole = user?.role as any;
+          redirectUrl = getDashboardPathByRole(userRole);
         }
         
         // Redirecionar para a página correta
@@ -102,9 +104,15 @@ export default function Login() {
   };
 
   // Se o usuário já estiver autenticado, redirecionar para o dashboard baseado na role
-  if (isAuthenticated && user) {
-    const dashboardPath = getDashboardPathByRole(user.role);
-    return <Redirect to={dashboardPath} />;
+  if (isAuthenticated) {
+    const { user } = useAuth();
+    if (user) {
+      // Convertemos para o tipo esperado pela função
+      const userRole = user.role as any;
+      const dashboardPath = getDashboardPathByRole(userRole);
+      return <Redirect to={dashboardPath} />;
+    }
+    return <Redirect to="/admin" />;
   }
 
   return (

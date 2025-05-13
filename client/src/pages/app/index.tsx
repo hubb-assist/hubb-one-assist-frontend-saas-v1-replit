@@ -1,14 +1,18 @@
 import React from 'react';
-import DynamicAppShell from '@/components/layout/dynamic-app-shell';
 import { useAuth } from '@/lib/auth';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Calendar, FileText, Bell, Clock } from 'lucide-react';
+import DashboardWrapper from '@/components/dashboard/dashboard-wrapper';
 
 export default function UserDashboard() {
   const { user } = useAuth();
 
   return (
-    <DynamicAppShell title="Painel do Usuário" subtitle="Início">
+    <DashboardWrapper 
+      title="Painel do Usuário" 
+      subtitle="Início"
+      requiredRoles={['PROFISSIONAL', 'USUARIO_COMUM']}
+    >
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Bem-vindo, {user?.name || 'Usuário'}</h1>
@@ -121,6 +125,6 @@ export default function UserDashboard() {
           </Card>
         </div>
       </div>
-    </DynamicAppShell>
+    </DashboardWrapper>
   );
 }

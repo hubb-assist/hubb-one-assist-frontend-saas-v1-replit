@@ -1,14 +1,18 @@
 import React from 'react';
-import DynamicAppShell from '@/components/layout/dynamic-app-shell';
 import { useAuth } from '@/lib/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, Users, Building, Settings } from 'lucide-react';
+import DashboardWrapper from '@/components/dashboard/dashboard-wrapper';
 
 export default function AdminDashboard() {
   const { user } = useAuth();
 
   return (
-    <DynamicAppShell title="Dashboard Admin" subtitle="Visão Geral">
+    <DashboardWrapper 
+      title="Dashboard Admin" 
+      subtitle="Visão Geral"
+      requiredRoles={['SUPER_ADMIN', 'DIRETOR']}
+    >
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Bem-vindo, {user?.name || 'Administrador'}</h1>
@@ -115,6 +119,6 @@ export default function AdminDashboard() {
           </Card>
         </div>
       </div>
-    </DynamicAppShell>
+    </DashboardWrapper>
   );
 }

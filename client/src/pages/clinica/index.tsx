@@ -2,15 +2,16 @@ import React from 'react';
 import { useAuth } from '@/lib/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, User, Scroll, Activity } from 'lucide-react';
-import { AppShellClinic } from '@/components/layout/app-shells';
+import DashboardWrapper from '@/components/dashboard/dashboard-wrapper';
 
 export default function ClinicaDashboard() {
   const { user } = useAuth();
 
   return (
-    <AppShellClinic
+    <DashboardWrapper 
       title="Dashboard da Clínica" 
       subtitle="Visão Geral"
+      requiredRoles={['DONO_ASSINANTE']}
     >
       <div className="space-y-6">
         <div>
@@ -125,6 +126,6 @@ export default function ClinicaDashboard() {
           </Card>
         </div>
       </div>
-    </AppShellClinic>
+    </DashboardWrapper>
   );
 }

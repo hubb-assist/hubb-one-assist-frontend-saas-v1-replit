@@ -40,8 +40,7 @@ export default function DashboardWrapper({
     }
   }
 
-  // Log para verificar a role do usuário
-  console.log('DashboardWrapper - Role do usuário:', user.role);
+  // Verificação lógica de role concluída acima
   
   return (
     <DynamicAppShell

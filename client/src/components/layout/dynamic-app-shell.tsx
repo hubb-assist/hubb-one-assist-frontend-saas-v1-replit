@@ -47,6 +47,9 @@ export default function DynamicAppShell({
   // Se não for fornecida uma role explícita, usa a role do usuário autenticado
   const { user } = useAuth();
   const role = explicitRole || (user?.role as UserRole);
+  
+  // Log para verificar qual role está sendo usada
+  console.log('DynamicAppShell - Role atual:', role, 'User completo:', user);
 
   // Se não houver role definida, não renderiza nada
   // Isso não deveria acontecer, pois rotas protegidas verificam autenticação

@@ -1,8 +1,9 @@
 import React from 'react';
 import { useAuth } from '@/lib/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar, User, Scroll, Activity } from 'lucide-react';
+import { Calendar, Users, ShoppingCart, PercentCircle, DollarSign } from 'lucide-react';
 import DashboardWrapper from '@/components/dashboard/dashboard-wrapper';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function ClinicaDashboard() {
   const { user } = useAuth();

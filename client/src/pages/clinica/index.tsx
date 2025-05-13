@@ -11,13 +11,13 @@ export default function ClinicaDashboard() {
     <DashboardWrapper 
       title="Dashboard da Clínica" 
       subtitle="Visão Geral"
-      requiredRoles={['DONO_CLINICA']}
+      requiredRoles={['DONO_CLINICA', 'DONO_ASSINANTE']}
     >
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Bem-vindo, {user?.name || 'Gestor'}</h1>
           <p className="text-muted-foreground">
-            Perfil: Dono de Clínica
+            Perfil: {user?.role === 'DONO_ASSINANTE' ? 'Gestor de Assinante' : 'Dono de Clínica'}
           </p>
         </div>
 

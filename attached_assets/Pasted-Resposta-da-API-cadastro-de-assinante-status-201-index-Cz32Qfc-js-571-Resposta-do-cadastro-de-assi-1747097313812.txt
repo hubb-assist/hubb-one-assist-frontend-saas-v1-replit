@@ -1,0 +1,34 @@
+Resposta da API cadastro de assinante: status 201
+index-Cz32Qfc_.js:571 Resposta do cadastro de assinante: Object
+index-Cz32Qfc_.js:571 Resposta da API: Object
+index-Cz32Qfc_.js:492 Tentando login com e-mail: comercialgenesisgn@gmail.com
+index-Cz32Qfc_.js:413 Tentando login na URL direta: https://hubb-one-assist-back-hubb-one.replit.app/auth/login
+index-Cz32Qfc_.js:413 Resposta do login: 200 
+index-Cz32Qfc_.js:492 Obtendo tipo de dashboard para redirecionamento inteligente
+2index-Cz32Qfc_.js:413 Solicitando tipo de dashboard
+index-Cz32Qfc_.js:413 Resposta do tipo de dashboard: 200 Object
+index-Cz32Qfc_.js:571 Estado de autenticação: Object
+index-Cz32Qfc_.js:413 Verificando autenticação...
+index-Cz32Qfc_.js:413 Solicitando verificação de autenticação: /users/me
+index-Cz32Qfc_.js:571 Estado de autenticação: ObjectcurrentRoute: "/clinica"isAuthenticated: trueisChecking: trueisLoading: trueisReallyAuthenticated: trueuser: {id: 14, email: 'comercialgenesisgn@gmail.com', authenticated: undefined}[[Prototype]]: Object
+index-Cz32Qfc_.js:413 Resposta de verificação de autenticação: 200 Objectcreated_at: "2025-05-13T00:45:41.448239"email: "comercialgenesisgn@gmail.com"id: 14is_active: truename: "Luis Teste Paim 2707"password_hash: "$2b$12$9RTVBCTXlUMOkipi6uTVpOeMHkpVU1pu0.y/K4li0ZuGyAru.4GIG"role: "DONO_ASSINANTE"subscriber_id: "1cbe3c85-c0b7-467b-998e-054a3a1086a8"updated_at: "2025-05-13T00:45:41.448245"[[Prototype]]: Object
+index-Cz32Qfc_.js:413 Usuário autenticado: Objectcreated_at: "2025-05-13T00:45:41.448239"email: "comercialgenesisgn@gmail.com"id: 14is_active: truename: "Luis Teste Paim 2707"password_hash: "$2b$12$9RTVBCTXlUMOkipi6uTVpOeMHkpVU1pu0.y/K4li0ZuGyAru.4GIG"role: "DONO_ASSINANTE"subscriber_id: "1cbe3c85-c0b7-467b-998e-054a3a1086a8"updated_at: "2025-05-13T00:45:41.448245"[[Prototype]]: Object
+index-Cz32Qfc_.js:571 Estado de autenticação: ObjectcurrentRoute: "/clinica"isAuthenticated: trueisChecking: trueisLoading: falseisReallyAuthenticated: trueuser: {id: 14, email: 'comercialgenesisgn@gmail.com', authenticated: undefined}[[Prototype]]: Object
+index-Cz32Qfc_.js:571 Estado de autenticação: ObjectcurrentRoute: "/clinica"isAuthenticated: trueisChecking: falseisLoading: falseisReallyAuthenticated: trueuser: {id: 14, email: 'comercialgenesisgn@gmail.com', authenticated: undefined}[[Prototype]]: Object
+index-Cz32Qfc_.js:571 Autenticado, mostrando conteúdo protegido
+index-Cz32Qfc_.js:413 Resposta do tipo de dashboard: 200 Objectdashboard_type: "clinica_odontologica"[[Prototype]]: Object
+index-Cz32Qfc_.js:492 Tipo de dashboard recebido: clinica_odontologica
+index-Cz32Qfc_.js:492 Redirecionando para: /clinica
+index-Cz32Qfc_.js:571 Estado de autenticação: Object
+index-Cz32Qfc_.js:413 Verificando autenticação...
+index-Cz32Qfc_.js:413 Solicitando verificação de autenticação: /users/me
+index-Cz32Qfc_.js:571 Estado de autenticação: Object
+index-Cz32Qfc_.js:413 Resposta de verificação de autenticação: 200 Object
+index-Cz32Qfc_.js:413 Usuário autenticado: Object
+index-Cz32Qfc_.js:571 Estado de autenticação: Object
+index-Cz32Qfc_.js:571 Estado de autenticação: Object
+index-Cz32Qfc_.js:571 Autenticado, mostrando conteúdo protegido
+[NOVO] Explique os erros do Console usando o Copilot no Edge: clique em
+         
+         para explicar um erro.
+        Saiba mais

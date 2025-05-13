@@ -2,8 +2,8 @@ import React from 'react';
 import { AppShellAdmin, AppShellClinic, AppShellUser } from './app-shells';
 import { useAuth } from '@/lib/auth';
 
-// Tipos de roles suportados
-export type UserRole = 'SUPER_ADMIN' | 'DIRETOR' | 'COLABORADOR_NIVEL_2' | 'DONO_ASSINANTE' | 'PROFISSIONAL' | 'CLIENTE';
+// Tipos de roles suportados (conforme implementado no sistema atual)
+export type UserRole = 'SUPER_ADMIN' | 'DIRETOR' | 'COLABORADOR_NIVEL_2' | 'DONO_ASSINANTE';
 
 interface DynamicAppShellProps {
   children: React.ReactNode;
@@ -26,8 +26,6 @@ export function getDashboardPathByRole(role?: UserRole): string {
     case 'DONO_ASSINANTE':
       return '/clinica';
     case 'COLABORADOR_NIVEL_2':
-    case 'PROFISSIONAL':
-    case 'CLIENTE':
       return '/app';
     default:
       return '/login';
@@ -67,8 +65,6 @@ export default function DynamicAppShell({
       return <AppShellClinic title={title} subtitle={subtitle}>{children}</AppShellClinic>;
     
     case 'COLABORADOR_NIVEL_2':
-    case 'PROFISSIONAL':
-    case 'CLIENTE':
       return <AppShellUser title={title} subtitle={subtitle}>{children}</AppShellUser>;
     
     default:

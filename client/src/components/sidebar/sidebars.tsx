@@ -217,11 +217,11 @@ export function SidebarClinic({ expanded }: SidebarProps) {
           />
           
           <NavItem
-            href="/clinica/pacientes"
+            href="/clinica/patients"
             icon={<ClipboardList className="h-5 w-5" />}
             label="Pacientes"
             expanded={expanded}
-            active={pathname === '/clinica/pacientes'}
+            active={pathname.startsWith('/clinica/patients')}
           />
           
           <NavItem

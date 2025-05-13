@@ -7,7 +7,7 @@ import { useLocation } from 'wouter';
 
 export default function PatientCreatePage() {
   const { user } = useAuth();
-  const [_, setLocation] = useLocation();
+  const [_, navigate] = useLocation();
   
   // Verificar se o usuário tem permissão CAN_CREATE_PATIENT
   // No mundo real, esta verificação seria baseada em dados do JWT ou resposta da API
@@ -18,9 +18,9 @@ export default function PatientCreatePage() {
   React.useEffect(() => {
     if (!canCreatePatient) {
       toast.error('Você não tem permissão para cadastrar pacientes');
-      setLocation('/clinica');
+      navigate('/clinica');
     }
-  }, [canCreatePatient, setLocation]);
+  }, [canCreatePatient, navigate]);
   
   if (!canCreatePatient) {
     return null; // Não renderizar nada enquanto redireciona

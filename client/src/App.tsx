@@ -14,6 +14,7 @@ import AdminDashboard from "@/pages/admin/dashboard";
 import AdminHome from "@/pages/admin/index";
 import ClinicaDashboard from "@/pages/clinica/index";
 import UserDashboard from "@/pages/app/index";
+import AutoRedirect from "@/pages/auto-redirect";
 import Segments from "@/pages/admin/segments";
 import Modules from "@/pages/admin/modules";
 import Plans from "@/pages/admin/plans";
@@ -83,7 +84,11 @@ function Router() {
 
   return (
     <Switch>
+      {/* Página inicial pública */}
       <Route path="/" component={Home}/>
+      
+      {/* Rota para redirecionamento automático baseado no tipo de dashboard */}
+      <Route path="/auto-redirect" component={AutoRedirect} />
       
       {/* Rota setup (também deve ser protegida) */}
       <Route path="/setup">

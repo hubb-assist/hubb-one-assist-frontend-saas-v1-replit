@@ -39,8 +39,8 @@ export default function Home() {
                     <Button 
                       className="mt-4 w-full"
                       onClick={() => {
-                        toast.success("Navegando para Dashboard");
-                        window.location.href = "/dashboard";
+                        toast.success("Redirecionando para seu dashboard");
+                        window.location.href = "/auto-redirect";
                       }}
                     >
                       Ir para Dashboard

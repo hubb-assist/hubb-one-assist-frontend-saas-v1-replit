@@ -74,16 +74,49 @@ export default function Login() {
         let redirectUrl = sessionStorage.getItem('redirectTo');
         sessionStorage.removeItem('redirectTo');
         
-        // Se não houver URL armazenada, determinar com base na role do usuário
+        // Se não houver URL armazenada, usar redirecionamento inteligente
         if (!redirectUrl) {
-          // Obter o usuário autenticado para verificar a role
-          const { user } = useAuth.getState();
-          // Convertemos para o tipo esperado pela função
-          const userRole = user?.role as any;
-          redirectUrl = getDashboardPathByRole(userRole);
+          try {
+            // Obter tipo de dashboard da API
+            console.log('Obtendo tipo de dashboard para redirecionamento inteligente');
+            const { authService } = await import('@/lib/api');
+            const response = await authService.getDashboardType();
+            const dashboardType = response.dashboard_type;
+            
+            console.log('Tipo de dashboard recebido:', dashboardType);
+            
+            // Determinar para qual rota redirecionar com base no tipo
+            switch (dashboardType) {
+              case 'admin_global':
+                redirectUrl = '/admin';
+                break;
+              case 'clinica_veterinaria':
+              case 'clinica_odontologica':
+              case 'clinica_padrao':
+                redirectUrl = '/clinica';
+                break;
+              case 'usuario_clinica':
+                redirectUrl = '/app';
+                break;
+              default:
+                // Se não for um tipo conhecido, usa o método antigo baseado em role
+                console.warn('Tipo de dashboard desconhecido:', dashboardType);
+                const { user } = useAuth.getState();
+                const userRole = user?.role as any;
+                redirectUrl = getDashboardPathByRole(userRole);
+            }
+          } catch (error) {
+            console.error('Erro ao obter tipo de dashboard:', error);
+            
+            // Em caso de erro, usar o método antigo baseado em role
+            const { user } = useAuth.getState();
+            const userRole = user?.role as any;
+            redirectUrl = getDashboardPathByRole(userRole);
+          }
         }
         
         // Redirecionar para a página correta
+        console.log('Redirecionando para:', redirectUrl);
         navigate(redirectUrl);
       } else {
         const errorMsg = 'Credenciais inválidas ou servidor indisponível';
@@ -103,16 +136,82 @@ export default function Login() {
     }
   };
 
-  // Se o usuário já estiver autenticado, redirecionar para o dashboard baseado na role
-  if (isAuthenticated) {
-    const { user } = useAuth();
-    if (user) {
-      // Convertemos para o tipo esperado pela função
-      const userRole = user.role as any;
-      const dashboardPath = getDashboardPathByRole(userRole);
-      return <Redirect to={dashboardPath} />;
+  // Se o usuário já estiver autenticado, usar o redirecionamento inteligente
+  const [isCheckingDashboardType, setIsCheckingDashboardType] = useState(false);
+  const [dashboardPath, setDashboardPath] = useState<string | null>(null);
+
+  // Efeito para verificar o tipo de dashboard quando estiver autenticado
+  useEffect(() => {
+    if (isAuthenticated && !isCheckingDashboardType && !dashboardPath) {
+      const checkDashboardType = async () => {
+        setIsCheckingDashboardType(true);
+        try {
+          // Obter tipo de dashboard da API
+          const { authService } = await import('@/lib/api');
+          const response = await authService.getDashboardType();
+          const dashboardType = response.dashboard_type;
+          
+          // Determinar para qual rota redirecionar com base no tipo
+          let path = '/';
+          
+          switch (dashboardType) {
+            case 'admin_global':
+              path = '/admin';
+              break;
+            case 'clinica_veterinaria':
+            case 'clinica_odontologica':
+            case 'clinica_padrao':
+              path = '/clinica';
+              break;
+            case 'usuario_clinica':
+              path = '/app';
+              break;
+            default:
+              // Se não for um tipo conhecido, usa o método antigo baseado em role
+              if (user) {
+                const userRole = user.role as any;
+                path = getDashboardPathByRole(userRole);
+              } else {
+                path = '/admin';
+              }
+          }
+          
+          setDashboardPath(path);
+        } catch (error) {
+          console.error('Erro ao obter tipo de dashboard para redirecionamento:', error);
+          
+          // Em caso de erro, usar o método antigo baseado em role
+          if (user) {
+            const userRole = user.role as any;
+            setDashboardPath(getDashboardPathByRole(userRole));
+          } else {
+            setDashboardPath('/admin');
+          }
+        } finally {
+          setIsCheckingDashboardType(false);
+        }
+      };
+      
+      checkDashboardType();
     }
-    return <Redirect to="/admin" />;
+  }, [isAuthenticated, user, isCheckingDashboardType, dashboardPath]);
+  
+  // Se estiver checando o tipo de dashboard, mostrar um spinner
+  if (isAuthenticated && isCheckingDashboardType) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin w-10 h-10 border-t-2 border-primary rounded-full mx-auto mb-4"></div>
+          <h2 className="text-xl font-medium text-gray-700 mb-2">Redirecionando</h2>
+          <p className="text-gray-500">Verificando seu acesso...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  // Se tiver o caminho do dashboard, redirecionar
+  if (isAuthenticated && dashboardPath) {
+    return <Redirect to={dashboardPath} />;
   }
 
   return (

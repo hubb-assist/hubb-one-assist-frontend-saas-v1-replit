@@ -37,7 +37,11 @@ export const useAuth = create<AuthState>((set, get) => ({
     try {
       const data = await authService.login(email, password);
       if (data) {
+        // Verificar autenticação após login bem-sucedido
         await get().checkAuth();
+        
+        // Se a autenticação foi bem-sucedida, podemos considerar o redirecionamento inteligente
+        // O redirecionamento propriamente dito será feito no componente de login
         return true;
       }
       return false;

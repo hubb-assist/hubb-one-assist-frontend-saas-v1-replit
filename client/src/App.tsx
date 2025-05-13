@@ -11,6 +11,9 @@ import Setup from "@/pages/setup";
 import Dashboard from "@/pages/dashboard";
 import Login from "@/pages/login";
 import AdminDashboard from "@/pages/admin/dashboard";
+import AdminHome from "@/pages/admin/index";
+import ClinicaDashboard from "@/pages/clinica/index";
+import UserDashboard from "@/pages/app/index";
 import Segments from "@/pages/admin/segments";
 import Modules from "@/pages/admin/modules";
 import Plans from "@/pages/admin/plans";
@@ -19,6 +22,7 @@ import Subscribers from "@/pages/admin/subscribers";
 import Onboarding from "@/pages/public/onboarding";
 import PrivateRoute from "@/components/auth/private-route";
 import { useAuth } from "@/lib/auth";
+import { getDashboardPathByRole } from "@/components/layout/dynamic-app-shell";
 
 function Router() {
   const { checkAuth, isAuthenticated, isLoading, user } = useAuth();

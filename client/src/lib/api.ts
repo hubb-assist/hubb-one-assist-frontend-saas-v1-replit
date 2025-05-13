@@ -189,5 +189,29 @@ export const authService = {
       // Mesmo que falhe no backend, redireciona para login
       window.location.href = '/login';
     }
+  },
+
+  // Obter o tipo de dashboard do usuário logado
+  async getDashboardType() {
+    try {
+      console.log('Solicitando tipo de dashboard');
+      
+      // Usar URL completa do backend
+      const dashboardTypeUrl = `${BASE_URL}${ENDPOINTS.DASHBOARD_TYPE}`;
+      
+      const response = await axios.get(dashboardTypeUrl, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
+      
+      console.log('Resposta do tipo de dashboard:', response.status, response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao obter tipo de dashboard:", error);
+      throw error;
+    }
   }
 };

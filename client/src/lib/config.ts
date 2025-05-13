@@ -13,6 +13,7 @@ export const API_CONFIG = {
     // Autenticação
     LOGIN: '/auth/login',
     LOGOUT: '/auth/logout',
+    DASHBOARD_TYPE: '/auth/dashboard-type',
     USER_ME: '/users/me',
     
     // Segmentos

@@ -17,7 +17,9 @@ const api = axios.create({
 
 // Interceptador para debug
 api.interceptors.request.use(config => {
-  console.log('Fazendo requisição para API:', config.baseURL + config.url);
+  if (config.baseURL && config.url) {
+    console.log('Fazendo requisição para API:', config.baseURL + config.url);
+  }
   return config;
 });
 

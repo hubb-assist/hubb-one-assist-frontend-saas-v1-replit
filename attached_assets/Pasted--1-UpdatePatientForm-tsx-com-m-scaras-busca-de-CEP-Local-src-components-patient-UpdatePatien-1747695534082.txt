@@ -1,0 +1,167 @@
+✅ 1. UpdatePatientForm.tsx com máscaras + busca de CEP
+📁 Local: src/components/patient/UpdatePatientForm.tsx
+
+tsx
+Copiar
+Editar
+import { useParams } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { useEffect } from "react";
+import { PatientFormData } from "@/domain/patient/types";
+import { useGetPatient, useUpdatePatient } from "@/domain/patient/useCases";
+import { useCepAutoComplete } from "@/hooks/useCepAutoComplete";
+import InputMask from "react-input-mask";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+export function UpdatePatientForm() {
+  const { id } = useParams<{ id: string }>();
+  const { fetchById } = useGetPatient();
+  const { handleUpdate } = useUpdatePatient();
+  const { register, handleSubmit, reset, setValue, watch } = useForm<PatientFormData>();
+
+  useCepAutoComplete(watch, setValue);
+
+  useEffect(() => {
+    if (id) {
+      fetchById(id).then((data) => {
+        reset(data);
+      });
+    }
+  }, [id]);
+
+  const onSubmit = async (data: PatientFormData) => {
+    if (id) {
+      await handleUpdate(id, data);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <div>
+        <Label htmlFor="name">Nome</Label>
+        <Input {...register("name")} />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="cpf">CPF</Label>
+          <InputMask mask="999.999.999-99" {...register("cpf")}>
+            {(inputProps: any) => <Input {...inputProps} />}
+          </InputMask>
+        </div>
+        <div>
+          <Label htmlFor="rg">RG</Label>
+          <Input {...register("rg")} />
+        </div>
+      </div>
+
+      <div>
+        <Label htmlFor="birth_date">Data de nascimento</Label>
+        <Input type="date" {...register("birth_date")} />
+      </div>
+
+      <div>
+        <Label htmlFor="phone">Telefone</Label>
+        <InputMask mask="(99) 99999-9999" {...register("phone")}>
+          {(inputProps: any) => <Input {...inputProps} />}
+        </InputMask>
+      </div>
+
+      <div>
+        <Label htmlFor="cep">CEP</Label>
+        <InputMask mask="99999999" {...register("cep")}>
+          {(inputProps: any) => <Input {...inputProps} />}
+        </InputMask>
+      </div>
+
+      <div>
+        <Label htmlFor="address">Endereço</Label>
+        <Input {...register("address")} />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="number">Número</Label>
+          <Input {...register("number")} />
+        </div>
+        <div>
+          <Label htmlFor="complement">Complemento</Label>
+          <Input {...register("complement")} />
+        </div>
+      </div>
+
+      <div>
+        <Label htmlFor="district">Bairro</Label>
+        <Input {...register("district")} />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="city">Cidade</Label>
+          <Input {...register("city")} />
+        </div>
+        <div>
+          <Label htmlFor="state">Estado</Label>
+          <Input {...register("state")} />
+        </div>
+      </div>
+
+      <Button type="submit" className="w-full">
+        Atualizar paciente
+      </Button>
+    </form>
+  );
+}
+✅ 2. Validação com Zod para PatientFormData
+📁 Local: src/domain/patient/validation.ts
+
+ts
+Copiar
+Editar
+import { z } from "zod";
+
+export const patientSchema = z.object({
+  name: z.string().min(3, "Nome é obrigatório"),
+  cpf: z
+    .string()
+    .regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, "CPF inválido"),
+  rg: z.string().optional(),
+  birth_date: z.string().nonempty("Data de nascimento é obrigatória"),
+  phone: z
+    .string()
+    .regex(/^\(\d{2}\) \d{5}-\d{4}$/, "Telefone inválido")
+    .optional(),
+  cep: z
+    .string()
+    .regex(/^\d{8}$/, "CEP deve conter 8 números"),
+  address: z.string().nonempty("Endereço é obrigatório"),
+  number: z.string().nonempty("Número é obrigatório"),
+  complement: z.string().optional(),
+  district: z.string().nonempty("Bairro é obrigatório"),
+  city: z.string().nonempty("Cidade é obrigatória"),
+  state: z.string().nonempty("Estado é obrigatório"),
+});
+
+export type PatientSchemaType = z.infer<typeof patientSchema>;
+📌 No formulário, use assim com react-hook-form:
+
+tsx
+Copiar
+Editar
+import { zodResolver } from "@hookform/resolvers/zod";
+import { patientSchema } from "@/domain/patient/validation";
+
+const form = useForm<PatientFormData>({
+  resolver: zodResolver(patientSchema),
+});
+Com isso você terá:
+
+✅ Formulário com máscaras
+
+✅ Busca automática por CEP
+
+✅ Validação com Zod diretamente nos campos
+
+✅ Update reutilizando o mesmo hook de autocomplete

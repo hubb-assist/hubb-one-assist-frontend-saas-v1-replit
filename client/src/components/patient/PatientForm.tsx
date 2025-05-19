@@ -1,6 +1,8 @@
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useCreatePatient } from "@/domain/patient/useCases";
 import { PatientFormData } from "@/domain/patient/types";
+import { patientSchema } from "@/domain/patient/validation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,7 +13,9 @@ import { useCepAutoComplete } from "@/hooks/useCepAutoComplete";
 import { toast } from "sonner";
 
 export function PatientForm() {
-  const { register, handleSubmit, setValue, reset, watch } = useForm<PatientFormData>();
+  const { register, handleSubmit, setValue, reset, watch, formState: { errors } } = useForm<PatientFormData>({
+    resolver: zodResolver(patientSchema)
+  });
   const { handleCreate } = useCreatePatient();
   const [loading, setLoading] = useState(false);
   
@@ -48,19 +52,29 @@ export function PatientForm() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="cpf">CPF</Label>
-                <InputMask 
-                  mask="999.999.999-99" 
-                  {...register("cpf")} 
-                  required
-                >
-                  {(inputProps: any) => (
-                    <Input 
-                      id="cpf" 
-                      placeholder="000.000.000-00" 
-                      {...inputProps} 
-                    />
+                <div className="relative">
+                  <Input 
+                    id="cpf" 
+                    placeholder="000.000.000-00" 
+                    {...register("cpf")} 
+                    required
+                    maxLength={14}
+                    onChange={(e) => {
+                      // Formatar CPF enquanto digita
+                      let value = e.target.value.replace(/\D/g, '');
+                      if (value.length <= 11) {
+                        // Formata como CPF
+                        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                        value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                        e.target.value = value;
+                      }
+                    }}
+                  />
+                  {errors.cpf && (
+                    <p className="text-xs text-red-500 mt-1">{errors.cpf.message as string}</p>
                   )}
-                </InputMask>
+                </div>
               </div>
               <div>
                 <Label htmlFor="rg">RG</Label>
@@ -72,39 +86,59 @@ export function PatientForm() {
               <div>
                 <Label htmlFor="birth_date">Data de Nascimento</Label>
                 <Input type="date" id="birth_date" {...register("birth_date")} required />
+                {errors.birth_date && (
+                  <p className="text-xs text-red-500 mt-1">{errors.birth_date.message as string}</p>
+                )}
               </div>
               <div>
                 <Label htmlFor="phone">Telefone</Label>
-                <InputMask 
-                  mask="(99) 99999-9999" 
-                  {...register("phone")}
-                >
-                  {(inputProps: any) => (
-                    <Input 
-                      id="phone" 
-                      placeholder="(00) 00000-0000" 
-                      {...inputProps} 
-                    />
+                <div className="relative">
+                  <Input 
+                    id="phone" 
+                    placeholder="(00) 00000-0000" 
+                    {...register("phone")}
+                    maxLength={15}
+                    onChange={(e) => {
+                      // Formatar telefone enquanto digita
+                      let value = e.target.value.replace(/\D/g, '');
+                      if (value.length <= 11) {
+                        // Formata como telefone
+                        value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
+                        value = value.replace(/(\d)(\d{4})$/, '$1-$2');
+                        e.target.value = value;
+                      }
+                    }}
+                  />
+                  {errors.phone && (
+                    <p className="text-xs text-red-500 mt-1">{errors.phone.message as string}</p>
                   )}
-                </InputMask>
+                </div>
               </div>
             </div>
             
             <div>
               <Label htmlFor="cep">CEP</Label>
-              <InputMask 
-                mask="99999-999" 
-                {...register("cep")} 
-                required
-              >
-                {(inputProps: any) => (
-                  <Input 
-                    id="cep" 
-                    placeholder="00000-000" 
-                    {...inputProps} 
-                  />
+              <div className="relative">
+                <Input 
+                  id="cep" 
+                  placeholder="00000-000" 
+                  {...register("cep")} 
+                  required
+                  maxLength={9}
+                  onChange={(e) => {
+                    // Formatar CEP enquanto digita
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length <= 8) {
+                      // Formata como CEP
+                      value = value.replace(/^(\d{5})(\d)/, '$1-$2');
+                      e.target.value = value;
+                    }
+                  }}
+                />
+                {errors.cep && (
+                  <p className="text-xs text-red-500 mt-1">{errors.cep.message as string}</p>
                 )}
-              </InputMask>
+              </div>
             </div>
             
             <div>

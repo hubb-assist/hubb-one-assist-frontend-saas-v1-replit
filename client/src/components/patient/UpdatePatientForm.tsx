@@ -1,37 +1,16 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useUpdatePatient, useGetPatient } from "@/domain/patient/useCases";
 import { PatientFormData } from "@/domain/patient/types";
+import { patientSchema } from "@/domain/patient/validation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-// Precisaríamos criar este serviço também
-const viaCepService = {
-  fetchAddress: async (cep: string) => {
-    try {
-      // Remover caracteres não numéricos
-      const cleanCep = cep.replace(/\D/g, '');
-      if (cleanCep.length !== 8) return null;
-      
-      const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
-      const data = await response.json();
-      
-      if (data.erro) return null;
-      
-      return {
-        address: data.logradouro,
-        district: data.bairro,
-        city: data.localidade,
-        state: data.uf
-      };
-    } catch (error) {
-      console.error('Erro ao buscar endereço:', error);
-      return null;
-    }
-  }
-};
+import InputMask from "react-input-mask";
+import { useCepAutoComplete } from "@/hooks/useCepAutoComplete";
+import { toast } from "sonner";
 
 interface UpdatePatientFormProps {
   patientId: string;
@@ -39,13 +18,16 @@ interface UpdatePatientFormProps {
 }
 
 export function UpdatePatientForm({ patientId, onSuccess }: UpdatePatientFormProps) {
-  const { register, handleSubmit, setValue, reset, watch } = useForm<PatientFormData>();
+  const { register, handleSubmit, setValue, reset, watch, formState: { errors } } = useForm<PatientFormData>({
+    resolver: zodResolver(patientSchema)
+  });
   const { handleUpdate } = useUpdatePatient();
   const { fetchById } = useGetPatient();
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   
-  const cep = watch('cep');
+  // Usar hook de autopreenchimento de CEP
+  useCepAutoComplete(watch, setValue);
   
   // Carregar dados do paciente
   useEffect(() => {
@@ -61,6 +43,7 @@ export function UpdatePatientForm({ patientId, onSuccess }: UpdatePatientFormPro
         });
       } catch (error) {
         console.error('Erro ao carregar paciente:', error);
+        toast.error("Erro ao carregar dados do paciente");
       } finally {
         setInitialLoading(false);
       }
@@ -71,29 +54,17 @@ export function UpdatePatientForm({ patientId, onSuccess }: UpdatePatientFormPro
     }
   }, [patientId, fetchById, setValue]);
 
-  // Efeito para buscar endereço via CEP
-  useEffect(() => {
-    if (cep?.length === 8) {
-      viaCepService.fetchAddress(cep).then(data => {
-        if (data) {
-          setValue('address', data.address);
-          setValue('district', data.district);
-          setValue('city', data.city);
-          setValue('state', data.state);
-        }
-      });
-    }
-  }, [cep, setValue]);
-
   const onSubmit = async (data: PatientFormData) => {
     try {
       setLoading(true);
       await handleUpdate(patientId, data);
+      toast.success("Paciente atualizado com sucesso!");
       if (onSuccess) {
         onSuccess();
       }
     } catch (error) {
       console.error('Erro ao atualizar paciente:', error);
+      toast.error("Erro ao atualizar paciente");
     } finally {
       setLoading(false);
     }
@@ -128,7 +99,29 @@ export function UpdatePatientForm({ patientId, onSuccess }: UpdatePatientFormPro
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="cpf">CPF</Label>
-                <Input id="cpf" {...register("cpf")} required placeholder="Somente números" />
+                <div className="relative">
+                  <Input 
+                    id="cpf" 
+                    placeholder="000.000.000-00" 
+                    {...register("cpf")} 
+                    required
+                    maxLength={14}
+                    onChange={(e) => {
+                      // Formatar CPF enquanto digita
+                      let value = e.target.value.replace(/\D/g, '');
+                      if (value.length <= 11) {
+                        // Formata como CPF
+                        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                        value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                        e.target.value = value;
+                      }
+                    }}
+                  />
+                  {errors.cpf && (
+                    <p className="text-xs text-red-500 mt-1">{errors.cpf.message as string}</p>
+                  )}
+                </div>
               </div>
               <div>
                 <Label htmlFor="rg">RG</Label>
@@ -140,22 +133,59 @@ export function UpdatePatientForm({ patientId, onSuccess }: UpdatePatientFormPro
               <div>
                 <Label htmlFor="birth_date">Data de Nascimento</Label>
                 <Input type="date" id="birth_date" {...register("birth_date")} required />
+                {errors.birth_date && (
+                  <p className="text-xs text-red-500 mt-1">{errors.birth_date.message as string}</p>
+                )}
               </div>
               <div>
                 <Label htmlFor="phone">Telefone</Label>
-                <Input id="phone" {...register("phone")} placeholder="(XX) XXXXX-XXXX" />
+                <div className="relative">
+                  <Input 
+                    id="phone" 
+                    placeholder="(00) 00000-0000" 
+                    {...register("phone")}
+                    maxLength={15}
+                    onChange={(e) => {
+                      // Formatar telefone enquanto digita
+                      let value = e.target.value.replace(/\D/g, '');
+                      if (value.length <= 11) {
+                        // Formata como telefone
+                        value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
+                        value = value.replace(/(\d)(\d{4})$/, '$1-$2');
+                        e.target.value = value;
+                      }
+                    }}
+                  />
+                  {errors.phone && (
+                    <p className="text-xs text-red-500 mt-1">{errors.phone.message as string}</p>
+                  )}
+                </div>
               </div>
             </div>
             
             <div>
               <Label htmlFor="cep">CEP</Label>
-              <Input 
-                id="cep" 
-                {...register("cep")} 
-                required
-                placeholder="Somente números"
-                maxLength={8}
-              />
+              <div className="relative">
+                <Input 
+                  id="cep" 
+                  placeholder="00000-000" 
+                  {...register("cep")} 
+                  required
+                  maxLength={9}
+                  onChange={(e) => {
+                    // Formatar CEP enquanto digita
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length <= 8) {
+                      // Formata como CEP
+                      value = value.replace(/^(\d{5})(\d)/, '$1-$2');
+                      e.target.value = value;
+                    }
+                  }}
+                />
+                {errors.cep && (
+                  <p className="text-xs text-red-500 mt-1">{errors.cep.message as string}</p>
+                )}
+              </div>
             </div>
             
             <div>

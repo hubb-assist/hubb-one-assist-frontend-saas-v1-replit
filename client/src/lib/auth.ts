@@ -9,6 +9,9 @@ export interface User {
   role?: string;
   // Campo adicional para verificar explicitamente status de autenticação
   authenticated?: boolean;
+  // Novos campos para permissões
+  permissions?: string[];
+  subscriber_id?: string;
   // Outros campos que podem vir do backend
   is_active?: boolean;
   created_at?: string;
@@ -23,6 +26,14 @@ interface AuthState {
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
+  // Métodos consolidados de permissão
+  hasPermission: (permission: string) => boolean;
+  hasAnyPermission: (permissions: string[]) => boolean;
+  hasAllPermissions: (permissions: string[]) => boolean;
+  // Verificação por tipo de acesso
+  canAccessAdmin: () => boolean;
+  canAccessClinica: () => boolean;
+  canAccessApp: () => boolean;
 }
 
 // Store de autenticação usando Zustand
@@ -118,4 +129,74 @@ export const useAuth = create<AuthState>((set, get) => ({
       set({ isLoading: false });
     }
   },
+
+  // Verificação de permissão única
+  hasPermission: (permission: string) => {
+    const { user } = get();
+    
+    if (!user || !user.is_active) return false;
+
+    // Verificar permissões diretas
+    if (user.permissions?.includes(permission)) {
+      return true;
+    }
+    
+    // Verificação baseada na role (fallback)
+    const role = user.role;
+    
+    // Permissões de pacientes
+    if ((permission === 'CAN_CREATE_PATIENT' || 
+         permission === 'CAN_VIEW_PATIENT' || 
+         permission === 'CAN_EDIT_PATIENT' || 
+         permission === 'CAN_DELETE_PATIENT') && 
+        (role === 'DONO_ASSINANTE' || role === 'SUPER_ADMIN' || role === 'DIRETOR')) {
+      return true;
+    }
+    
+    // Permissões de administração
+    if ((permission === 'CAN_MANAGE_SUBSCRIBERS' || 
+         permission === 'CAN_MANAGE_USERS' || 
+         permission === 'CAN_MANAGE_SEGMENTS' || 
+         permission === 'CAN_MANAGE_MODULES' ||
+         permission === 'CAN_MANAGE_PLANS') && 
+        (role === 'SUPER_ADMIN' || role === 'DIRETOR')) {
+      return true;
+    }
+    
+    return false;
+  },
+  
+  // Verificação de qualquer permissão em um array
+  hasAnyPermission: (permissions: string[]) => {
+    return permissions.some(permission => get().hasPermission(permission));
+  },
+  
+  // Verificação de todas as permissões em um array
+  hasAllPermissions: (permissions: string[]) => {
+    return permissions.every(permission => get().hasPermission(permission));
+  },
+  
+  // Verificação de acesso à área administrativa
+  canAccessAdmin: () => {
+    const { user } = get();
+    if (!user) return false;
+    
+    return user.role === 'SUPER_ADMIN' || user.role === 'DIRETOR';
+  },
+  
+  // Verificação de acesso à área da clínica
+  canAccessClinica: () => {
+    const { user } = get();
+    if (!user) return false;
+    
+    return user.role === 'DONO_ASSINANTE' || user.role === 'SUPER_ADMIN';
+  },
+  
+  // Verificação de acesso à área do app
+  canAccessApp: () => {
+    const { user } = get();
+    if (!user) return false;
+    
+    return user.role === 'COLABORADOR_NIVEL_2' || user.role === 'SUPER_ADMIN';
+  }
 }));

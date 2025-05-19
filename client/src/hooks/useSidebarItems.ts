@@ -1,5 +1,4 @@
 import { useAuth } from "@/lib/auth";
-import { useHasPermission } from "./useHasPermission";
 
 export type UserRole = "SUPER_ADMIN" | "DIRETOR" | "COLABORADOR_NIVEL_2" | "DONO_ASSINANTE";
 
@@ -15,8 +14,7 @@ export interface SidebarItem {
  * @returns Array de itens para o menu lateral
  */
 export function useSidebarItems(): SidebarItem[] {
-  const { user } = useAuth();
-  const canManagePatients = useHasPermission('CAN_VIEW_PATIENT');
+  const { user, hasPermission, canAccessAdmin, canAccessClinica, canAccessApp } = useAuth();
   
   if (!user) return [];
   
@@ -28,15 +26,15 @@ export function useSidebarItems(): SidebarItem[] {
   // Itens específicos para cada role
   const roleSpecificItems: Record<UserRole, SidebarItem[]> = {
     SUPER_ADMIN: [
-      { label: "Assinantes", href: "/admin/subscribers" },
-      { label: "Usuários", href: "/admin/system-users" },
-      { label: "Segmentos", href: "/admin/segments" },
-      { label: "Módulos", href: "/admin/modules" },
-      { label: "Planos", href: "/admin/plans" },
+      { label: "Assinantes", href: "/admin/subscribers", permission: "CAN_MANAGE_SUBSCRIBERS" },
+      { label: "Usuários", href: "/admin/system-users", permission: "CAN_MANAGE_USERS" },
+      { label: "Segmentos", href: "/admin/segments", permission: "CAN_MANAGE_SEGMENTS" },
+      { label: "Módulos", href: "/admin/modules", permission: "CAN_MANAGE_MODULES" },
+      { label: "Planos", href: "/admin/plans", permission: "CAN_MANAGE_PLANS" },
     ],
     DIRETOR: [
-      { label: "Assinantes", href: "/admin/subscribers" },
-      { label: "Usuários", href: "/admin/system-users" },
+      { label: "Assinantes", href: "/admin/subscribers", permission: "CAN_MANAGE_SUBSCRIBERS" },
+      { label: "Usuários", href: "/admin/system-users", permission: "CAN_MANAGE_USERS" },
     ],
     DONO_ASSINANTE: [
       { label: "Pacientes", href: "/clinica/patients", permission: "CAN_VIEW_PATIENT" },
@@ -50,12 +48,33 @@ export function useSidebarItems(): SidebarItem[] {
   };
   
   // Obter itens específicos para a role atual
-  const currentRoleItems = user.role ? (roleSpecificItems[user.role as UserRole] || []) : [];
+  let menuItems: SidebarItem[] = [];
+  
+  // Adicionar itens baseados nas áreas que o usuário pode acessar
+  if (canAccessAdmin()) {
+    // Se pode acessar área administrativa, adicionar itens de SUPER_ADMIN ou DIRETOR
+    menuItems = [...menuItems, ...roleSpecificItems.SUPER_ADMIN];
+  }
+  
+  if (canAccessClinica()) {
+    // Se pode acessar área da clínica, adicionar itens de DONO_ASSINANTE
+    menuItems = [...menuItems, ...roleSpecificItems.DONO_ASSINANTE];
+  }
+  
+  if (canAccessApp()) {
+    // Se pode acessar área do app, adicionar itens de COLABORADOR_NIVEL_2
+    menuItems = [...menuItems, ...roleSpecificItems.COLABORADOR_NIVEL_2];
+  }
+  
+  // Remover duplicatas (como mesmo link pode aparecer em múltiplas roles)
+  const uniqueItems = menuItems.filter((item, index, self) => 
+    index === self.findIndex((t) => t.href === item.href)
+  );
   
   // Filtrar itens com base nas permissões
-  const filteredItems = currentRoleItems.filter(item => {
+  const filteredItems = uniqueItems.filter(item => {
     if (!item.permission) return true;
-    return useHasPermission(item.permission);
+    return hasPermission(item.permission);
   });
   
   return [...commonItems, ...filteredItems];

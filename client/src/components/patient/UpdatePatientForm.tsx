@@ -107,15 +107,7 @@ export function UpdatePatientForm({ patientId, onSuccess }: UpdatePatientFormPro
                     required
                     maxLength={14}
                     onChange={(e) => {
-                      // Formatar CPF enquanto digita
-                      let value = e.target.value.replace(/\D/g, '');
-                      if (value.length <= 11) {
-                        // Formata como CPF
-                        value = value.replace(/(\d{3})(\d)/, '$1.$2');
-                        value = value.replace(/(\d{3})(\d)/, '$1.$2');
-                        value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-                        e.target.value = value;
-                      }
+                      e.target.value = formatCpf(e.target.value);
                     }}
                   />
                   {errors.cpf && (
@@ -146,14 +138,7 @@ export function UpdatePatientForm({ patientId, onSuccess }: UpdatePatientFormPro
                     {...register("phone")}
                     maxLength={15}
                     onChange={(e) => {
-                      // Formatar telefone enquanto digita
-                      let value = e.target.value.replace(/\D/g, '');
-                      if (value.length <= 11) {
-                        // Formata como telefone
-                        value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
-                        value = value.replace(/(\d)(\d{4})$/, '$1-$2');
-                        e.target.value = value;
-                      }
+                      e.target.value = formatPhone(e.target.value);
                     }}
                   />
                   {errors.phone && (
@@ -173,13 +158,7 @@ export function UpdatePatientForm({ patientId, onSuccess }: UpdatePatientFormPro
                   required
                   maxLength={9}
                   onChange={(e) => {
-                    // Formatar CEP enquanto digita
-                    let value = e.target.value.replace(/\D/g, '');
-                    if (value.length <= 8) {
-                      // Formata como CEP
-                      value = value.replace(/^(\d{5})(\d)/, '$1-$2');
-                      e.target.value = value;
-                    }
+                    e.target.value = formatCep(e.target.value);
                   }}
                 />
                 {errors.cep && (

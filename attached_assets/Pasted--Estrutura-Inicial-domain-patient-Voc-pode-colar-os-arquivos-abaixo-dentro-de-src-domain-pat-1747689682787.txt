@@ -1,0 +1,132 @@
+✅ Estrutura Inicial /domain/patient/
+Você pode colar os arquivos abaixo dentro de:
+📁 src/domain/patient/
+
+📄 types.ts — Tipagens e contratos
+ts
+Copiar
+Editar
+export interface PatientFormData {
+  name: string;
+  cpf: string;
+  rg?: string;
+  birth_date: string;
+  phone?: string;
+  cep: string;
+  address: string;
+  number: string;
+  complement?: string;
+  district: string;
+  city: string;
+  state: string;
+}
+
+export interface Patient extends PatientFormData {
+  id: string;
+  created_at: string;
+  is_active: boolean;
+}
+📄 api.ts — Comunicação com backend
+ts
+Copiar
+Editar
+import axios from "axios";
+import { Patient, PatientFormData } from "./types";
+
+export async function createPatient(data: PatientFormData): Promise<Patient> {
+  const response = await axios.post("/api/v1/patients", data);
+  return response.data;
+}
+
+export async function getPatients(): Promise<Patient[]> {
+  const response = await axios.get("/api/v1/patients");
+  return response.data;
+}
+
+export async function getPatient(id: string): Promise<Patient> {
+  const response = await axios.get(`/api/v1/patients/${id}`);
+  return response.data;
+}
+
+export async function updatePatient(id: string, data: PatientFormData): Promise<Patient> {
+  const response = await axios.put(`/api/v1/patients/${id}`, data);
+  return response.data;
+}
+
+export async function deletePatient(id: string): Promise<void> {
+  await axios.delete(`/api/v1/patients/${id}`);
+}
+📄 useCases.ts — Regras de negócio via hooks
+ts
+Copiar
+Editar
+import { useToast } from "@/hooks/useToast";
+import {
+  createPatient,
+  updatePatient,
+  getPatients,
+  deletePatient,
+  getPatient,
+} from "./api";
+import { PatientFormData } from "./types";
+
+export function useCreatePatient() {
+  const { toast } = useToast();
+
+  const handleCreate = async (data: PatientFormData) => {
+    try {
+      const result = await createPatient(data);
+      toast({ title: "Paciente criado com sucesso!" });
+      return result;
+    } catch (err: any) {
+      toast({ title: "Erro ao criar paciente", description: err.message });
+      throw err;
+    }
+  };
+
+  return { handleCreate };
+}
+
+export function useUpdatePatient() {
+  const { toast } = useToast();
+
+  const handleUpdate = async (id: string, data: PatientFormData) => {
+    try {
+      const result = await updatePatient(id, data);
+      toast({ title: "Paciente atualizado com sucesso!" });
+      return result;
+    } catch (err: any) {
+      toast({ title: "Erro ao atualizar paciente", description: err.message });
+      throw err;
+    }
+  };
+
+  return { handleUpdate };
+}
+
+export function useDeletePatient() {
+  const { toast } = useToast();
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deletePatient(id);
+      toast({ title: "Paciente excluído com sucesso!" });
+    } catch (err: any) {
+      toast({ title: "Erro ao excluir paciente", description: err.message });
+      throw err;
+    }
+  };
+
+  return { handleDelete };
+}
+
+export function useListPatients() {
+  const fetch = async () => await getPatients();
+  return { fetch };
+}
+
+export function useGetPatient() {
+  const fetchById = async (id: string) => await getPatient(id);
+  return { fetchById };
+}
+📦 O que vem agora?

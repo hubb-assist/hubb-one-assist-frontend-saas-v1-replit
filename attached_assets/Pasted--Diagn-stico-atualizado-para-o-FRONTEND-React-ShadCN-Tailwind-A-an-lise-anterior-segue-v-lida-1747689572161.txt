@@ -1,0 +1,120 @@
+✅ Diagnóstico atualizado para o FRONTEND (React + ShadCN + Tailwind)
+A análise anterior segue válida, mas agora removemos suposições de Next.js (como /app, App Router, SSR). Vamos focar 100% em React tradicional com arquitetura moderna.
+
+🧱 Arquitetura recomendada — baseada em DDD adaptado ao Frontend
+Aqui está uma sugestão de estrutura modularizada por domínio, ideal para React SPA com ShadCN e Tailwind:
+
+bash
+Copiar
+Editar
+/src
+  /domain
+    /patient
+      entities.ts           ← Tipagens e validações (ex: CPF, endereço)
+      useCases.ts           ← useCreatePatient, useUpdatePatient, etc.
+      api.ts                ← Chamada de API: GET, POST, PUT, DELETE
+      types.ts              ← Tipos como Patient, PatientFormData
+  /components
+    /patient
+      PatientForm.tsx       ← UI pura (sem lógica de negócio)
+      PatientList.tsx
+  /hooks
+    useAuth.ts              ← Dados e permissões do usuário
+    useToast.ts             ← Notificações centralizadas
+    useSidebarItems.ts      ← Itens do menu por role
+  /lib
+    permissions.ts          ← Helpers como canCreatePatient(role)
+  /services
+    viaCepService.ts        ← Serviços externos (ex: buscar endereço)
+  /pages
+    PatientsPage.tsx
+    PatientCreatePage.tsx
+🔨 Ações recomendadas para alinhar com SOLID + Clean Code
+✅ SRP: Separar responsabilidades
+Situação atual	Refatorar para
+PatientCreateForm faz tudo	Criar useCreatePatient() para mover lógica
+onSubmit com formatação, API, toasts	Separar cada responsabilidade em função ou hook
+Sidebars com código duplicado	Criar useSidebarItems() hook reutilizável
+
+✅ DIP: Inversão de dependência
+Situação atual	Refatorar para
+Chamadas diretas a viaCepService	Criar um wrapper com interface (ex: getAddressFromZip(cep))
+Acoplamento direto aos serviços	Injetar via hooks ou contexts (useCepService())
+
+✅ DDD (Frontend adaptado)
+Problema atual	Melhoria proposta
+Lógica de negócio dentro do componente	Mover para useCase (ex: useCreatePatient)
+Sem entidades ou value objects	Criar Patient.ts com funções como validateCPF, formatPhone
+Sem repositórios	api.ts de cada domínio funciona como “repositório concreto”
+
+📁 Exemplo de estrutura para o domínio Patient
+/src/domain/patient/api.ts
+ts
+Copiar
+Editar
+import axios from "axios";
+import { PatientFormData, Patient } from "./types";
+
+export async function createPatient(data: PatientFormData): Promise<Patient> {
+  const res = await axios.post("/api/patients", data);
+  return res.data;
+}
+/src/domain/patient/useCases.ts
+ts
+Copiar
+Editar
+import { useToast } from "@/hooks/useToast";
+import { createPatient } from "./api";
+import { PatientFormData } from "./types";
+
+export function useCreatePatient() {
+  const { toast } = useToast();
+
+  const handleCreate = async (data: PatientFormData) => {
+    try {
+      const created = await createPatient(data);
+      toast({ title: "Paciente criado com sucesso!" });
+      return created;
+    } catch (err: any) {
+      toast({ title: "Erro ao criar paciente", description: err.message });
+      throw err;
+    }
+  };
+
+  return { handleCreate };
+}
+/src/components/patient/PatientForm.tsx
+tsx
+Copiar
+Editar
+import { useForm } from "react-hook-form";
+import { useCreatePatient } from "@/domain/patient/useCases";
+import { PatientFormData } from "@/domain/patient/types";
+
+export function PatientForm() {
+  const { register, handleSubmit } = useForm<PatientFormData>();
+  const { handleCreate } = useCreatePatient();
+
+  const onSubmit = async (data: PatientFormData) => {
+    await handleCreate(data);
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input {...register("name")} />
+      {/* outros campos */}
+      <button type="submit">Criar paciente</button>
+    </form>
+  );
+}
+✅ Conclusão
+📌 Você está com uma base funcional, mas o próximo passo é:
+
+Organizar o frontend por domínios
+
+Separar lógica de negócio dos componentes de UI
+
+Extrair lógica repetida e criar hooks reutilizáveis
+
+Encapsular chamadas externas como serviços
+

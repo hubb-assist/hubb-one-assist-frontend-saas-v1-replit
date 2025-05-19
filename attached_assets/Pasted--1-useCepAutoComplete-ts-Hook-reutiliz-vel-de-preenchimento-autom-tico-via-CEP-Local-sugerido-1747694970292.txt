@@ -1,0 +1,155 @@
+✅ 1. useCepAutoComplete.ts — Hook reutilizável de preenchimento automático via CEP
+📁 Local sugerido: src/hooks/useCepAutoComplete.ts
+
+ts
+Copiar
+Editar
+import { useEffect } from "react";
+import { UseFormSetValue, UseFormWatch } from "react-hook-form";
+import { PatientFormData } from "@/domain/patient/types";
+
+export function useCepAutoComplete(
+  watch: UseFormWatch<PatientFormData>,
+  setValue: UseFormSetValue<PatientFormData>
+) {
+  const cep = watch("cep");
+
+  useEffect(() => {
+    const cleanCep = (cep || "").replace(/\D/g, "");
+
+    if (cleanCep.length !== 8) return;
+
+    const fetchAddress = async () => {
+      try {
+        const res = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+        const data = await res.json();
+
+        if (data.erro) throw new Error("CEP não encontrado");
+
+        setValue("address", data.logradouro);
+        setValue("district", data.bairro);
+        setValue("city", data.localidade);
+        setValue("state", data.uf);
+      } catch (e) {
+        console.warn("Erro ao buscar endereço via CEP:", e);
+      }
+    };
+
+    fetchAddress();
+  }, [cep, setValue]);
+}
+✅ 2. PatientForm.tsx — Atualizado com máscaras + CEP inteligente
+📁 Local: src/components/patient/PatientForm.tsx
+
+tsx
+Copiar
+Editar
+import { useForm } from "react-hook-form";
+import { PatientFormData } from "@/domain/patient/types";
+import { useCreatePatient } from "@/domain/patient/useCases";
+import { useCepAutoComplete } from "@/hooks/useCepAutoComplete";
+import InputMask from "react-input-mask";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+export function PatientForm() {
+  const { register, handleSubmit, reset, setValue, watch } = useForm<PatientFormData>();
+  const { handleCreate } = useCreatePatient();
+
+  // CEP auto preenchimento
+  useCepAutoComplete(watch, setValue);
+
+  const onSubmit = async (data: PatientFormData) => {
+    await handleCreate(data);
+    reset();
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <div>
+        <Label htmlFor="name">Nome</Label>
+        <Input {...register("name")} />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="cpf">CPF</Label>
+          <InputMask mask="999.999.999-99" {...register("cpf")}>
+            {(inputProps: any) => <Input {...inputProps} />}
+          </InputMask>
+        </div>
+        <div>
+          <Label htmlFor="rg">RG</Label>
+          <Input {...register("rg")} />
+        </div>
+      </div>
+
+      <div>
+        <Label htmlFor="birth_date">Data de nascimento</Label>
+        <Input type="date" {...register("birth_date")} />
+      </div>
+
+      <div>
+        <Label htmlFor="phone">Telefone</Label>
+        <InputMask mask="(99) 99999-9999" {...register("phone")}>
+          {(inputProps: any) => <Input {...inputProps} />}
+        </InputMask>
+      </div>
+
+      <div>
+        <Label htmlFor="cep">CEP</Label>
+        <InputMask mask="99999999" {...register("cep")}>
+          {(inputProps: any) => <Input {...inputProps} />}
+        </InputMask>
+      </div>
+
+      <div>
+        <Label htmlFor="address">Endereço</Label>
+        <Input {...register("address")} />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="number">Número</Label>
+          <Input {...register("number")} />
+        </div>
+        <div>
+          <Label htmlFor="complement">Complemento</Label>
+          <Input {...register("complement")} />
+        </div>
+      </div>
+
+      <div>
+        <Label htmlFor="district">Bairro</Label>
+        <Input {...register("district")} />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="city">Cidade</Label>
+          <Input {...register("city")} />
+        </div>
+        <div>
+          <Label htmlFor="state">Estado</Label>
+          <Input {...register("state")} />
+        </div>
+      </div>
+
+      <Button type="submit" className="w-full">
+        Criar paciente
+      </Button>
+    </form>
+  );
+}
+✅ Resultado esperado agora:
+CEP digitado automaticamente preenche endereço, cidade, bairro e estado
+
+Máscaras funcionam para CPF e telefone
+
+Nenhum erro no console
+
+Lógica extraída de forma limpa em useCepAutoComplete()
+
+Código alinhado à arquitetura de domínio
+

@@ -4,63 +4,29 @@ import { PatientFormData } from "@/domain/patient/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-// Precisaríamos criar este serviço também
-const viaCepService = {
-  fetchAddress: async (cep: string) => {
-    try {
-      // Remover caracteres não numéricos
-      const cleanCep = cep.replace(/\D/g, '');
-      if (cleanCep.length !== 8) return null;
-      
-      const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
-      const data = await response.json();
-      
-      if (data.erro) return null;
-      
-      return {
-        address: data.logradouro,
-        district: data.bairro,
-        city: data.localidade,
-        state: data.uf
-      };
-    } catch (error) {
-      console.error('Erro ao buscar endereço:', error);
-      return null;
-    }
-  }
-};
+import InputMask from "react-input-mask";
+import { useCepAutoComplete } from "@/hooks/useCepAutoComplete";
+import { toast } from "sonner";
 
 export function PatientForm() {
   const { register, handleSubmit, setValue, reset, watch } = useForm<PatientFormData>();
   const { handleCreate } = useCreatePatient();
   const [loading, setLoading] = useState(false);
   
-  const cep = watch('cep');
-  
-  // Efeito para buscar endereço via CEP
-  useEffect(() => {
-    if (cep?.length === 8) {
-      viaCepService.fetchAddress(cep).then(data => {
-        if (data) {
-          setValue('address', data.address);
-          setValue('district', data.district);
-          setValue('city', data.city);
-          setValue('state', data.state);
-        }
-      });
-    }
-  }, [cep, setValue]);
+  // Usar o hook de autopreenchimento de CEP
+  useCepAutoComplete(watch, setValue);
 
   const onSubmit = async (data: PatientFormData) => {
     try {
       setLoading(true);
       await handleCreate(data);
+      toast.success("Paciente cadastrado com sucesso!");
       reset(); // Limpa o formulário após o sucesso
     } catch (error) {
       console.error('Erro ao criar paciente:', error);
+      toast.error("Erro ao cadastrar paciente. Tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -82,7 +48,19 @@ export function PatientForm() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="cpf">CPF</Label>
-                <Input id="cpf" {...register("cpf")} required placeholder="Somente números" />
+                <InputMask 
+                  mask="999.999.999-99" 
+                  {...register("cpf")} 
+                  required
+                >
+                  {(inputProps: any) => (
+                    <Input 
+                      id="cpf" 
+                      placeholder="000.000.000-00" 
+                      {...inputProps} 
+                    />
+                  )}
+                </InputMask>
               </div>
               <div>
                 <Label htmlFor="rg">RG</Label>
@@ -97,19 +75,36 @@ export function PatientForm() {
               </div>
               <div>
                 <Label htmlFor="phone">Telefone</Label>
-                <Input id="phone" {...register("phone")} placeholder="(XX) XXXXX-XXXX" />
+                <InputMask 
+                  mask="(99) 99999-9999" 
+                  {...register("phone")}
+                >
+                  {(inputProps: any) => (
+                    <Input 
+                      id="phone" 
+                      placeholder="(00) 00000-0000" 
+                      {...inputProps} 
+                    />
+                  )}
+                </InputMask>
               </div>
             </div>
             
             <div>
               <Label htmlFor="cep">CEP</Label>
-              <Input 
-                id="cep" 
+              <InputMask 
+                mask="99999-999" 
                 {...register("cep")} 
                 required
-                placeholder="Somente números"
-                maxLength={8}
-              />
+              >
+                {(inputProps: any) => (
+                  <Input 
+                    id="cep" 
+                    placeholder="00000-000" 
+                    {...inputProps} 
+                  />
+                )}
+              </InputMask>
             </div>
             
             <div>

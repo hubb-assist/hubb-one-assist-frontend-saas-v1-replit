@@ -1,0 +1,130 @@
+Obrigado pelo print e o relatório. Vamos corrigir os principais problemas funcionais e de UX no formulário de cadastro de pacientes, com foco em:
+
+✅ Diagnóstico dos problemas atuais
+❌ Sem máscara no CPF
+
+❌ Sem máscara no telefone
+
+❌ Busca automática de endereço via CEP não funcionando
+
+✅ Nenhum erro visível no console (ótimo)
+
+📌 Formulário visualmente estável, mas funcionalmente incompleto
+
+🎯 Objetivo da correção
+🟢 Adicionar máscara de CPF e telefone no formulário
+
+🟢 Implementar busca automática de endereço ao digitar o CEP
+
+🟢 Validar se o campo de endereço é preenchido corretamente
+
+🛡️ Manter o código limpo e alinhado à arquitetura com useCase + serviços
+
+✅ Etapas de correção
+1. Instalar react-input-mask
+Se ainda não tiver:
+
+bash
+Copiar
+Editar
+npm install react-input-mask
+2. Criar serviço para ViaCEP
+📁 src/services/viaCepService.ts
+
+ts
+Copiar
+Editar
+export async function fetchAddressByCep(cep: string) {
+  const cleanCep = cep.replace(/\D/g, "");
+  if (cleanCep.length !== 8) throw new Error("CEP inválido");
+
+  const res = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+  const data = await res.json();
+
+  if ("erro" in data) throw new Error("CEP não encontrado");
+
+  return {
+    address: data.logradouro,
+    district: data.bairro,
+    city: data.localidade,
+    state: data.uf,
+  };
+}
+3. Atualizar o PatientForm.tsx
+Exemplo de campos com máscara e integração ViaCEP:
+
+tsx
+Copiar
+Editar
+import InputMask from "react-input-mask";
+import { fetchAddressByCep } from "@/services/viaCepService";
+
+// Dentro do componente:
+const { register, setValue, handleSubmit, watch } = useForm<PatientFormData>();
+const cep = watch("cep");
+
+useEffect(() => {
+  const run = async () => {
+    if (cep && cep.length === 8) {
+      try {
+        const result = await fetchAddressByCep(cep);
+        setValue("address", result.address);
+        setValue("district", result.district);
+        setValue("city", result.city);
+        setValue("state", result.state);
+      } catch (e) {
+        console.warn("Erro ao buscar CEP:", e);
+      }
+    }
+  };
+
+  run();
+}, [cep, setValue]);
+4. Aplicar máscara nos campos
+tsx
+Copiar
+Editar
+<div>
+  <Label htmlFor="cpf">CPF</Label>
+  <InputMask
+    mask="999.999.999-99"
+    {...register("cpf")}
+  >
+    {(inputProps: any) => <Input id="cpf" {...inputProps} />}
+  </InputMask>
+</div>
+
+<div>
+  <Label htmlFor="phone">Telefone</Label>
+  <InputMask
+    mask="(99) 99999-9999"
+    {...register("phone")}
+  >
+    {(inputProps: any) => <Input id="phone" {...inputProps} />}
+  </InputMask>
+</div>
+
+<div>
+  <Label htmlFor="cep">CEP</Label>
+  <InputMask
+    mask="99999999"
+    {...register("cep")}
+  >
+    {(inputProps: any) => <Input id="cep" {...inputProps} />}
+  </InputMask>
+</div>
+✅ Resultado esperado
+Ao digitar o CEP corretamente, os campos de endereço, bairro, cidade e estado são preenchidos automaticamente
+
+CPF aparece com formato: 000.000.000-00
+
+Telefone com formato: (99) 99999-9999
+
+Nada quebra se o CEP for inválido — apenas aviso no console (ou toast, se quiser implementar)
+
+Deseja que eu:
+✅ Atualize o PatientForm.tsx inteiro com tudo isso integrado?
+
+✅ Gere um useCepAutoComplete() como hook reutilizável?
+
+Me avise qual você prefere e já te entrego pronto para colar.

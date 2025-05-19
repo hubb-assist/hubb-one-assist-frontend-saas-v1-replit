@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import InputMask from "react-input-mask";
 import { useCepAutoComplete } from "@/hooks/useCepAutoComplete";
 import { toast } from "sonner";
+import { formatCpf, formatPhone, formatCep } from "@/utils/masks";
 
 interface UpdatePatientFormProps {
   patientId: string;

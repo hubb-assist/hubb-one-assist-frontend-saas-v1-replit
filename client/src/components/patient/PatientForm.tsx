@@ -8,9 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import InputMask from "react-input-mask";
 import { useCepAutoComplete } from "@/hooks/useCepAutoComplete";
 import { toast } from "sonner";
+import { formatCpf, formatPhone, formatCep } from "@/utils/masks";
 
 export function PatientForm() {
   const { register, handleSubmit, setValue, reset, watch, formState: { errors } } = useForm<PatientFormData>({
@@ -60,15 +60,7 @@ export function PatientForm() {
                     required
                     maxLength={14}
                     onChange={(e) => {
-                      // Formatar CPF enquanto digita
-                      let value = e.target.value.replace(/\D/g, '');
-                      if (value.length <= 11) {
-                        // Formata como CPF
-                        value = value.replace(/(\d{3})(\d)/, '$1.$2');
-                        value = value.replace(/(\d{3})(\d)/, '$1.$2');
-                        value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-                        e.target.value = value;
-                      }
+                      e.target.value = formatCpf(e.target.value);
                     }}
                   />
                   {errors.cpf && (
@@ -99,14 +91,7 @@ export function PatientForm() {
                     {...register("phone")}
                     maxLength={15}
                     onChange={(e) => {
-                      // Formatar telefone enquanto digita
-                      let value = e.target.value.replace(/\D/g, '');
-                      if (value.length <= 11) {
-                        // Formata como telefone
-                        value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
-                        value = value.replace(/(\d)(\d{4})$/, '$1-$2');
-                        e.target.value = value;
-                      }
+                      e.target.value = formatPhone(e.target.value);
                     }}
                   />
                   {errors.phone && (
@@ -126,13 +111,7 @@ export function PatientForm() {
                   required
                   maxLength={9}
                   onChange={(e) => {
-                    // Formatar CEP enquanto digita
-                    let value = e.target.value.replace(/\D/g, '');
-                    if (value.length <= 8) {
-                      // Formata como CEP
-                      value = value.replace(/^(\d{5})(\d)/, '$1-$2');
-                      e.target.value = value;
-                    }
+                    e.target.value = formatCep(e.target.value);
                   }}
                 />
                 {errors.cep && (
